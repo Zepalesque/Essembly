@@ -1,0 +1,14 @@
+let .x;
+let .x;
+
+let .my_funny_variable;
+
+#label: load const 10;
+
+let .y;
+
+goto #label;
+
+#l1: goto #l1;
+
+load local .my_fnuny_variable;

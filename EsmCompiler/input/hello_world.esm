@@ -1,0 +1,17 @@
+load const "Hello, World!"
+
+let .curr;
+goto #start;
+
+#loop: 
+    load local .curr;
+    print ascii;
+    #start: 
+    store .curr;
+    load local .curr;
+    load const '\0';
+    do ^;
+goto #loop if !zero;
+
+load const 0;
+exit;
