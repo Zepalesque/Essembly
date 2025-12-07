@@ -59,7 +59,7 @@ Local: 'local';
 Const: 'const';
 Input: 'input';
 
-// Pop top value and discard it
+// Pop top value and discard it (todo: remove this, 'tis dangerous)
 Discard: 'discard';
 
 // Store
