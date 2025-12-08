@@ -1,36 +1,11 @@
 let .currChar;
 
 load const "Please input a string, and it will be repeated.\n";
-
-goto #start;
-
-#loop: 
-    load local .currChar;
-    print ascii;
-    #start: 
-    store .currChar;
-    load local .currChar;
-    load const '\0';
-    do ^;
-goto #loop if !zero;
-
-load const '\n';
-print ascii;
-
+print str;
 
 load input str;
+print str;
 
-goto #inputStart;
-
-#inputLoop: 
-    load local .currChar;
-    print ascii;
-    #inputStart: 
-    store .currChar;
-    load local .currChar;
-    load const '\0';
-    do ^;
-goto #inputLoop if !zero;
 
 load const 0;
 exit;
