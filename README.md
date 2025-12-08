@@ -16,7 +16,7 @@ More code examples can be found [here.](https://github.com/Zepalesque/Essembly/t
 constants are loaded to the stack via a `load const [value];`
 the value may any of:
 - a binary integer (`0b0010_1101` for instance)
-- a hex inteeger (`0x8D`)
+- a hex integer (`0x8D`)
 - a decimal integer (`11`)
 - an ascii character or escape sequence (`'e'`, `'\n'`, `'\0'`, etc...)
 - a string (`"hi world :3"`, loaded into the stack with a `'\0'` appended to the end, the whole thing is in reverse order)
