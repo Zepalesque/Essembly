@@ -1,3 +1,6 @@
+![logo](logo.png)
+
+temporary weird logo lol
 
 ## Essembly - a funny stack-based "assemblish" language written in C#
 This language is very simple, and currently operates on singular bytes and null-terminated strings (loaded to stack as ascii bytes)
@@ -10,7 +13,7 @@ print str;
 load const 0;
 exit;
 ```
-More code examples can be found [here.](https://github.com/Zepalesque/Essembly/tree/master/EsmCompiler/input)
+More code examples can be found [here.](./EsmCompiler/input)
 
 ### constants
 constants are loaded to the stack via a `load const [value];`
