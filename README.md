@@ -10,7 +10,7 @@ print str;
 load const 0;
 exit;
 ```
-
+More code examples can be found [here.](https://github.com/Zepalesque/Essembly/tree/master/EsmCompiler/input)
 
 ### constants
 constants are loaded to the stack via a `load const [value];`
