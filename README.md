@@ -25,25 +25,25 @@ the value may any of:
 ### operations
 there are 5 binary operations and one unary.
 these are all bitwise and operate with single-byte values
-`operate &;`: `stack += stack.Pop() & stack.Pop()` (AND)
-`operate |;`: `stack += stack.Pop() | stack.Pop()` (OR)
-`operate ^;`: `stack += stack.Pop() ^ stack.Pop()` (XOR)
-`operate <<;`: `stack += stack.Pop() << stack.Pop()` (LSHIFT)
-`operate >>;`: `stack += stack.Pop() >> stack.Pop()` (RSHIFT, *unsigned*)
-`operate ~;`: `stack += ~` (NOT)
+- `operate &;`: `stack += stack.Pop() & stack.Pop()` (AND)
+- `operate |;`: `stack += stack.Pop() | stack.Pop()` (OR)
+- `operate ^;`: `stack += stack.Pop() ^ stack.Pop()` (XOR)
+- `operate <<;`: `stack += stack.Pop() << stack.Pop()` (LSHIFT)
+- `operate >>;`: `stack += stack.Pop() >> stack.Pop()` (RSHIFT, *unsigned*)
+- `operate ~;`: `stack += ~` (NOT)
 
 
 ### I/O
 there is one form of input and one form of output.
-`input` statements await user input from the console.
-`print` statements push output to the console.
+- `input` statements await user input from the console.
+- `print` statements push output to the console.
 
 each require an I/O mode to be specified:
-`ascii`: inputs the user's next input as an ascii byte to the stack / pops the top of the stack and prints it formatted as an ascii character
-`dec`: inputs the next line of user next input as a decimal number to the stack / pops the top of the stack and prints it formatted as a decimal number
-`hex`: inputs the next line of user next input as a hexadecimal number to the stack / pops the top of the stack and prints it formatted as a hexadecimal number
-`bin`: inputs the next line of user next input as a binary number to the stack / pops the top of the stack and prints it formatted as a binary number
-`str`: inputs the next line of user next input as a string to the stack, with a `'\0'` terminator much like loading string constants / pops and prints the top of the stack iteratively until reaching `'\0'`, which is discarded
+- `ascii`: inputs the user's next input as an ascii byte to the stack / pops the top of the stack and prints it formatted as an ascii character
+- `dec`: inputs the next line of user next input as a decimal number to the stack / pops the top of the stack and prints it formatted as a decimal number
+- `hex`: inputs the next line of user next input as a hexadecimal number to the stack / pops the top of the stack and prints it formatted as a hexadecimal number
+- `bin`: inputs the next line of user next input as a binary number to the stack / pops the top of the stack and prints it formatted as a binary number
+- `str`: inputs the next line of user next input as a string to the stack, with a `'\0'` terminator much like loading string constants / pops and prints the top of the stack iteratively until reaching `'\0'`, which is discarded
 
 
 ### variables
