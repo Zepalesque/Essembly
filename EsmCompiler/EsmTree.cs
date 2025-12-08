@@ -86,7 +86,6 @@ public record StoreMem(byte Index, FilePos Pos) : OneOpStmt(EsmCore.OpCode.Store
     public byte Index { get; set; } = Index;
 }
 
-public record Pop(FilePos Pos) : NoOpStmt(EsmCore.OpCode.PopTop, Pos);
 public record Exit(FilePos Pos) : NoOpStmt(EsmCore.OpCode.Exit, Pos);
 
 public record LabeledStmt(Label Label, SizedStmt Statement, FilePos Pos) : UnfinalizedStmt(Statement.Size, Pos) {
@@ -101,11 +100,7 @@ public record Goto(Label Label, bool? IfZero, FilePos Pos) : UnfinalizedStmt(2, 
 }
 
 public record Jump(sbyte Offset, bool? IfZero, FilePos Pos) 
-    : OneOpStmt(IfZero switch {
-        null => EsmCore.OpCode.Jump,
-            true => EsmCore.OpCode.JumpIfZero,
-            false => EsmCore.OpCode.JumpIfNZero
-    }, unchecked((byte) Offset), Pos) {
+    : OneOpStmt(EsmCore.OpCode.get_Item(IfZero), unchecked((byte) Offset), Pos) {
     public bool? IfZero { get; set; } = IfZero;
     public sbyte Offset { get; set; } = Offset;
 }
@@ -114,12 +109,12 @@ public record Label(string Id, FilePos Pos) : BaseNode(Pos) {
     public string Id { get; set; } = Id;
 }
 
-public record BitAnd(FilePos Pos) : NoOpStmt(EsmCore.OpCode.Do2And, Pos);
-public record BitOr(FilePos Pos) : NoOpStmt(EsmCore.OpCode.Do2Or, Pos);
-public record BitXor(FilePos Pos) : NoOpStmt(EsmCore.OpCode.Do2Xor, Pos);
-public record BitNot(FilePos Pos) : NoOpStmt(EsmCore.OpCode.Do1Not, Pos);
-public record BitLShift(FilePos Pos) : NoOpStmt(EsmCore.OpCode.Do2Left, Pos);
-public record BitRShift(FilePos Pos) : NoOpStmt(EsmCore.OpCode.Do2Right, Pos);
+public record BitAnd(FilePos Pos) : NoOpStmt(EsmCore.OpCode.BwAnd, Pos);
+public record BitOr(FilePos Pos) : NoOpStmt(EsmCore.OpCode.BwOr, Pos);
+public record BitXor(FilePos Pos) : NoOpStmt(EsmCore.OpCode.BwXor, Pos);
+public record BitNot(FilePos Pos) : NoOpStmt(EsmCore.OpCode.BwNot, Pos);
+public record BitLShift(FilePos Pos) : NoOpStmt(EsmCore.OpCode.BwLeft, Pos);
+public record BitRShift(FilePos Pos) : NoOpStmt(EsmCore.OpCode.BwRight, Pos);
 
 public record Print(PrintMode Mode, FilePos Pos) : NoOpStmt(Mode.Code, Pos) {
     public PrintMode Mode { get; set; } = Mode;
@@ -134,6 +129,7 @@ public enum PrintMode {
     Binary,
     Hex,
     Decimal,
+    Str,
 }
 
 public static class PrintModeExt {
@@ -143,6 +139,7 @@ public static class PrintModeExt {
             EsmLexer.Bin => PrintMode.Binary,
             EsmLexer.Hex => PrintMode.Hex,
             EsmLexer.Dec => PrintMode.Decimal,
+            EsmLexer.Str => PrintMode.Str,
             _ => throw new InvalidOperationException()
         };
 
@@ -152,6 +149,7 @@ public static class PrintModeExt {
                 PrintMode.Binary => OpCode.PrintBin,
                 PrintMode.Decimal => OpCode.PrintDec,
                 PrintMode.Hex => OpCode.PrintHex,
+                PrintMode.Str => OpCode.PrintStr,
                 _ => throw new InvalidOperationException()
             };
     }
@@ -163,7 +161,6 @@ public enum InputMode {
     Binary,
     Hex,
     Decimal,
-    Int,
     Str,
 }
 
@@ -174,7 +171,6 @@ public static class InputModeExt {
             EsmLexer.Bin => InputMode.Binary,
             EsmLexer.Hex => InputMode.Hex,
             EsmLexer.Dec => InputMode.Decimal,
-            EsmLexer.Int => InputMode.Int,
             EsmLexer.Str => InputMode.Str,
             _ => throw new InvalidOperationException()
         };
@@ -185,7 +181,6 @@ public static class InputModeExt {
                 InputMode.Binary => OpCode.InputBin,
                 InputMode.Decimal => OpCode.InputDec,
                 InputMode.Hex => OpCode.InputHex,
-                InputMode.Int => OpCode.InputInt,
                 InputMode.Str => OpCode.InputStr,
                 _ => throw new InvalidOperationException()
             };

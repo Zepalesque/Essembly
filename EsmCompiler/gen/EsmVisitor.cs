@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:/Users/emers/RiderProjects/Estrogembly/Esmc/Esm.g4 by ANTLR 4.13.2
+// Generated from C:/Users/emers/RiderProjects/EssemblyV2/EsmCompiler/Esm.g4 by ANTLR 4.13.2
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -86,13 +86,6 @@ public interface IEsmVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitGoto([NotNull] EsmParser.GotoContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>discard</c>
-	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitDiscard([NotNull] EsmParser.DiscardContext context);
-	/// <summary>
 	/// Visit a parse tree produced by the <c>exit</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// </summary>
@@ -100,17 +93,11 @@ public interface IEsmVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitExit([NotNull] EsmParser.ExitContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsmParser.printMode"/>.
+	/// Visit a parse tree produced by <see cref="EsmParser.ioMode"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitPrintMode([NotNull] EsmParser.PrintModeContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsmParser.inputMode"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitInputMode([NotNull] EsmParser.InputModeContext context);
+	Result VisitIoMode([NotNull] EsmParser.IoModeContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsmParser.stackOp"/>.
 	/// </summary>

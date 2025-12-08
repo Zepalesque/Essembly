@@ -8,20 +8,18 @@ statement
 ;
 
 baseStmt
-    : Do op = stackOp ';' #operationPerform
+    : Op op = stackOp ';' #operationPerform
     | Let id = Identifier ';' #varDec
     | Load load = loadClause ';' #toStack
     | Store id = Identifier ';' #storeToVar
-    | Print io = printMode ';' #print
+    | Print io = ioMode ';' #print
     | Goto (label = LabelId) (If condition = ifCond)? ';' #goto
-    | Discard ';' #discard
     | Exit ';' #exit
 ;
 
 // IO
 Print: 'print';
-printMode: io = Ascii | io = Hex | io = Dec | io = Bin;
-inputMode: io = Ascii | io = Hex | io = Dec | io = Bin | io = Int | io = Str;
+ioMode: io = Ascii | io = Hex | io = Dec | io = Bin | io = Str;
 Ascii: 'ascii';
 Hex: 'hex';
 Dec: 'dec';
@@ -44,7 +42,7 @@ stackOp
 loadClause
     : Const lit = literal #loadConst
     | Local loc = Identifier #loadLocal
-    | Input io = inputMode #loadInput
+    | Input io = ioMode #loadInput
 ;
 
 ifCond: not = Not? Zero;
@@ -59,9 +57,6 @@ Local: 'local';
 Const: 'const';
 Input: 'input';
 
-// Pop top value and discard it (todo: remove this, 'tis dangerous)
-Discard: 'discard';
-
 // Store
 Store: 'store';
 
@@ -70,7 +65,7 @@ Let: 'let';
 
 
 // Stack operations
-Do: 'do';
+Op: 'operate';
 BwAnd: '&';
 BwOr: '|';
 BwNot: '~';

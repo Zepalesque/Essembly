@@ -57,10 +57,7 @@ public class EsmAstBuilder(CompilationLogger logger, FileData file) : EsmBaseVis
     
     public override Print VisitPrint(EsmParser.PrintContext context)
         => new(PrintMode.Of(context.io.io.Type), context.InFile(File));
-
-    public override Pop VisitDiscard(EsmParser.DiscardContext context) 
-        => new(context.InFile(File));
-
+    
     public override LoadLocal VisitLoadLocal(EsmParser.LoadLocalContext context)
         => new(context.loc.Text, context.InFile(File));
 

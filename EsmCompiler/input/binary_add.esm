@@ -6,84 +6,59 @@ let .b; // init local var b
 let .aux; // init auxiliary var
 
 load const "Please input a number.\n";
-
-goto #aStart;
-
-#aLoop: 
-    load local .currChar;
-    print ascii;
-    #aStart: 
-    store .currChar;
-    load local .currChar;
-    load const '\0';
-    do ^;
-goto #aLoop if !zero;
-
-load const '\n';
-print ascii;
+print str;
 
 // take input a
-load input int;
+load input dec;
 store .a;
 
-load const "Please input a second number.\n";
-
-goto #bStart;
-
-#bLoop: 
-    load local .currChar;
+#add_loop:
+    
+    load const "Please input another number.\n";
+    print str;
+    
+    // take input b
+    load input dec;
+    store .b;
+    
+    // begin adder loop
+    #loop: 
+        // load a and b in reverse order
+        load local .b; // -> b
+        load local .a; // -> a, b
+        operate ^; // -> a^b
+    
+        load local .b; // -> b, a^b
+        load local .a; // -> a, b, a^b
+        operate &; // -> a&b, a^b
+        store .aux; // -> a^b
+        load const 1; // -> 1, a^b
+        load local .aux; // -> a&b, 1, a^b
+        operate <<; // -> (a&b)<<1, a^b
+        store .b; // -> a^b_prev
+    
+        store .a; // ->
+    
+        load local .b; // -> b
+    goto #loop if !zero; // if b == zero break #loop; else continue;
+    
+    load const "Sum: ";
+    print str;
+    
+    load local .a;
+    print dec;
+    
+    load const '\n';
     print ascii;
-    #bStart: 
-    store .currChar;
-    load local .currChar;
-    load const '\0';
-    do ^;
-goto #bLoop if !zero;
-
-load const '\n';
-print ascii;
-
-// take input b
-load input int;
-store .b;
-
-// begin adder loop
-#loop: 
-    // load a and b in reverse order
-    load local .b; // -> b
-    load local .a; // -> a, b
-    do ^; // -> a^b
-
-    load local .b; // -> b, a^b
-    load local .a; // -> a, b, a^b
-    do &; // -> a&b, a^b
-    store .aux; // -> a^b
-    load const 1; // -> 1, a^b
-    load local .aux; // -> a&b, 1, a^b
-    do <<; // -> (a&b)<<1, a^b
-    store .b; // -> a^b_prev
-
-    store .a; // ->
-
-    load local .b; // -> b
-goto #loop if !zero; // if b == zero break #loop; else continue;
-
-load const "Sum: ";
-
-goto #sumStart;
-
-#sumLoop: 
-    load local .currChar;
-    print ascii;
-    #sumStart: 
-    store .currChar;
-    load local .currChar;
-    load const '\0';
-    do ^;
-goto #sumLoop if !zero;
-
-load local .a;
-print dec;
+    
+    load const "Want to continue? Press 'y'!\n";
+    print str;
+    
+    load input ascii;
+    load const 'y';
+    operate ^;
+    
+goto #add_loop if zero;
 
 load const 0;
 exit;

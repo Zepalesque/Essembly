@@ -6,6 +6,7 @@ namespace EsmCompiler;
 
 public static partial class EsmCompiler {
     public static void Main(string[] args) {
+        Console.WriteLine();
         var inputOption = new Option<FileInfo>("--input");
         var outputOption = new Option<FileInfo>("--output");
         var rootCommand = new RootCommand("The Esm compiler.") { inputOption, outputOption };

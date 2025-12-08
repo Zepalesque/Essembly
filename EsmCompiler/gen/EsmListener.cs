@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:/Users/emers/RiderProjects/Estrogembly/Esmc/Esm.g4 by ANTLR 4.13.2
+// Generated from C:/Users/emers/RiderProjects/EssemblyV2/EsmCompiler/Esm.g4 by ANTLR 4.13.2
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -123,18 +123,6 @@ public interface IEsmListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitGoto([NotNull] EsmParser.GotoContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>discard</c>
-	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterDiscard([NotNull] EsmParser.DiscardContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>discard</c>
-	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitDiscard([NotNull] EsmParser.DiscardContext context);
-	/// <summary>
 	/// Enter a parse tree produced by the <c>exit</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// </summary>
@@ -147,25 +135,15 @@ public interface IEsmListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitExit([NotNull] EsmParser.ExitContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsmParser.printMode"/>.
+	/// Enter a parse tree produced by <see cref="EsmParser.ioMode"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterPrintMode([NotNull] EsmParser.PrintModeContext context);
+	void EnterIoMode([NotNull] EsmParser.IoModeContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsmParser.printMode"/>.
+	/// Exit a parse tree produced by <see cref="EsmParser.ioMode"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitPrintMode([NotNull] EsmParser.PrintModeContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsmParser.inputMode"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterInputMode([NotNull] EsmParser.InputModeContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsmParser.inputMode"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitInputMode([NotNull] EsmParser.InputModeContext context);
+	void ExitIoMode([NotNull] EsmParser.IoModeContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsmParser.stackOp"/>.
 	/// </summary>

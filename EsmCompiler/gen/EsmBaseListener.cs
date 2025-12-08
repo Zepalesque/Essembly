@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:/Users/emers/RiderProjects/Estrogembly/Esmc/Esm.g4 by ANTLR 4.13.2
+// Generated from C:/Users/emers/RiderProjects/EssemblyV2/EsmCompiler/Esm.g4 by ANTLR 4.13.2
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -144,20 +144,6 @@ public partial class EsmBaseListener : IEsmListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitGoto([NotNull] EsmParser.GotoContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by the <c>discard</c>
-	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterDiscard([NotNull] EsmParser.DiscardContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>discard</c>
-	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitDiscard([NotNull] EsmParser.DiscardContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by the <c>exit</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -172,29 +158,17 @@ public partial class EsmBaseListener : IEsmListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExit([NotNull] EsmParser.ExitContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsmParser.printMode"/>.
+	/// Enter a parse tree produced by <see cref="EsmParser.ioMode"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPrintMode([NotNull] EsmParser.PrintModeContext context) { }
+	public virtual void EnterIoMode([NotNull] EsmParser.IoModeContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsmParser.printMode"/>.
+	/// Exit a parse tree produced by <see cref="EsmParser.ioMode"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPrintMode([NotNull] EsmParser.PrintModeContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsmParser.inputMode"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterInputMode([NotNull] EsmParser.InputModeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsmParser.inputMode"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitInputMode([NotNull] EsmParser.InputModeContext context) { }
+	public virtual void ExitIoMode([NotNull] EsmParser.IoModeContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsmParser.stackOp"/>.
 	/// <para>The default implementation does nothing.</para>
