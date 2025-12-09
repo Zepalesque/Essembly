@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:/Users/emers/RiderProjects/EssemblyV2/EsmCompiler/Esm.g4 by ANTLR 4.13.2
+// Generated from C:/Users/emers/RiderProjects/EssemblyV2/EsmCompiler/EsmParser.g4 by ANTLR 4.13.2
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -36,32 +36,47 @@ public partial class EsmParser : Parser {
 	protected static DFA[] decisionToDFA;
 	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
 	public const int
-		Print=1, Ascii=2, Hex=3, Dec=4, Bin=5, Int=6, Str=7, Semi=8, Colon=9, 
-		Exit=10, Load=11, Local=12, Const=13, Input=14, Store=15, Let=16, Op=17, 
-		BwAnd=18, BwOr=19, BwNot=20, BwXor=21, BwLShift=22, BwRShift=23, Goto=24, 
-		If=25, Not=26, Zero=27, DecIntLiteral=28, HexIntLiteral=29, BinIntLiteral=30, 
-		LabelId=31, Identifier=32, CharLiteral=33, StrLiteral=34, Comment=35, 
-		Whitespace=36;
+		Print=1, Ascii=2, Utf16=3, Hex=4, Dec=5, Oct=6, Binary=7, Unary=8, Str=9, 
+		Let=10, Semi=11, Colon=12, Op=13, Arrow=14, Equal=15, BwAnd=16, BwOr=17, 
+		BwNot=18, BwXor=19, BwLShift=20, BwRShift=21, BwSRShift=22, Plus=23, Minus=24, 
+		Times=25, Slash=26, Mod=27, Exit=28, Push=29, Input=30, Store=31, Alloc=32, 
+		Promote=33, Demote=34, I8=35, I16=36, I32=37, I64=38, U8=39, U16=40, U32=41, 
+		U64=42, X8=43, X16=44, X32=45, X64=46, Goto=47, Free=48, If=49, Bang=50, 
+		Zero=51, DecIntLiteral=52, HexIntLiteral=53, BinIntLiteral=54, OctIntLiteral=55, 
+		LabelId=56, Identifier=57, CharLiteral=58, StrLiteral=59, LineComment=60, 
+		BlockCommentStart=61, Whitespace=62, BlockCommentRecStart=63, BlockCommentEnd=64, 
+		CommentContents=65;
 	public const int
 		RULE_base = 0, RULE_statement = 1, RULE_baseStmt = 2, RULE_ioMode = 3, 
-		RULE_stackOp = 4, RULE_loadClause = 5, RULE_ifCond = 6, RULE_literal = 7;
+		RULE_opMode = 4, RULE_stackOp = 5, RULE_pushClause = 6, RULE_ifCond = 7, 
+		RULE_specificInt = 8, RULE_arbitraryInt = 9, RULE_instanceType = 10, RULE_sizedLiteral = 11, 
+		RULE_anyLiteral = 12;
 	public static readonly string[] ruleNames = {
-		"base", "statement", "baseStmt", "ioMode", "stackOp", "loadClause", "ifCond", 
-		"literal"
+		"base", "statement", "baseStmt", "ioMode", "opMode", "stackOp", "pushClause", 
+		"ifCond", "specificInt", "arbitraryInt", "instanceType", "sizedLiteral", 
+		"anyLiteral"
 	};
 
 	private static readonly string[] _LiteralNames = {
-		null, "'print'", "'ascii'", "'hex'", "'dec'", "'bin'", "'int'", "'str'", 
-		"';'", "':'", "'exit'", "'load'", "'local'", "'const'", "'input'", "'store'", 
-		"'let'", "'operate'", "'&'", "'|'", "'~'", "'^'", "'<<'", "'>>'", "'goto'", 
-		"'if'", "'!'", "'zero'"
+		null, "'print'", "'ascii'", "'utf16'", "'hex'", "'decimal'", "'octal'", 
+		"'binary'", "'unary'", "'str'", "'let'", "';'", "':'", "'operate'", "'->'", 
+		"'='", "'&'", "'|'", "'~'", "'^'", "'<<'", "'>>'", "'+>>'", "'+'", "'-'", 
+		"'*'", "'/'", "'%'", "'exit'", "'push'", "'input'", "'store'", "'alloc'", 
+		"'promote'", "'demote'", "'i8'", "'i16'", "'i32'", "'i64'", "'u8'", "'u16'", 
+		"'u32'", "'u64'", "'x8'", "'x16'", "'x32'", "'x64'", "'goto'", "'free'", 
+		"'if'", "'!'", "'zero'", null, null, null, null, null, null, null, null, 
+		null, null, null, null, "'*/'"
 	};
 	private static readonly string[] _SymbolicNames = {
-		null, "Print", "Ascii", "Hex", "Dec", "Bin", "Int", "Str", "Semi", "Colon", 
-		"Exit", "Load", "Local", "Const", "Input", "Store", "Let", "Op", "BwAnd", 
-		"BwOr", "BwNot", "BwXor", "BwLShift", "BwRShift", "Goto", "If", "Not", 
-		"Zero", "DecIntLiteral", "HexIntLiteral", "BinIntLiteral", "LabelId", 
-		"Identifier", "CharLiteral", "StrLiteral", "Comment", "Whitespace"
+		null, "Print", "Ascii", "Utf16", "Hex", "Dec", "Oct", "Binary", "Unary", 
+		"Str", "Let", "Semi", "Colon", "Op", "Arrow", "Equal", "BwAnd", "BwOr", 
+		"BwNot", "BwXor", "BwLShift", "BwRShift", "BwSRShift", "Plus", "Minus", 
+		"Times", "Slash", "Mod", "Exit", "Push", "Input", "Store", "Alloc", "Promote", 
+		"Demote", "I8", "I16", "I32", "I64", "U8", "U16", "U32", "U64", "X8", 
+		"X16", "X32", "X64", "Goto", "Free", "If", "Bang", "Zero", "DecIntLiteral", 
+		"HexIntLiteral", "BinIntLiteral", "OctIntLiteral", "LabelId", "Identifier", 
+		"CharLiteral", "StrLiteral", "LineComment", "BlockCommentStart", "Whitespace", 
+		"BlockCommentRecStart", "BlockCommentEnd", "CommentContents"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -74,7 +89,7 @@ public partial class EsmParser : Parser {
 		}
 	}
 
-	public override string GrammarFileName { get { return "Esm.g4"; } }
+	public override string GrammarFileName { get { return "EsmParser.g4"; } }
 
 	public override string[] RuleNames { get { return ruleNames; } }
 
@@ -110,17 +125,17 @@ public partial class EsmParser : Parser {
 		public override int RuleIndex { get { return RULE_base; } }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.EnterBase(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.ExitBase(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitBase(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -134,21 +149,21 @@ public partial class EsmParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 19;
+			State = 29;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 2164493314L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 72479839520564226L) != 0)) {
 				{
 				{
-				State = 16;
+				State = 26;
 				statement();
 				}
 				}
-				State = 21;
+				State = 31;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
-			State = 22;
+			State = 32;
 			Match(Eof);
 			}
 		}
@@ -178,17 +193,17 @@ public partial class EsmParser : Parser {
 		public override int RuleIndex { get { return RULE_statement; } }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.EnterStatement(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.ExitStatement(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitStatement(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -199,30 +214,34 @@ public partial class EsmParser : Parser {
 		StatementContext _localctx = new StatementContext(Context, State);
 		EnterRule(_localctx, 2, RULE_statement);
 		try {
-			State = 28;
+			State = 38;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case Print:
-			case Exit:
-			case Load:
-			case Store:
 			case Let:
 			case Op:
+			case Exit:
+			case Push:
+			case Store:
+			case Alloc:
+			case Promote:
+			case Demote:
 			case Goto:
+			case Free:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 24;
+				State = 34;
 				_localctx.stmt = baseStmt();
 				}
 				break;
 			case LabelId:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 25;
+				State = 35;
 				_localctx.label = Match(LabelId);
-				State = 26;
+				State = 36;
 				Match(Colon);
-				State = 27;
+				State = 37;
 				_localctx.stmt = baseStmt();
 				}
 				break;
@@ -259,17 +278,17 @@ public partial class EsmParser : Parser {
 		public ExitContext(BaseStmtContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.EnterExit(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.ExitExit(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitExit(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -284,17 +303,17 @@ public partial class EsmParser : Parser {
 		public PrintContext(BaseStmtContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.EnterPrint(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.ExitPrint(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitPrint(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -312,114 +331,236 @@ public partial class EsmParser : Parser {
 		public GotoContext(BaseStmtContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.EnterGoto(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.ExitGoto(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitGoto(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class ToStackContext : BaseStmtContext {
-		public LoadClauseContext load;
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Load() { return GetToken(EsmParser.Load, 0); }
+	public partial class StoreToPointerContext : BaseStmtContext {
+		public IToken id;
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Store() { return GetToken(EsmParser.Store, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Semi() { return GetToken(EsmParser.Semi, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public LoadClauseContext loadClause() {
-			return GetRuleContext<LoadClauseContext>(0);
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Identifier() { return GetToken(EsmParser.Identifier, 0); }
+		public StoreToPointerContext(BaseStmtContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterStoreToPointer(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitStoreToPointer(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitStoreToPointer(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class LocalVarContext : BaseStmtContext {
+		public IToken id;
+		public InstanceTypeContext type;
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Let() { return GetToken(EsmParser.Let, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Colon() { return GetToken(EsmParser.Colon, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Semi() { return GetToken(EsmParser.Semi, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Identifier() { return GetToken(EsmParser.Identifier, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public InstanceTypeContext instanceType() {
+			return GetRuleContext<InstanceTypeContext>(0);
+		}
+		public LocalVarContext(BaseStmtContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterLocalVar(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitLocalVar(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitLocalVar(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class AllocMemContext : BaseStmtContext {
+		public IToken id;
+		public InstanceTypeContext type;
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Alloc() { return GetToken(EsmParser.Alloc, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Colon() { return GetToken(EsmParser.Colon, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Semi() { return GetToken(EsmParser.Semi, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Identifier() { return GetToken(EsmParser.Identifier, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public InstanceTypeContext instanceType() {
+			return GetRuleContext<InstanceTypeContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Equal() { return GetToken(EsmParser.Equal, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public AnyLiteralContext anyLiteral() {
+			return GetRuleContext<AnyLiteralContext>(0);
+		}
+		public AllocMemContext(BaseStmtContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterAllocMem(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitAllocMem(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitAllocMem(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class ToStackContext : BaseStmtContext {
+		public PushClauseContext push;
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Push() { return GetToken(EsmParser.Push, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Semi() { return GetToken(EsmParser.Semi, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public PushClauseContext pushClause() {
+			return GetRuleContext<PushClauseContext>(0);
 		}
 		public ToStackContext(BaseStmtContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.EnterToStack(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.ExitToStack(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitToStack(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class VarDecContext : BaseStmtContext {
-		public IToken id;
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Let() { return GetToken(EsmParser.Let, 0); }
+	public partial class DemotionContext : BaseStmtContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Demote() { return GetToken(EsmParser.Demote, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ArbitraryIntContext[] arbitraryInt() {
+			return GetRuleContexts<ArbitraryIntContext>();
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ArbitraryIntContext arbitraryInt(int i) {
+			return GetRuleContext<ArbitraryIntContext>(i);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Arrow() { return GetToken(EsmParser.Arrow, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Semi() { return GetToken(EsmParser.Semi, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Identifier() { return GetToken(EsmParser.Identifier, 0); }
-		public VarDecContext(BaseStmtContext context) { CopyFrom(context); }
+		public DemotionContext(BaseStmtContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
-			if (typedListener != null) typedListener.EnterVarDec(this);
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterDemotion(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
-			if (typedListener != null) typedListener.ExitVarDec(this);
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitDemotion(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitVarDec(this);
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitDemotion(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class FreeMemContext : BaseStmtContext {
+		public IToken id;
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Free() { return GetToken(EsmParser.Free, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Semi() { return GetToken(EsmParser.Semi, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Identifier() { return GetToken(EsmParser.Identifier, 0); }
+		public FreeMemContext(BaseStmtContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterFreeMem(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitFreeMem(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitFreeMem(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 	public partial class OperationPerformContext : BaseStmtContext {
 		public StackOpContext op;
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Op() { return GetToken(EsmParser.Op, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public SpecificIntContext specificInt() {
+			return GetRuleContext<SpecificIntContext>(0);
+		}
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Semi() { return GetToken(EsmParser.Semi, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public StackOpContext stackOp() {
 			return GetRuleContext<StackOpContext>(0);
 		}
+		[System.Diagnostics.DebuggerNonUserCode] public OpModeContext opMode() {
+			return GetRuleContext<OpModeContext>(0);
+		}
 		public OperationPerformContext(BaseStmtContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.EnterOperationPerform(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.ExitOperationPerform(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitOperationPerform(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class StoreToVarContext : BaseStmtContext {
-		public IToken id;
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Store() { return GetToken(EsmParser.Store, 0); }
+	public partial class PromotionContext : BaseStmtContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Promote() { return GetToken(EsmParser.Promote, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ArbitraryIntContext arbitraryInt() {
+			return GetRuleContext<ArbitraryIntContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Arrow() { return GetToken(EsmParser.Arrow, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public SpecificIntContext specificInt() {
+			return GetRuleContext<SpecificIntContext>(0);
+		}
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Semi() { return GetToken(EsmParser.Semi, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Identifier() { return GetToken(EsmParser.Identifier, 0); }
-		public StoreToVarContext(BaseStmtContext context) { CopyFrom(context); }
+		public PromotionContext(BaseStmtContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
-			if (typedListener != null) typedListener.EnterStoreToVar(this);
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterPromotion(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
-			if (typedListener != null) typedListener.ExitStoreToVar(this);
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitPromotion(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitStoreToVar(this);
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitPromotion(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
@@ -430,102 +571,190 @@ public partial class EsmParser : Parser {
 		EnterRule(_localctx, 4, RULE_baseStmt);
 		int _la;
 		try {
-			State = 57;
+			State = 99;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case Op:
 				_localctx = new OperationPerformContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 30;
+				State = 40;
 				Match(Op);
-				State = 31;
+				State = 41;
+				specificInt();
+				State = 43;
+				ErrorHandler.Sync(this);
+				_la = TokenStream.LA(1);
+				if (_la==Binary || _la==Unary) {
+					{
+					State = 42;
+					opMode();
+					}
+				}
+
+				State = 45;
 				((OperationPerformContext)_localctx).op = stackOp();
-				State = 32;
+				State = 46;
+				Match(Semi);
+				}
+				break;
+			case Promote:
+				_localctx = new PromotionContext(_localctx);
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 48;
+				Match(Promote);
+				State = 49;
+				arbitraryInt();
+				State = 50;
+				Match(Arrow);
+				State = 51;
+				specificInt();
+				State = 52;
+				Match(Semi);
+				}
+				break;
+			case Demote:
+				_localctx = new DemotionContext(_localctx);
+				EnterOuterAlt(_localctx, 3);
+				{
+				State = 54;
+				Match(Demote);
+				State = 55;
+				arbitraryInt();
+				State = 56;
+				Match(Arrow);
+				State = 57;
+				arbitraryInt();
+				State = 58;
+				Match(Semi);
+				}
+				break;
+			case Alloc:
+				_localctx = new AllocMemContext(_localctx);
+				EnterOuterAlt(_localctx, 4);
+				{
+				State = 60;
+				Match(Alloc);
+				State = 61;
+				((AllocMemContext)_localctx).id = Match(Identifier);
+				State = 62;
+				Match(Colon);
+				State = 63;
+				((AllocMemContext)_localctx).type = instanceType();
+				State = 66;
+				ErrorHandler.Sync(this);
+				_la = TokenStream.LA(1);
+				if (_la==Equal) {
+					{
+					State = 64;
+					Match(Equal);
+					State = 65;
+					anyLiteral();
+					}
+				}
+
+				State = 68;
 				Match(Semi);
 				}
 				break;
 			case Let:
-				_localctx = new VarDecContext(_localctx);
-				EnterOuterAlt(_localctx, 2);
+				_localctx = new LocalVarContext(_localctx);
+				EnterOuterAlt(_localctx, 5);
 				{
-				State = 34;
+				State = 70;
 				Match(Let);
-				State = 35;
-				((VarDecContext)_localctx).id = Match(Identifier);
-				State = 36;
+				State = 71;
+				((LocalVarContext)_localctx).id = Match(Identifier);
+				State = 72;
+				Match(Colon);
+				State = 73;
+				((LocalVarContext)_localctx).type = instanceType();
+				State = 74;
 				Match(Semi);
 				}
 				break;
-			case Load:
-				_localctx = new ToStackContext(_localctx);
-				EnterOuterAlt(_localctx, 3);
+			case Free:
+				_localctx = new FreeMemContext(_localctx);
+				EnterOuterAlt(_localctx, 6);
 				{
-				State = 37;
-				Match(Load);
-				State = 38;
-				((ToStackContext)_localctx).load = loadClause();
-				State = 39;
+				State = 76;
+				Match(Free);
+				State = 77;
+				((FreeMemContext)_localctx).id = Match(Identifier);
+				State = 78;
+				Match(Semi);
+				}
+				break;
+			case Push:
+				_localctx = new ToStackContext(_localctx);
+				EnterOuterAlt(_localctx, 7);
+				{
+				State = 79;
+				Match(Push);
+				State = 80;
+				((ToStackContext)_localctx).push = pushClause();
+				State = 81;
 				Match(Semi);
 				}
 				break;
 			case Store:
-				_localctx = new StoreToVarContext(_localctx);
-				EnterOuterAlt(_localctx, 4);
+				_localctx = new StoreToPointerContext(_localctx);
+				EnterOuterAlt(_localctx, 8);
 				{
-				State = 41;
+				State = 83;
 				Match(Store);
-				State = 42;
-				((StoreToVarContext)_localctx).id = Match(Identifier);
-				State = 43;
+				State = 84;
+				((StoreToPointerContext)_localctx).id = Match(Identifier);
+				State = 85;
 				Match(Semi);
 				}
 				break;
 			case Print:
 				_localctx = new PrintContext(_localctx);
-				EnterOuterAlt(_localctx, 5);
+				EnterOuterAlt(_localctx, 9);
 				{
-				State = 44;
+				State = 86;
 				Match(Print);
-				State = 45;
+				State = 87;
 				((PrintContext)_localctx).io = ioMode();
-				State = 46;
+				State = 88;
 				Match(Semi);
 				}
 				break;
 			case Goto:
 				_localctx = new GotoContext(_localctx);
-				EnterOuterAlt(_localctx, 6);
+				EnterOuterAlt(_localctx, 10);
 				{
-				State = 48;
+				State = 90;
 				Match(Goto);
 				{
-				State = 49;
+				State = 91;
 				((GotoContext)_localctx).label = Match(LabelId);
 				}
-				State = 52;
+				State = 94;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==If) {
 					{
-					State = 50;
+					State = 92;
 					Match(If);
-					State = 51;
+					State = 93;
 					((GotoContext)_localctx).condition = ifCond();
 					}
 				}
 
-				State = 54;
+				State = 96;
 				Match(Semi);
 				}
 				break;
 			case Exit:
 				_localctx = new ExitContext(_localctx);
-				EnterOuterAlt(_localctx, 7);
+				EnterOuterAlt(_localctx, 11);
 				{
-				State = 55;
+				State = 97;
 				Match(Exit);
-				State = 56;
+				State = 98;
 				Match(Semi);
 				}
 				break;
@@ -547,10 +776,17 @@ public partial class EsmParser : Parser {
 	public partial class IoModeContext : ParserRuleContext {
 		public IToken io;
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Ascii() { return GetToken(EsmParser.Ascii, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Hex() { return GetToken(EsmParser.Hex, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Dec() { return GetToken(EsmParser.Dec, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Bin() { return GetToken(EsmParser.Bin, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Utf16() { return GetToken(EsmParser.Utf16, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BwAnd() { return GetToken(EsmParser.BwAnd, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Str() { return GetToken(EsmParser.Str, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode U8() { return GetToken(EsmParser.U8, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode U16() { return GetToken(EsmParser.U16, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode U32() { return GetToken(EsmParser.U32, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode U64() { return GetToken(EsmParser.U64, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I8() { return GetToken(EsmParser.I8, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I16() { return GetToken(EsmParser.I16, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I32() { return GetToken(EsmParser.I32, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I64() { return GetToken(EsmParser.I64, 0); }
 		public IoModeContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -558,17 +794,17 @@ public partial class EsmParser : Parser {
 		public override int RuleIndex { get { return RULE_ioMode; } }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.EnterIoMode(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.ExitIoMode(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitIoMode(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -579,46 +815,148 @@ public partial class EsmParser : Parser {
 		IoModeContext _localctx = new IoModeContext(Context, State);
 		EnterRule(_localctx, 6, RULE_ioMode);
 		try {
-			State = 64;
+			State = 113;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case Ascii:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 59;
+				State = 101;
 				_localctx.io = Match(Ascii);
 				}
 				break;
-			case Hex:
+			case Utf16:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 60;
-				_localctx.io = Match(Hex);
+				State = 102;
+				_localctx.io = Match(Utf16);
 				}
 				break;
-			case Dec:
+			case BwAnd:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 61;
-				_localctx.io = Match(Dec);
+				{
+				State = 103;
+				Match(BwAnd);
+				State = 104;
+				_localctx.io = Match(Str);
+				}
 				}
 				break;
-			case Bin:
+			case U8:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 62;
-				_localctx.io = Match(Bin);
+				State = 105;
+				_localctx.io = Match(U8);
 				}
 				break;
-			case Str:
+			case U16:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 63;
-				_localctx.io = Match(Str);
+				State = 106;
+				_localctx.io = Match(U16);
+				}
+				break;
+			case U32:
+				EnterOuterAlt(_localctx, 6);
+				{
+				State = 107;
+				_localctx.io = Match(U32);
+				}
+				break;
+			case U64:
+				EnterOuterAlt(_localctx, 7);
+				{
+				State = 108;
+				_localctx.io = Match(U64);
+				}
+				break;
+			case I8:
+				EnterOuterAlt(_localctx, 8);
+				{
+				State = 109;
+				_localctx.io = Match(I8);
+				}
+				break;
+			case I16:
+				EnterOuterAlt(_localctx, 9);
+				{
+				State = 110;
+				_localctx.io = Match(I16);
+				}
+				break;
+			case I32:
+				EnterOuterAlt(_localctx, 10);
+				{
+				State = 111;
+				_localctx.io = Match(I32);
+				}
+				break;
+			case I64:
+				EnterOuterAlt(_localctx, 11);
+				{
+				State = 112;
+				_localctx.io = Match(I64);
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class OpModeContext : ParserRuleContext {
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Binary() { return GetToken(EsmParser.Binary, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Unary() { return GetToken(EsmParser.Unary, 0); }
+		public OpModeContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_opMode; } }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterOpMode(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitOpMode(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitOpMode(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public OpModeContext opMode() {
+		OpModeContext _localctx = new OpModeContext(Context, State);
+		EnterRule(_localctx, 8, RULE_opMode);
+		int _la;
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 115;
+			_la = TokenStream.LA(1);
+			if ( !(_la==Binary || _la==Unary) ) {
+			ErrorHandler.RecoverInline(this);
+			}
+			else {
+				ErrorHandler.ReportMatch(this);
+			    Consume();
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -640,6 +978,12 @@ public partial class EsmParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BwXor() { return GetToken(EsmParser.BwXor, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BwLShift() { return GetToken(EsmParser.BwLShift, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BwRShift() { return GetToken(EsmParser.BwRShift, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BwSRShift() { return GetToken(EsmParser.BwSRShift, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Plus() { return GetToken(EsmParser.Plus, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Minus() { return GetToken(EsmParser.Minus, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Times() { return GetToken(EsmParser.Times, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Slash() { return GetToken(EsmParser.Slash, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Mod() { return GetToken(EsmParser.Mod, 0); }
 		public StackOpContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -647,17 +991,17 @@ public partial class EsmParser : Parser {
 		public override int RuleIndex { get { return RULE_stackOp; } }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.EnterStackOp(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.ExitStackOp(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitStackOp(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -666,51 +1010,93 @@ public partial class EsmParser : Parser {
 	[RuleVersion(0)]
 	public StackOpContext stackOp() {
 		StackOpContext _localctx = new StackOpContext(Context, State);
-		EnterRule(_localctx, 8, RULE_stackOp);
+		EnterRule(_localctx, 10, RULE_stackOp);
 		try {
-			State = 72;
+			State = 129;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case BwAnd:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 66;
+				State = 117;
 				_localctx.op = Match(BwAnd);
 				}
 				break;
 			case BwOr:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 67;
+				State = 118;
 				_localctx.op = Match(BwOr);
 				}
 				break;
 			case BwNot:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 68;
+				State = 119;
 				_localctx.op = Match(BwNot);
 				}
 				break;
 			case BwXor:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 69;
+				State = 120;
 				_localctx.op = Match(BwXor);
 				}
 				break;
 			case BwLShift:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 70;
+				State = 121;
 				_localctx.op = Match(BwLShift);
 				}
 				break;
 			case BwRShift:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 71;
+				State = 122;
 				_localctx.op = Match(BwRShift);
+				}
+				break;
+			case BwSRShift:
+				EnterOuterAlt(_localctx, 7);
+				{
+				State = 123;
+				_localctx.op = Match(BwSRShift);
+				}
+				break;
+			case Plus:
+				EnterOuterAlt(_localctx, 8);
+				{
+				State = 124;
+				_localctx.op = Match(Plus);
+				}
+				break;
+			case Minus:
+				EnterOuterAlt(_localctx, 9);
+				{
+				State = 125;
+				_localctx.op = Match(Minus);
+				}
+				break;
+			case Times:
+				EnterOuterAlt(_localctx, 10);
+				{
+				State = 126;
+				_localctx.op = Match(Times);
+				}
+				break;
+			case Slash:
+				EnterOuterAlt(_localctx, 11);
+				{
+				State = 127;
+				_localctx.op = Match(Slash);
+				}
+				break;
+			case Mod:
+				EnterOuterAlt(_localctx, 12);
+				{
+				State = 128;
+				_localctx.op = Match(Mod);
 				}
 				break;
 			default:
@@ -728,125 +1114,132 @@ public partial class EsmParser : Parser {
 		return _localctx;
 	}
 
-	public partial class LoadClauseContext : ParserRuleContext {
-		public LoadClauseContext(ParserRuleContext parent, int invokingState)
+	public partial class PushClauseContext : ParserRuleContext {
+		public PushClauseContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_loadClause; } }
+		public override int RuleIndex { get { return RULE_pushClause; } }
 	 
-		public LoadClauseContext() { }
-		public virtual void CopyFrom(LoadClauseContext context) {
+		public PushClauseContext() { }
+		public virtual void CopyFrom(PushClauseContext context) {
 			base.CopyFrom(context);
 		}
 	}
-	public partial class LoadLocalContext : LoadClauseContext {
-		public IToken loc;
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Local() { return GetToken(EsmParser.Local, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Identifier() { return GetToken(EsmParser.Identifier, 0); }
-		public LoadLocalContext(LoadClauseContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
-			if (typedListener != null) typedListener.EnterLoadLocal(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
-			if (typedListener != null) typedListener.ExitLoadLocal(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitLoadLocal(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class LoadConstContext : LoadClauseContext {
-		public LiteralContext lit;
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Const() { return GetToken(EsmParser.Const, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public LiteralContext literal() {
-			return GetRuleContext<LiteralContext>(0);
-		}
-		public LoadConstContext(LoadClauseContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
-			if (typedListener != null) typedListener.EnterLoadConst(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
-			if (typedListener != null) typedListener.ExitLoadConst(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitLoadConst(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class LoadInputContext : LoadClauseContext {
+	public partial class PushInputContext : PushClauseContext {
 		public IoModeContext io;
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Input() { return GetToken(EsmParser.Input, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public IoModeContext ioMode() {
 			return GetRuleContext<IoModeContext>(0);
 		}
-		public LoadInputContext(LoadClauseContext context) { CopyFrom(context); }
+		public PushInputContext(PushClauseContext context) { CopyFrom(context); }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
-			if (typedListener != null) typedListener.EnterLoadInput(this);
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterPushInput(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
-			if (typedListener != null) typedListener.ExitLoadInput(this);
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitPushInput(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitLoadInput(this);
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitPushInput(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class PushConstContext : PushClauseContext {
+		public SpecificIntContext type;
+		public SizedLiteralContext lit;
+		[System.Diagnostics.DebuggerNonUserCode] public SpecificIntContext specificInt() {
+			return GetRuleContext<SpecificIntContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public SizedLiteralContext sizedLiteral() {
+			return GetRuleContext<SizedLiteralContext>(0);
+		}
+		public PushConstContext(PushClauseContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterPushConst(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitPushConst(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitPushConst(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+	public partial class PushMemContext : PushClauseContext {
+		public IToken loc;
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Identifier() { return GetToken(EsmParser.Identifier, 0); }
+		public PushMemContext(PushClauseContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterPushMem(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitPushMem(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitPushMem(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public LoadClauseContext loadClause() {
-		LoadClauseContext _localctx = new LoadClauseContext(Context, State);
-		EnterRule(_localctx, 10, RULE_loadClause);
+	public PushClauseContext pushClause() {
+		PushClauseContext _localctx = new PushClauseContext(Context, State);
+		EnterRule(_localctx, 12, RULE_pushClause);
 		try {
-			State = 80;
+			State = 137;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
-			case Const:
-				_localctx = new LoadConstContext(_localctx);
+			case I8:
+			case I16:
+			case I32:
+			case I64:
+			case U8:
+			case U16:
+			case U32:
+			case U64:
+				_localctx = new PushConstContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 74;
-				Match(Const);
-				State = 75;
-				((LoadConstContext)_localctx).lit = literal();
+				State = 131;
+				((PushConstContext)_localctx).type = specificInt();
+				State = 132;
+				((PushConstContext)_localctx).lit = sizedLiteral();
 				}
 				break;
-			case Local:
-				_localctx = new LoadLocalContext(_localctx);
+			case Identifier:
+				_localctx = new PushMemContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 76;
-				Match(Local);
-				State = 77;
-				((LoadLocalContext)_localctx).loc = Match(Identifier);
+				State = 134;
+				((PushMemContext)_localctx).loc = Match(Identifier);
 				}
 				break;
 			case Input:
-				_localctx = new LoadInputContext(_localctx);
+				_localctx = new PushInputContext(_localctx);
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 78;
+				State = 135;
 				Match(Input);
-				State = 79;
-				((LoadInputContext)_localctx).io = ioMode();
+				State = 136;
+				((PushInputContext)_localctx).io = ioMode();
 				}
 				break;
 			default:
@@ -867,7 +1260,7 @@ public partial class EsmParser : Parser {
 	public partial class IfCondContext : ParserRuleContext {
 		public IToken not;
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Zero() { return GetToken(EsmParser.Zero, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Not() { return GetToken(EsmParser.Not, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Bang() { return GetToken(EsmParser.Bang, 0); }
 		public IfCondContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -875,17 +1268,17 @@ public partial class EsmParser : Parser {
 		public override int RuleIndex { get { return RULE_ifCond; } }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.EnterIfCond(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
+			IEsmParserListener typedListener = listener as IEsmParserListener;
 			if (typedListener != null) typedListener.ExitIfCond(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitIfCond(this);
 			else return visitor.VisitChildren(this);
 		}
@@ -894,22 +1287,22 @@ public partial class EsmParser : Parser {
 	[RuleVersion(0)]
 	public IfCondContext ifCond() {
 		IfCondContext _localctx = new IfCondContext(Context, State);
-		EnterRule(_localctx, 12, RULE_ifCond);
+		EnterRule(_localctx, 14, RULE_ifCond);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 83;
+			State = 140;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==Not) {
+			if (_la==Bang) {
 				{
-				State = 82;
-				_localctx.not = Match(Not);
+				State = 139;
+				_localctx.not = Match(Bang);
 				}
 			}
 
-			State = 85;
+			State = 142;
 			Match(Zero);
 			}
 		}
@@ -924,78 +1317,492 @@ public partial class EsmParser : Parser {
 		return _localctx;
 	}
 
-	public partial class LiteralContext : ParserRuleContext {
-		public IToken @int;
-		public IToken @char;
-		public IToken str;
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode DecIntLiteral() { return GetToken(EsmParser.DecIntLiteral, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode HexIntLiteral() { return GetToken(EsmParser.HexIntLiteral, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BinIntLiteral() { return GetToken(EsmParser.BinIntLiteral, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode CharLiteral() { return GetToken(EsmParser.CharLiteral, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode StrLiteral() { return GetToken(EsmParser.StrLiteral, 0); }
-		public LiteralContext(ParserRuleContext parent, int invokingState)
+	public partial class SpecificIntContext : ParserRuleContext {
+		public IToken type;
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode U8() { return GetToken(EsmParser.U8, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode U16() { return GetToken(EsmParser.U16, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode U32() { return GetToken(EsmParser.U32, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode U64() { return GetToken(EsmParser.U64, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I8() { return GetToken(EsmParser.I8, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I16() { return GetToken(EsmParser.I16, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I32() { return GetToken(EsmParser.I32, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I64() { return GetToken(EsmParser.I64, 0); }
+		public SpecificIntContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_literal; } }
+		public override int RuleIndex { get { return RULE_specificInt; } }
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void EnterRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
-			if (typedListener != null) typedListener.EnterLiteral(this);
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterSpecificInt(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override void ExitRule(IParseTreeListener listener) {
-			IEsmListener typedListener = listener as IEsmListener;
-			if (typedListener != null) typedListener.ExitLiteral(this);
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitSpecificInt(this);
 		}
 		[System.Diagnostics.DebuggerNonUserCode]
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmVisitor<TResult> typedVisitor = visitor as IEsmVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitLiteral(this);
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitSpecificInt(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public LiteralContext literal() {
-		LiteralContext _localctx = new LiteralContext(Context, State);
-		EnterRule(_localctx, 14, RULE_literal);
+	public SpecificIntContext specificInt() {
+		SpecificIntContext _localctx = new SpecificIntContext(Context, State);
+		EnterRule(_localctx, 16, RULE_specificInt);
 		try {
-			State = 92;
+			State = 152;
+			ErrorHandler.Sync(this);
+			switch (TokenStream.LA(1)) {
+			case U8:
+				EnterOuterAlt(_localctx, 1);
+				{
+				State = 144;
+				_localctx.type = Match(U8);
+				}
+				break;
+			case U16:
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 145;
+				_localctx.type = Match(U16);
+				}
+				break;
+			case U32:
+				EnterOuterAlt(_localctx, 3);
+				{
+				State = 146;
+				_localctx.type = Match(U32);
+				}
+				break;
+			case U64:
+				EnterOuterAlt(_localctx, 4);
+				{
+				State = 147;
+				_localctx.type = Match(U64);
+				}
+				break;
+			case I8:
+				EnterOuterAlt(_localctx, 5);
+				{
+				State = 148;
+				_localctx.type = Match(I8);
+				}
+				break;
+			case I16:
+				EnterOuterAlt(_localctx, 6);
+				{
+				State = 149;
+				_localctx.type = Match(I16);
+				}
+				break;
+			case I32:
+				EnterOuterAlt(_localctx, 7);
+				{
+				State = 150;
+				_localctx.type = Match(I32);
+				}
+				break;
+			case I64:
+				EnterOuterAlt(_localctx, 8);
+				{
+				State = 151;
+				_localctx.type = Match(I64);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class ArbitraryIntContext : ParserRuleContext {
+		public IToken type;
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode X8() { return GetToken(EsmParser.X8, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode X16() { return GetToken(EsmParser.X16, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode X32() { return GetToken(EsmParser.X32, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode X64() { return GetToken(EsmParser.X64, 0); }
+		public ArbitraryIntContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_arbitraryInt; } }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterArbitraryInt(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitArbitraryInt(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitArbitraryInt(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public ArbitraryIntContext arbitraryInt() {
+		ArbitraryIntContext _localctx = new ArbitraryIntContext(Context, State);
+		EnterRule(_localctx, 18, RULE_arbitraryInt);
+		try {
+			State = 158;
+			ErrorHandler.Sync(this);
+			switch (TokenStream.LA(1)) {
+			case X8:
+				EnterOuterAlt(_localctx, 1);
+				{
+				State = 154;
+				_localctx.type = Match(X8);
+				}
+				break;
+			case X16:
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 155;
+				_localctx.type = Match(X16);
+				}
+				break;
+			case X32:
+				EnterOuterAlt(_localctx, 3);
+				{
+				State = 156;
+				_localctx.type = Match(X32);
+				}
+				break;
+			case X64:
+				EnterOuterAlt(_localctx, 4);
+				{
+				State = 157;
+				_localctx.type = Match(X64);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class InstanceTypeContext : ParserRuleContext {
+		public IToken type;
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode U8() { return GetToken(EsmParser.U8, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode U16() { return GetToken(EsmParser.U16, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode U32() { return GetToken(EsmParser.U32, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode U64() { return GetToken(EsmParser.U64, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I8() { return GetToken(EsmParser.I8, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I16() { return GetToken(EsmParser.I16, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I32() { return GetToken(EsmParser.I32, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I64() { return GetToken(EsmParser.I64, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BwAnd() { return GetToken(EsmParser.BwAnd, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Str() { return GetToken(EsmParser.Str, 0); }
+		public InstanceTypeContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_instanceType; } }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterInstanceType(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitInstanceType(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitInstanceType(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public InstanceTypeContext instanceType() {
+		InstanceTypeContext _localctx = new InstanceTypeContext(Context, State);
+		EnterRule(_localctx, 20, RULE_instanceType);
+		try {
+			State = 170;
+			ErrorHandler.Sync(this);
+			switch (TokenStream.LA(1)) {
+			case U8:
+				EnterOuterAlt(_localctx, 1);
+				{
+				State = 160;
+				_localctx.type = Match(U8);
+				}
+				break;
+			case U16:
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 161;
+				_localctx.type = Match(U16);
+				}
+				break;
+			case U32:
+				EnterOuterAlt(_localctx, 3);
+				{
+				State = 162;
+				_localctx.type = Match(U32);
+				}
+				break;
+			case U64:
+				EnterOuterAlt(_localctx, 4);
+				{
+				State = 163;
+				_localctx.type = Match(U64);
+				}
+				break;
+			case I8:
+				EnterOuterAlt(_localctx, 5);
+				{
+				State = 164;
+				_localctx.type = Match(I8);
+				}
+				break;
+			case I16:
+				EnterOuterAlt(_localctx, 6);
+				{
+				State = 165;
+				_localctx.type = Match(I16);
+				}
+				break;
+			case I32:
+				EnterOuterAlt(_localctx, 7);
+				{
+				State = 166;
+				_localctx.type = Match(I32);
+				}
+				break;
+			case I64:
+				EnterOuterAlt(_localctx, 8);
+				{
+				State = 167;
+				_localctx.type = Match(I64);
+				}
+				break;
+			case BwAnd:
+				EnterOuterAlt(_localctx, 9);
+				{
+				{
+				State = 168;
+				Match(BwAnd);
+				State = 169;
+				_localctx.type = Match(Str);
+				}
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class SizedLiteralContext : ParserRuleContext {
+		public IToken @int;
+		public IToken @char;
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode DecIntLiteral() { return GetToken(EsmParser.DecIntLiteral, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode HexIntLiteral() { return GetToken(EsmParser.HexIntLiteral, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BinIntLiteral() { return GetToken(EsmParser.BinIntLiteral, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode OctIntLiteral() { return GetToken(EsmParser.OctIntLiteral, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode CharLiteral() { return GetToken(EsmParser.CharLiteral, 0); }
+		public SizedLiteralContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_sizedLiteral; } }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterSizedLiteral(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitSizedLiteral(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitSizedLiteral(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public SizedLiteralContext sizedLiteral() {
+		SizedLiteralContext _localctx = new SizedLiteralContext(Context, State);
+		EnterRule(_localctx, 22, RULE_sizedLiteral);
+		try {
+			State = 177;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case DecIntLiteral:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 87;
+				State = 172;
 				_localctx.@int = Match(DecIntLiteral);
 				}
 				break;
 			case HexIntLiteral:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 88;
+				State = 173;
 				_localctx.@int = Match(HexIntLiteral);
 				}
 				break;
 			case BinIntLiteral:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 89;
+				State = 174;
 				_localctx.@int = Match(BinIntLiteral);
 				}
 				break;
-			case CharLiteral:
+			case OctIntLiteral:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 90;
+				State = 175;
+				_localctx.@int = Match(OctIntLiteral);
+				}
+				break;
+			case CharLiteral:
+				EnterOuterAlt(_localctx, 5);
+				{
+				State = 176;
+				_localctx.@char = Match(CharLiteral);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class AnyLiteralContext : ParserRuleContext {
+		public IToken @int;
+		public IToken @char;
+		public IToken str;
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode DecIntLiteral() { return GetToken(EsmParser.DecIntLiteral, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode HexIntLiteral() { return GetToken(EsmParser.HexIntLiteral, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode BinIntLiteral() { return GetToken(EsmParser.BinIntLiteral, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode OctIntLiteral() { return GetToken(EsmParser.OctIntLiteral, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode CharLiteral() { return GetToken(EsmParser.CharLiteral, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode StrLiteral() { return GetToken(EsmParser.StrLiteral, 0); }
+		public AnyLiteralContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_anyLiteral; } }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterAnyLiteral(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitAnyLiteral(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitAnyLiteral(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public AnyLiteralContext anyLiteral() {
+		AnyLiteralContext _localctx = new AnyLiteralContext(Context, State);
+		EnterRule(_localctx, 24, RULE_anyLiteral);
+		try {
+			State = 185;
+			ErrorHandler.Sync(this);
+			switch (TokenStream.LA(1)) {
+			case DecIntLiteral:
+				EnterOuterAlt(_localctx, 1);
+				{
+				State = 179;
+				_localctx.@int = Match(DecIntLiteral);
+				}
+				break;
+			case HexIntLiteral:
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 180;
+				_localctx.@int = Match(HexIntLiteral);
+				}
+				break;
+			case BinIntLiteral:
+				EnterOuterAlt(_localctx, 3);
+				{
+				State = 181;
+				_localctx.@int = Match(BinIntLiteral);
+				}
+				break;
+			case OctIntLiteral:
+				EnterOuterAlt(_localctx, 4);
+				{
+				State = 182;
+				_localctx.@int = Match(OctIntLiteral);
+				}
+				break;
+			case CharLiteral:
+				EnterOuterAlt(_localctx, 5);
+				{
+				State = 183;
 				_localctx.@char = Match(CharLiteral);
 				}
 				break;
 			case StrLiteral:
-				EnterOuterAlt(_localctx, 5);
+				EnterOuterAlt(_localctx, 6);
 				{
-				State = 91;
+				State = 184;
 				_localctx.str = Match(StrLiteral);
 				}
 				break;
@@ -1015,36 +1822,73 @@ public partial class EsmParser : Parser {
 	}
 
 	private static int[] _serializedATN = {
-		4,1,36,95,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,
-		7,7,1,0,5,0,18,8,0,10,0,12,0,21,9,0,1,0,1,0,1,1,1,1,1,1,1,1,3,1,29,8,1,
+		4,1,65,188,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,
+		7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,1,0,5,0,28,8,0,10,0,
+		12,0,31,9,0,1,0,1,0,1,1,1,1,1,1,1,1,3,1,39,8,1,1,2,1,2,1,2,3,2,44,8,2,
 		1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,
-		2,1,2,1,2,1,2,1,2,3,2,53,8,2,1,2,1,2,1,2,3,2,58,8,2,1,3,1,3,1,3,1,3,1,
-		3,3,3,65,8,3,1,4,1,4,1,4,1,4,1,4,1,4,3,4,73,8,4,1,5,1,5,1,5,1,5,1,5,1,
-		5,3,5,81,8,5,1,6,3,6,84,8,6,1,6,1,6,1,7,1,7,1,7,1,7,1,7,3,7,93,8,7,1,7,
-		0,0,8,0,2,4,6,8,10,12,14,0,0,111,0,19,1,0,0,0,2,28,1,0,0,0,4,57,1,0,0,
-		0,6,64,1,0,0,0,8,72,1,0,0,0,10,80,1,0,0,0,12,83,1,0,0,0,14,92,1,0,0,0,
-		16,18,3,2,1,0,17,16,1,0,0,0,18,21,1,0,0,0,19,17,1,0,0,0,19,20,1,0,0,0,
-		20,22,1,0,0,0,21,19,1,0,0,0,22,23,5,0,0,1,23,1,1,0,0,0,24,29,3,4,2,0,25,
-		26,5,31,0,0,26,27,5,9,0,0,27,29,3,4,2,0,28,24,1,0,0,0,28,25,1,0,0,0,29,
-		3,1,0,0,0,30,31,5,17,0,0,31,32,3,8,4,0,32,33,5,8,0,0,33,58,1,0,0,0,34,
-		35,5,16,0,0,35,36,5,32,0,0,36,58,5,8,0,0,37,38,5,11,0,0,38,39,3,10,5,0,
-		39,40,5,8,0,0,40,58,1,0,0,0,41,42,5,15,0,0,42,43,5,32,0,0,43,58,5,8,0,
-		0,44,45,5,1,0,0,45,46,3,6,3,0,46,47,5,8,0,0,47,58,1,0,0,0,48,49,5,24,0,
-		0,49,52,5,31,0,0,50,51,5,25,0,0,51,53,3,12,6,0,52,50,1,0,0,0,52,53,1,0,
-		0,0,53,54,1,0,0,0,54,58,5,8,0,0,55,56,5,10,0,0,56,58,5,8,0,0,57,30,1,0,
-		0,0,57,34,1,0,0,0,57,37,1,0,0,0,57,41,1,0,0,0,57,44,1,0,0,0,57,48,1,0,
-		0,0,57,55,1,0,0,0,58,5,1,0,0,0,59,65,5,2,0,0,60,65,5,3,0,0,61,65,5,4,0,
-		0,62,65,5,5,0,0,63,65,5,7,0,0,64,59,1,0,0,0,64,60,1,0,0,0,64,61,1,0,0,
-		0,64,62,1,0,0,0,64,63,1,0,0,0,65,7,1,0,0,0,66,73,5,18,0,0,67,73,5,19,0,
-		0,68,73,5,20,0,0,69,73,5,21,0,0,70,73,5,22,0,0,71,73,5,23,0,0,72,66,1,
-		0,0,0,72,67,1,0,0,0,72,68,1,0,0,0,72,69,1,0,0,0,72,70,1,0,0,0,72,71,1,
-		0,0,0,73,9,1,0,0,0,74,75,5,13,0,0,75,81,3,14,7,0,76,77,5,12,0,0,77,81,
-		5,32,0,0,78,79,5,14,0,0,79,81,3,6,3,0,80,74,1,0,0,0,80,76,1,0,0,0,80,78,
-		1,0,0,0,81,11,1,0,0,0,82,84,5,26,0,0,83,82,1,0,0,0,83,84,1,0,0,0,84,85,
-		1,0,0,0,85,86,5,27,0,0,86,13,1,0,0,0,87,93,5,28,0,0,88,93,5,29,0,0,89,
-		93,5,30,0,0,90,93,5,33,0,0,91,93,5,34,0,0,92,87,1,0,0,0,92,88,1,0,0,0,
-		92,89,1,0,0,0,92,90,1,0,0,0,92,91,1,0,0,0,93,15,1,0,0,0,9,19,28,52,57,
-		64,72,80,83,92
+		2,1,2,1,2,1,2,3,2,67,8,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,
+		2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,3,2,95,8,2,1,
+		2,1,2,1,2,3,2,100,8,2,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,
+		3,3,114,8,3,1,4,1,4,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,3,
+		5,130,8,5,1,6,1,6,1,6,1,6,1,6,1,6,3,6,138,8,6,1,7,3,7,141,8,7,1,7,1,7,
+		1,8,1,8,1,8,1,8,1,8,1,8,1,8,1,8,3,8,153,8,8,1,9,1,9,1,9,1,9,3,9,159,8,
+		9,1,10,1,10,1,10,1,10,1,10,1,10,1,10,1,10,1,10,1,10,3,10,171,8,10,1,11,
+		1,11,1,11,1,11,1,11,3,11,178,8,11,1,12,1,12,1,12,1,12,1,12,1,12,3,12,186,
+		8,12,1,12,0,0,13,0,2,4,6,8,10,12,14,16,18,20,22,24,0,1,1,0,7,8,240,0,29,
+		1,0,0,0,2,38,1,0,0,0,4,99,1,0,0,0,6,113,1,0,0,0,8,115,1,0,0,0,10,129,1,
+		0,0,0,12,137,1,0,0,0,14,140,1,0,0,0,16,152,1,0,0,0,18,158,1,0,0,0,20,170,
+		1,0,0,0,22,177,1,0,0,0,24,185,1,0,0,0,26,28,3,2,1,0,27,26,1,0,0,0,28,31,
+		1,0,0,0,29,27,1,0,0,0,29,30,1,0,0,0,30,32,1,0,0,0,31,29,1,0,0,0,32,33,
+		5,0,0,1,33,1,1,0,0,0,34,39,3,4,2,0,35,36,5,56,0,0,36,37,5,12,0,0,37,39,
+		3,4,2,0,38,34,1,0,0,0,38,35,1,0,0,0,39,3,1,0,0,0,40,41,5,13,0,0,41,43,
+		3,16,8,0,42,44,3,8,4,0,43,42,1,0,0,0,43,44,1,0,0,0,44,45,1,0,0,0,45,46,
+		3,10,5,0,46,47,5,11,0,0,47,100,1,0,0,0,48,49,5,33,0,0,49,50,3,18,9,0,50,
+		51,5,14,0,0,51,52,3,16,8,0,52,53,5,11,0,0,53,100,1,0,0,0,54,55,5,34,0,
+		0,55,56,3,18,9,0,56,57,5,14,0,0,57,58,3,18,9,0,58,59,5,11,0,0,59,100,1,
+		0,0,0,60,61,5,32,0,0,61,62,5,57,0,0,62,63,5,12,0,0,63,66,3,20,10,0,64,
+		65,5,15,0,0,65,67,3,24,12,0,66,64,1,0,0,0,66,67,1,0,0,0,67,68,1,0,0,0,
+		68,69,5,11,0,0,69,100,1,0,0,0,70,71,5,10,0,0,71,72,5,57,0,0,72,73,5,12,
+		0,0,73,74,3,20,10,0,74,75,5,11,0,0,75,100,1,0,0,0,76,77,5,48,0,0,77,78,
+		5,57,0,0,78,100,5,11,0,0,79,80,5,29,0,0,80,81,3,12,6,0,81,82,5,11,0,0,
+		82,100,1,0,0,0,83,84,5,31,0,0,84,85,5,57,0,0,85,100,5,11,0,0,86,87,5,1,
+		0,0,87,88,3,6,3,0,88,89,5,11,0,0,89,100,1,0,0,0,90,91,5,47,0,0,91,94,5,
+		56,0,0,92,93,5,49,0,0,93,95,3,14,7,0,94,92,1,0,0,0,94,95,1,0,0,0,95,96,
+		1,0,0,0,96,100,5,11,0,0,97,98,5,28,0,0,98,100,5,11,0,0,99,40,1,0,0,0,99,
+		48,1,0,0,0,99,54,1,0,0,0,99,60,1,0,0,0,99,70,1,0,0,0,99,76,1,0,0,0,99,
+		79,1,0,0,0,99,83,1,0,0,0,99,86,1,0,0,0,99,90,1,0,0,0,99,97,1,0,0,0,100,
+		5,1,0,0,0,101,114,5,2,0,0,102,114,5,3,0,0,103,104,5,16,0,0,104,114,5,9,
+		0,0,105,114,5,39,0,0,106,114,5,40,0,0,107,114,5,41,0,0,108,114,5,42,0,
+		0,109,114,5,35,0,0,110,114,5,36,0,0,111,114,5,37,0,0,112,114,5,38,0,0,
+		113,101,1,0,0,0,113,102,1,0,0,0,113,103,1,0,0,0,113,105,1,0,0,0,113,106,
+		1,0,0,0,113,107,1,0,0,0,113,108,1,0,0,0,113,109,1,0,0,0,113,110,1,0,0,
+		0,113,111,1,0,0,0,113,112,1,0,0,0,114,7,1,0,0,0,115,116,7,0,0,0,116,9,
+		1,0,0,0,117,130,5,16,0,0,118,130,5,17,0,0,119,130,5,18,0,0,120,130,5,19,
+		0,0,121,130,5,20,0,0,122,130,5,21,0,0,123,130,5,22,0,0,124,130,5,23,0,
+		0,125,130,5,24,0,0,126,130,5,25,0,0,127,130,5,26,0,0,128,130,5,27,0,0,
+		129,117,1,0,0,0,129,118,1,0,0,0,129,119,1,0,0,0,129,120,1,0,0,0,129,121,
+		1,0,0,0,129,122,1,0,0,0,129,123,1,0,0,0,129,124,1,0,0,0,129,125,1,0,0,
+		0,129,126,1,0,0,0,129,127,1,0,0,0,129,128,1,0,0,0,130,11,1,0,0,0,131,132,
+		3,16,8,0,132,133,3,22,11,0,133,138,1,0,0,0,134,138,5,57,0,0,135,136,5,
+		30,0,0,136,138,3,6,3,0,137,131,1,0,0,0,137,134,1,0,0,0,137,135,1,0,0,0,
+		138,13,1,0,0,0,139,141,5,50,0,0,140,139,1,0,0,0,140,141,1,0,0,0,141,142,
+		1,0,0,0,142,143,5,51,0,0,143,15,1,0,0,0,144,153,5,39,0,0,145,153,5,40,
+		0,0,146,153,5,41,0,0,147,153,5,42,0,0,148,153,5,35,0,0,149,153,5,36,0,
+		0,150,153,5,37,0,0,151,153,5,38,0,0,152,144,1,0,0,0,152,145,1,0,0,0,152,
+		146,1,0,0,0,152,147,1,0,0,0,152,148,1,0,0,0,152,149,1,0,0,0,152,150,1,
+		0,0,0,152,151,1,0,0,0,153,17,1,0,0,0,154,159,5,43,0,0,155,159,5,44,0,0,
+		156,159,5,45,0,0,157,159,5,46,0,0,158,154,1,0,0,0,158,155,1,0,0,0,158,
+		156,1,0,0,0,158,157,1,0,0,0,159,19,1,0,0,0,160,171,5,39,0,0,161,171,5,
+		40,0,0,162,171,5,41,0,0,163,171,5,42,0,0,164,171,5,35,0,0,165,171,5,36,
+		0,0,166,171,5,37,0,0,167,171,5,38,0,0,168,169,5,16,0,0,169,171,5,9,0,0,
+		170,160,1,0,0,0,170,161,1,0,0,0,170,162,1,0,0,0,170,163,1,0,0,0,170,164,
+		1,0,0,0,170,165,1,0,0,0,170,166,1,0,0,0,170,167,1,0,0,0,170,168,1,0,0,
+		0,171,21,1,0,0,0,172,178,5,52,0,0,173,178,5,53,0,0,174,178,5,54,0,0,175,
+		178,5,55,0,0,176,178,5,58,0,0,177,172,1,0,0,0,177,173,1,0,0,0,177,174,
+		1,0,0,0,177,175,1,0,0,0,177,176,1,0,0,0,178,23,1,0,0,0,179,186,5,52,0,
+		0,180,186,5,53,0,0,181,186,5,54,0,0,182,186,5,55,0,0,183,186,5,58,0,0,
+		184,186,5,59,0,0,185,179,1,0,0,0,185,180,1,0,0,0,185,181,1,0,0,0,185,182,
+		1,0,0,0,185,183,1,0,0,0,185,184,1,0,0,0,186,25,1,0,0,0,15,29,38,43,66,
+		94,99,113,129,137,140,152,158,170,177,185
 	};
 
 	public static readonly ATN _ATN =

@@ -1,4 +1,4 @@
-﻿namespace EsmCompiler.Util;
+﻿namespace EsmRuntime;
 
 public static class LinqUtil {
 

@@ -1,4 +1,7 @@
 ﻿using EsmCompiler.Util;
+using EsmCore;
+using EsmRuntime;
+using EsmRuntime.Common.Types;
 using Quickenshtein;
 
 namespace EsmCompiler;
@@ -26,7 +29,7 @@ public static partial class EsmCompiler {
             }
             
             
-            if (stmt is DecLocal(var name, _)) {
+            if (stmt is AllocMem(var name, _)) {
                 var id = (byte) variables.Count;
                 if (!variables.TryAdd(name, new(index, id))) {
                     logger.LogInspection(new VarAlreadyDec(pos, name));
@@ -43,7 +46,7 @@ public static partial class EsmCompiler {
             ref SizedStmt stmt = ref stmts[i];
             FilePos pos = stmt.Pos;
             
-            if (stmt is StoreLocal(var name, _)) {
+            if (stmt is StoreIdentifier(var name, _)) {
                 if (!variables.TryGetValue(name, out VariableInfo info)) {
                     string[] typos = variables.Keys.Filter(s => TypoPossible(name, s));
                     string? hint = typos.Length == 0
@@ -56,7 +59,7 @@ public static partial class EsmCompiler {
                     stmtInfo.Add(new(index, mem));
                     stmt = mem;
                 }
-            } else if (stmt is LoadLocal(var name1, _)) {
+            } else if (stmt is LoadMem(var name1, _)) {
                 if (!variables.TryGetValue(name1, out VariableInfo info)) {
                     string[] typos = variables.Keys.Filter(s => TypoPossible(name1, s));
                     string? hint = typos.Length == 0
@@ -65,7 +68,7 @@ public static partial class EsmCompiler {
                     
                     logger.LogInspection(new UndefVar(pos, name1, hint));
                 } else {
-                    var mem = new LoadMem(info.Id, pos);
+                    var mem = new LoadHeap(info.Id, pos);
                     stmtInfo.Add(new(index, mem));
                     stmt = mem;
                 }
@@ -119,8 +122,16 @@ public static partial class EsmCompiler {
         return dist <= thresh;
     }
 
-    readonly record struct VariableInfo(int BitIndex, byte Id);
+    readonly record struct VariableInfo(int BitIndex, int Size, byte Id);
     readonly record struct StmtInfo(int BitIndex, FinalizedStmt Stmt): IComparable<StmtInfo> {
         public int CompareTo(StmtInfo other) => BitIndex.CompareTo(other.BitIndex);
     }
+}
+
+internal static class FixedTypeExtIII {
+    extension(FixedSizeType self) {
+   
+    }
+    
+    
 }

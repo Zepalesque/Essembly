@@ -1,64 +1,56 @@
 // binary 8-bit adder
-let .currChar;
+let a: u8; // init local var a
+let b: u8; // init local var b
 
-let .a; // init local var a
-let .b; // init local var b
-let .aux; // init auxiliary var
+alloc inputStr: &str = "Please input a number.\n";
+push inputStr;
+print &str;
+free inputStr;
 
-load const "Please input a number.\n";
-print str;
+// stays longer
+alloc moreInputs: &str = "Please input another number.\n";
+alloc sum: &str = "Sum: ";
+alloc continue: &str = "Want to continue? Press 'y'!\n";
 
 // take input a
-load input dec;
-store .a;
+push input u8;
+store a;
 
 #add_loop:
-    
-    load const "Please input another number.\n";
-    print str;
+     push moreInputs;
+     print &str;
     
     // take input b
-    load input dec;
-    store .b;
+    push input u8;
+    store b;
     
-    // begin adder loop
-    #loop: 
-        // load a and b in reverse order
-        load local .b; // -> b
-        load local .a; // -> a, b
-        operate ^; // -> a^b
+    // arithmetic operations, yippee!!!!
+    push b; // -> b
+    push a; // -> a, b
+    operate u8 binary +; // -> a+b
+    store a; // ->
+
     
-        load local .b; // -> b, a^b
-        load local .a; // -> a, b, a^b
-        operate &; // -> a&b, a^b
-        store .aux; // -> a^b
-        load const 1; // -> 1, a^b
-        load local .aux; // -> a&b, 1, a^b
-        operate <<; // -> (a&b)<<1, a^b
-        store .b; // -> a^b_prev
+    push sum;
+    print &str;
     
-        store .a; // ->
+    push a;
+    print u8;
     
-        load local .b; // -> b
-    goto #loop if !zero; // if b == zero break #loop; else continue;
-    
-    load const "Sum: ";
-    print str;
-    
-    load local .a;
-    print dec;
-    
-    load const '\n';
+    push u8 '\n';
     print ascii;
     
-    load const "Want to continue? Press 'y'!\n";
-    print str;
+    push continue;
+    print &str;
     
-    load input ascii;
-    load const 'y';
-    operate ^;
+    push input ascii;
+    push u8 'y';
+    operate u8 ^;
     
 goto #add_loop if zero;
 
-load const 0;
+free continue;
+free sum;
+free moreInputs;
+push u8 0;
 exit;

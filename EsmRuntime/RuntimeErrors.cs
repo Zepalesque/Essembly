@@ -5,6 +5,7 @@ public enum ErrorType : byte {
     StackUnderflow = 0001,
     MemoryAccess   = 0010,
     InvalidFormat  = 0011,
+    InvalidIndex   = 0100,
 }
 
 public abstract class RuntimeError : Exception {
@@ -31,4 +32,9 @@ public class MemoryAccessError: RuntimeError {
 public class InvalidFormatError: RuntimeError {
     public InvalidFormatError(): base(ErrorType.InvalidFormat) {}
     public InvalidFormatError(string message) : base(message, ErrorType.InvalidFormat) {}
+}
+
+public class InvalidIndexError: RuntimeError {
+    public InvalidIndexError(): base(ErrorType.InvalidIndex) {}
+    public InvalidIndexError(string message) : base(message, ErrorType.InvalidIndex) {}
 }

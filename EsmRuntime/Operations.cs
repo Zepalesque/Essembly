@@ -1,40 +1,56 @@
-﻿using System.Text;
-using EsmCompiler.Util;
+﻿using System.Numerics;
+using System.Text;
+using EsmRuntime.Common.Types;
+using EsmRuntime.Debug;
 using JetBrains.Annotations;
+// ReSharper disable InconsistentNaming
 
 namespace EsmRuntime;
 
-public static partial class EsmRuntime {
+public static partial class EsmVM {
     static u8 LoadConst(ReadOnlySpan<byte> program, ref int pc) {
         u8 val = program[++pc];
         if (_debug) Debug($"Pushing {val} to stack");
         return val;
     }
+    
+    static T LoadConst<T>(ReadOnlySpan<byte> program, ref int pc) where T: struct, ISizedValue<T> {
+        T val = T.FromSpan(program[(pc + 1)..(pc + T.ByteCount + 1)]);
+        pc += T.ByteCount;
+        if (_debug) Debug($"Pushing {val} to stack");
+        return val;
+    }
 
-    static void LoadStr(ReadOnlySpan<byte> program, ref int pc, ref OpStack stack) {
+    static void AllocStr(ReadOnlySpan<byte> program, ref int pc, ref Heap heap) {
+        usize loc = usize.FromSpan(program[(pc + 1)..(pc + usize.ByteCount + 1)]);
+        pc += usize.ByteCount;
         int start = pc + 1;
         do {
             pc++; 
         } while (program[pc] != '\0');
 
         var span = program[start..(pc+1)];
-        if (_debug) Debug($"Pushing \"{Encoding.ASCII.GetString(span)}\\0\" to stack");
+        if (_debug) Debug($"Pushing \"{StringTransformation.Escape(Encoding.ASCII.GetString(span))}\" to stack");
 
-        stack += span;
+        heap.AllocateUnsized(loc, span);
     }
 
-    static u8 LoadMem(ReadOnlySpan<byte> program, ref int pc, ref Memory mem) {
-        byte ptr = program[++pc];
-        if (_debug) Debug($"Attempting to get @.{ptr:X2}");
-        u8 val = mem[ptr];
-        if (_debug) Debug($"Pushing @.{ptr:X2} ({val}) to stack");
+    static unsafe u8 LoadMem(ReadOnlySpan<byte> program, ref int pc, ref Heap mem) {
+        pc++;
+        usize addr = usize.FromProgram(program[++pc..], ref pc);
+        if (_debug) Debug($"Attempting to get @.{addr:X2}");
+        byte* ptr = mem[addr];
+        var val = (u8) (*ptr);
+        if (_debug) Debug($"Pushing @.{addr:X2} ({val}) to stack");
         return val;
     }
 
-    static void StoreMem(ReadOnlySpan<byte> program, ref int pc, ref Memory mem, u8 val) {
-        byte loc = program[++pc];
-        if (_debug) Debug($"Storing {val} to &.{loc:X2}");
-        mem[loc] = val;
+    static void StoreMem<T>(ReadOnlySpan<byte> program, ref int pc, ref Heap mem, T val)  where T : struct, ISizedValue<T> {
+        usize addr = usize.FromSpan(program[++pc..(pc + usize.ByteCount)]);
+        if (_debug) Debug($"Storing {val} to &.{addr:X2}");
+        pc += usize.ByteCount - 1;
+        var span = mem[(int)addr..(int)(addr + T.ByteCount)];
+        val.ToSpan(span);
     }
 
     static void Jump(ReadOnlySpan<byte> program, ref int pc, ref OpStack stack, bool? cond) {
@@ -77,78 +93,79 @@ public static partial class EsmRuntime {
         return code;
     }
 
-    static u8 UnaryNot(u8 val) {
-        u8 res = ~val;
+    static T UnaryNot<T>(T val) where T: struct, ISizedValue<T>, IBitwiseOperators<T, T, T> {
+        T res = ~val;
         if (_debug) Debug($"~{val}: -> {val} ~= -> {res}");
         return res;
     }
     
-    static u8 BinaryAnd(u8 a, u8 b) {
-        u8 res = a & b;
+    static T BinaryAnd<T>(T a, T b) where T: struct, ISizedValue<T>, IBitwiseOperators<T, T, T> {
+        T res = a & b;
         if (_debug) Debug($"{a} & {b}: -> {b}, {a} &= -> {res}");
         return res;
     }
     
-    static u8 BinaryOr(u8 a, u8 b) {
-        u8 res = a | b;
+    static T BinaryOr<T>(T a, T b) where T: struct, ISizedValue<T>, IBitwiseOperators<T, T, T>  {
+        T res = a | b;
         if (_debug) Debug($"{a} | {b}: -> {b}, {a} |= -> {res}");
         return res;
     }
     
-    static u8 BinaryXor(u8 a, u8 b) {
-        u8 res = a ^ b;
+    static T BinaryXor<T>(T a, T b) where T: struct, ISizedValue<T>, IBitwiseOperators<T, T, T>  {
+        T res = a ^ b;
         if (_debug) Debug($"{a} ^ {b}: -> {b}, {a} ^= -> {res}");
         return res;
     }
     
-    static u8 BinaryLeft(u8 a, u8 b) {
-        u8 res = a << b;
+    static T BinaryLeft<T>(T a, T b) where T: struct, ISizedValue<T>, IShiftOperators<T, T, T>  {
+        T res = a << b;
         if (_debug) Debug($"{a} << {b}: -> {b}, {a} <<= -> {res}");
         return res;
     }
     
-    static u8 BinaryRight(u8 a, u8 b) {
-        u8 res = a >> b;
+    static T BinaryRight<T>(T a, T b) where T: struct, ISizedValue<T>, IShiftOperators<T, T, T>  {
+        T res = a >> b;
+        if (_debug) Debug($"{a} >>> {b}: -> {b}, {a} >>= -> {res}");
+        return res;
+    }
+    
+    static T BinaryURight<T>(T a, T b) where T: struct, ISizedValue<T>, IShiftOperators<T, T, T>  {
+        T res = a >>> b;
         if (_debug) Debug($"{a} >> {b}: -> {b}, {a} >>= -> {res}");
         return res;
     }
 
-    static void PrintBinary(u8 val) {
+    static void PrintBinary<T>(T val) where T : struct, ISizedValue<T>, INumberFormattable {
         if (_debug) Debug($"Printing stack.Pop(): {val} formatted {val.Bin}");
         Console.Write(val.Bin);
     }
     
     
-    static void PrintDecimal(u8 val) {
+    static void PrintDecimal<T>(T val) where T : struct, ISizedValue<T>, INumberFormattable {
         if (_debug) Debug($"Printing stack.Pop(): {val} formatted {val.Dec}");
         Console.Write(val.Dec);
     }
     
-    static void PrintHex(u8 val) {
+    static void PrintHex<T>(T val) where T : struct, ISizedValue<T>, INumberFormattable {
         if (_debug) Debug($"Printing stack.Pop(): {val} formatted {val.Hex}");
         Console.Write(val.Hex);
     }
     
-    static void PrintAscii(u8 val) {
+    static void PrintAscii<T>(T val) where T : struct, ISizedValue<T>, IAsciiFormattable<T> {
+        if (_debug) Debug($"Printing stack.Pop(): {val} formatted \'{(char) val}\'");
+        Console.Write((char) val);
+    }
+    
+    static void PrintUtf16<T>(T val) where T : struct, ISizedValue<T>, IUtf16Formattable<T> {
         if (_debug) Debug($"Printing stack.Pop(): {val} formatted \'{(char) val}\'");
         Console.Write((char) val);
     }
     
     static void PrintString(ref OpStack stack) {
-        ReadOnlySpan<byte> str;
-        if (_debug) {
-            int index = stack.LastIndexOf((byte) '\0');
-            if (index == -1) {
-                Debug("Printing unbound string to console, StackUnderflow is inevitable...");
-                str = stack.PopStr();
-            } else
-                Debug(
-                    $"Printing string to console: \"{(str = stack.PopStr()).ToArray().Map(x => ((char) x).ToString()).Aggregate("", (s1, s2) => s1 + s2)}\"");
-        } else {
-            str = stack.PopStr();
-        }
+        var s = stack.Pop<str>();
+        if (_debug) Debug($"Printing string to console: \"{s.ToString()}\"");
 
-        foreach (byte b in str) {
+        foreach (byte b in s.ToStringSpan()) {
             Console.Write((char) b);
         }
     }

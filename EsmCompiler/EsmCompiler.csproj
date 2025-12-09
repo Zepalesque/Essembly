@@ -6,6 +6,7 @@
         <LangVersion>14</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,6 +17,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\EsmCore\EsmCore.csproj" />
+      <ProjectReference Include="..\EsmRuntime\EsmRuntime.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="gen\" />
     </ItemGroup>
 
 </Project>

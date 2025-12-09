@@ -2,6 +2,7 @@
 using Antlr4.Runtime.Tree;
 using EsmCompiler.Util;
 using EsmCore;
+using EsmRuntime;
 
 namespace EsmCompiler;
 
@@ -56,37 +57,49 @@ public abstract record OneOpStmt : FinalizedStmt {
     }
 }
 
-public record LoadConst(byte Val, FilePos Pos) : OneOpStmt(EsmCore.OpCode.LoadConst, Val, Pos) {
-    public byte Val { get; set; } = Val;
-}
-
-public record LoadStr(byte[] Ascii, FilePos Pos) : FinalizedStmt(Pos) {
-    public byte[] Bytes { get; set; } = new byte[]{(byte) EsmCore.OpCode.LoadStr}.Concat(Ascii).ToArray();
+public record AllocStr(byte[] Ascii, FilePos Pos) : FinalizedStmt(Pos) {
+    public byte[] Bytes { get; set; } = new[]{(byte) EsmRuntime.OpCode.AllocStr}.Concat(Ascii).ToArray();
     public override ReadOnlySpan<byte> OpCode => Bytes;
     public byte[] Ascii { get; set; } = Ascii;
 }
 
-public record DecLocal(string VarName, FilePos Pos) : UnfinalizedStmt(0, Pos) {
+public record AllocMem(string VarName, FixedSizeType Type,  FilePos Pos) : UnfinalizedStmt(0, Pos) {
     public string VarName { get; set; } = VarName;
 }
 
-public record LoadLocal(string VarName, FilePos Pos) : UnfinalizedStmt(2, Pos) {
+public record LocalVar(string VarName, FixedSizeType Type, FilePos Pos) : UnfinalizedStmt(0, Pos) {
     public string VarName { get; set; } = VarName;
 }
 
-public record LoadMem(byte Index, FilePos Pos) : OneOpStmt(EsmCore.OpCode.LoadMem, Index, Pos) {
+public record LoadMem(string VarName, FilePos Pos) : UnfinalizedStmt(2, Pos) {
+    public string VarName { get; set; } = VarName;
+}
+
+public record LoadHeap(byte Index, FilePos Pos) : OneOpStmt(EsmRuntime.OpCode.LoadMem, Index, Pos) {
     public byte Index { get; set; } = Index;
 }
 
-public record StoreLocal(string VarName, FilePos Pos) : UnfinalizedStmt(2, Pos) {
+public record StoreIdentifier(string VarName, FilePos Pos) : UnfinalizedStmt(2, Pos) {
     public string VarName { get; set; } = VarName;
 }
 
-public record StoreMem(byte Index, FilePos Pos) : OneOpStmt(EsmCore.OpCode.Store, Index, Pos) {
-    public byte Index { get; set; } = Index;
+public record StoreMem(ushort Index, FixedSizeType Type, FilePos Pos) : FinalizedStmt {
+    public ushort Index { get; set; } = Index;
+    public override ReadOnlySpan<byte> OpCode => FixedTypeExtIII.
+}
+public record StoreMem16(int Index, FilePos Pos) : OneOpStmt(EsmRuntime.OpCode.StoreMem16, Index, Pos) {
+    public int Index { get; set; } = Index;
 }
 
-public record Exit(FilePos Pos) : NoOpStmt(EsmCore.OpCode.Exit, Pos);
+public record StoreMem32(int Index, FilePos Pos) : OneOpStmt(EsmRuntime.OpCode.StoreMem32, Index, Pos) {
+    public int Index { get; set; } = Index;
+}
+
+public record StoreMem64(int Index, FilePos Pos) : OneOpStmt(EsmRuntime.OpCode.StoreMem64, Index, Pos) {
+    public int Index { get; set; } = Index;
+}
+
+public record Exit(FilePos Pos) : NoOpStmt(EsmRuntime.OpCode.Exit, Pos);
 
 public record LabeledStmt(Label Label, SizedStmt Statement, FilePos Pos) : UnfinalizedStmt(Statement.Size, Pos) {
     public Label Label { get; set; } = Label;
@@ -100,21 +113,58 @@ public record Goto(Label Label, bool? IfZero, FilePos Pos) : UnfinalizedStmt(2, 
 }
 
 public record Jump(sbyte Offset, bool? IfZero, FilePos Pos) 
-    : OneOpStmt(EsmCore.OpCode.get_Item(IfZero), unchecked((byte) Offset), Pos) {
+    : OneOpStmt(EsmRuntime.OpCode.get_Item(IfZero), unchecked((byte) Offset), Pos) {
     public bool? IfZero { get; set; } = IfZero;
     public sbyte Offset { get; set; } = Offset;
 }
+
+public record IntDemotion(byte Start, byte End, FilePos Pos) 
+    : FinalizedStmt(Pos) {
+    public override ReadOnlySpan<byte> OpCode => CalculateOpcodes(Start, End);
+    
+    static ReadOnlySpan<byte> CalculateOpcodes(byte start, byte end) {
+        
+        int length = end - start;
+        var codes = new byte[length];
+        for (byte i = 0; i < length; i++) {
+            OpCode code = EsmRuntime.OpCode.X64ToX32 + (byte) (start - 3) + i;
+            codes[i] = (byte) code;
+        }
+
+        return new(codes);
+    } 
+}
+
+public record IntPromotion(byte Start, byte End, bool SignExtend, FilePos Pos) 
+    : FinalizedStmt(Pos) {
+    public override ReadOnlySpan<byte> OpCode => CalculateOpcodes(Start, End, SignExtend);
+    
+    static ReadOnlySpan<byte> CalculateOpcodes(byte start, byte end, bool signExtend) {
+        
+        int length = end - start;
+        var codes = new byte[length];
+        for (byte i = 0; i < length; i++) {
+            OpCode code = (signExtend ? EsmRuntime.OpCode.X8ToI16 : EsmRuntime.OpCode.X8ToU16) + start + i;
+            codes[i] = (byte) code;
+        }
+
+        return new(codes);
+    } 
+}
+
+
 
 public record Label(string Id, FilePos Pos) : BaseNode(Pos) {
     public string Id { get; set; } = Id;
 }
 
-public record BitAnd(FilePos Pos) : NoOpStmt(EsmCore.OpCode.BwAnd, Pos);
-public record BitOr(FilePos Pos) : NoOpStmt(EsmCore.OpCode.BwOr, Pos);
-public record BitXor(FilePos Pos) : NoOpStmt(EsmCore.OpCode.BwXor, Pos);
-public record BitNot(FilePos Pos) : NoOpStmt(EsmCore.OpCode.BwNot, Pos);
-public record BitLShift(FilePos Pos) : NoOpStmt(EsmCore.OpCode.BwLeft, Pos);
-public record BitRShift(FilePos Pos) : NoOpStmt(EsmCore.OpCode.BwRight, Pos);
+public record BitAnd(FilePos Pos) : NoOpStmt(EsmRuntime.OpCode.And8, Pos);
+public record BitOr(FilePos Pos) : NoOpStmt(EsmRuntime.OpCode.Or8, Pos);
+public record BitXor(FilePos Pos) : NoOpStmt(EsmRuntime.OpCode.Xor8, Pos);
+public record BitNot(FilePos Pos) : NoOpStmt(EsmRuntime.OpCode.Not8, Pos);
+public record BitLShift(FilePos Pos) : NoOpStmt(EsmRuntime.OpCode.Left8, Pos);
+public record BitRShift(FilePos Pos) : NoOpStmt(EsmRuntime.OpCode.Right8, Pos);
+public record BitURShift(FilePos Pos) : NoOpStmt(EsmRuntime.OpCode.RightU8, Pos);
 
 public record Print(PrintMode Mode, FilePos Pos) : NoOpStmt(Mode.Code, Pos) {
     public PrintMode Mode { get; set; } = Mode;
@@ -158,9 +208,11 @@ public static class PrintModeExt {
 
 public enum InputMode {
     Ascii,
-    Binary,
-    Hex,
-    Decimal,
+    Utf16,
+    DecimalI8,
+    DecimalU8,
+    DecimalI16,
+    DecimalU16,
     Str,
 }
 

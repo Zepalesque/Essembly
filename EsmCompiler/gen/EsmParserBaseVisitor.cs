@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:/Users/emers/RiderProjects/EssemblyV2/EsmCompiler/Esm.g4 by ANTLR 4.13.2
+// Generated from C:/Users/emers/RiderProjects/EssemblyV2/EsmCompiler/EsmParser.g4 by ANTLR 4.13.2
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -25,7 +25,7 @@ using IToken = Antlr4.Runtime.IToken;
 using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;
 
 /// <summary>
-/// This class provides an empty implementation of <see cref="IEsmVisitor{Result}"/>,
+/// This class provides an empty implementation of <see cref="IEsmParserVisitor{Result}"/>,
 /// which can be extended to create a visitor which only needs to handle a subset
 /// of the available methods.
 /// </summary>
@@ -33,7 +33,7 @@ using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.13.2")]
 [System.Diagnostics.DebuggerNonUserCode]
 [System.CLSCompliant(false)]
-public partial class EsmBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, IEsmVisitor<Result> {
+public partial class EsmParserBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, IEsmParserVisitor<Result> {
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsmParser.base"/>.
 	/// <para>
@@ -66,7 +66,7 @@ public partial class EsmBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, 
 	/// <return>The visitor result.</return>
 	public virtual Result VisitOperationPerform([NotNull] EsmParser.OperationPerformContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>varDec</c>
+	/// Visit a parse tree produced by the <c>promotion</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -75,7 +75,51 @@ public partial class EsmBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, 
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitVarDec([NotNull] EsmParser.VarDecContext context) { return VisitChildren(context); }
+	public virtual Result VisitPromotion([NotNull] EsmParser.PromotionContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by the <c>demotion</c>
+	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitDemotion([NotNull] EsmParser.DemotionContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by the <c>allocMem</c>
+	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitAllocMem([NotNull] EsmParser.AllocMemContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by the <c>localVar</c>
+	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitLocalVar([NotNull] EsmParser.LocalVarContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by the <c>freeMem</c>
+	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitFreeMem([NotNull] EsmParser.FreeMemContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by the <c>toStack</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
@@ -88,7 +132,7 @@ public partial class EsmBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, 
 	/// <return>The visitor result.</return>
 	public virtual Result VisitToStack([NotNull] EsmParser.ToStackContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>storeToVar</c>
+	/// Visit a parse tree produced by the <c>storeToPointer</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -97,7 +141,7 @@ public partial class EsmBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, 
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitStoreToVar([NotNull] EsmParser.StoreToVarContext context) { return VisitChildren(context); }
+	public virtual Result VisitStoreToPointer([NotNull] EsmParser.StoreToPointerContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by the <c>print</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
@@ -142,6 +186,16 @@ public partial class EsmBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, 
 	/// <return>The visitor result.</return>
 	public virtual Result VisitIoMode([NotNull] EsmParser.IoModeContext context) { return VisitChildren(context); }
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsmParser.opMode"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitOpMode([NotNull] EsmParser.OpModeContext context) { return VisitChildren(context); }
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsmParser.stackOp"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -152,8 +206,8 @@ public partial class EsmBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, 
 	/// <return>The visitor result.</return>
 	public virtual Result VisitStackOp([NotNull] EsmParser.StackOpContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>loadConst</c>
-	/// labeled alternative in <see cref="EsmParser.loadClause"/>.
+	/// Visit a parse tree produced by the <c>pushConst</c>
+	/// labeled alternative in <see cref="EsmParser.pushClause"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -161,10 +215,10 @@ public partial class EsmBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, 
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitLoadConst([NotNull] EsmParser.LoadConstContext context) { return VisitChildren(context); }
+	public virtual Result VisitPushConst([NotNull] EsmParser.PushConstContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>loadLocal</c>
-	/// labeled alternative in <see cref="EsmParser.loadClause"/>.
+	/// Visit a parse tree produced by the <c>pushMem</c>
+	/// labeled alternative in <see cref="EsmParser.pushClause"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -172,10 +226,10 @@ public partial class EsmBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, 
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitLoadLocal([NotNull] EsmParser.LoadLocalContext context) { return VisitChildren(context); }
+	public virtual Result VisitPushMem([NotNull] EsmParser.PushMemContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>loadInput</c>
-	/// labeled alternative in <see cref="EsmParser.loadClause"/>.
+	/// Visit a parse tree produced by the <c>pushInput</c>
+	/// labeled alternative in <see cref="EsmParser.pushClause"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -183,7 +237,7 @@ public partial class EsmBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, 
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitLoadInput([NotNull] EsmParser.LoadInputContext context) { return VisitChildren(context); }
+	public virtual Result VisitPushInput([NotNull] EsmParser.PushInputContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsmParser.ifCond"/>.
 	/// <para>
@@ -195,7 +249,7 @@ public partial class EsmBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, 
 	/// <return>The visitor result.</return>
 	public virtual Result VisitIfCond([NotNull] EsmParser.IfCondContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsmParser.literal"/>.
+	/// Visit a parse tree produced by <see cref="EsmParser.specificInt"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -203,5 +257,45 @@ public partial class EsmBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, 
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitLiteral([NotNull] EsmParser.LiteralContext context) { return VisitChildren(context); }
+	public virtual Result VisitSpecificInt([NotNull] EsmParser.SpecificIntContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsmParser.arbitraryInt"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitArbitraryInt([NotNull] EsmParser.ArbitraryIntContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsmParser.instanceType"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitInstanceType([NotNull] EsmParser.InstanceTypeContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsmParser.sizedLiteral"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitSizedLiteral([NotNull] EsmParser.SizedLiteralContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsmParser.anyLiteral"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitAnyLiteral([NotNull] EsmParser.AnyLiteralContext context) { return VisitChildren(context); }
 }

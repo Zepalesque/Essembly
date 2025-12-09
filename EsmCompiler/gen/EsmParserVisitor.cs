@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:/Users/emers/RiderProjects/EssemblyV2/EsmCompiler/Esm.g4 by ANTLR 4.13.2
+// Generated from C:/Users/emers/RiderProjects/EssemblyV2/EsmCompiler/EsmParser.g4 by ANTLR 4.13.2
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -30,7 +30,7 @@ using IToken = Antlr4.Runtime.IToken;
 /// <typeparam name="Result">The return type of the visit operation.</typeparam>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.13.2")]
 [System.CLSCompliant(false)]
-public interface IEsmVisitor<Result> : IParseTreeVisitor<Result> {
+public interface IEsmParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsmParser.base"/>.
 	/// </summary>
@@ -51,12 +51,40 @@ public interface IEsmVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitOperationPerform([NotNull] EsmParser.OperationPerformContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>varDec</c>
+	/// Visit a parse tree produced by the <c>promotion</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitVarDec([NotNull] EsmParser.VarDecContext context);
+	Result VisitPromotion([NotNull] EsmParser.PromotionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>demotion</c>
+	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDemotion([NotNull] EsmParser.DemotionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>allocMem</c>
+	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAllocMem([NotNull] EsmParser.AllocMemContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>localVar</c>
+	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLocalVar([NotNull] EsmParser.LocalVarContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>freeMem</c>
+	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitFreeMem([NotNull] EsmParser.FreeMemContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>toStack</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
@@ -65,12 +93,12 @@ public interface IEsmVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitToStack([NotNull] EsmParser.ToStackContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>storeToVar</c>
+	/// Visit a parse tree produced by the <c>storeToPointer</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitStoreToVar([NotNull] EsmParser.StoreToVarContext context);
+	Result VisitStoreToPointer([NotNull] EsmParser.StoreToPointerContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>print</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
@@ -99,32 +127,38 @@ public interface IEsmVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitIoMode([NotNull] EsmParser.IoModeContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsmParser.opMode"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitOpMode([NotNull] EsmParser.OpModeContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsmParser.stackOp"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitStackOp([NotNull] EsmParser.StackOpContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>loadConst</c>
-	/// labeled alternative in <see cref="EsmParser.loadClause"/>.
+	/// Visit a parse tree produced by the <c>pushConst</c>
+	/// labeled alternative in <see cref="EsmParser.pushClause"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitLoadConst([NotNull] EsmParser.LoadConstContext context);
+	Result VisitPushConst([NotNull] EsmParser.PushConstContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>loadLocal</c>
-	/// labeled alternative in <see cref="EsmParser.loadClause"/>.
+	/// Visit a parse tree produced by the <c>pushMem</c>
+	/// labeled alternative in <see cref="EsmParser.pushClause"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitLoadLocal([NotNull] EsmParser.LoadLocalContext context);
+	Result VisitPushMem([NotNull] EsmParser.PushMemContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>loadInput</c>
-	/// labeled alternative in <see cref="EsmParser.loadClause"/>.
+	/// Visit a parse tree produced by the <c>pushInput</c>
+	/// labeled alternative in <see cref="EsmParser.pushClause"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitLoadInput([NotNull] EsmParser.LoadInputContext context);
+	Result VisitPushInput([NotNull] EsmParser.PushInputContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsmParser.ifCond"/>.
 	/// </summary>
@@ -132,9 +166,33 @@ public interface IEsmVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitIfCond([NotNull] EsmParser.IfCondContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsmParser.literal"/>.
+	/// Visit a parse tree produced by <see cref="EsmParser.specificInt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitLiteral([NotNull] EsmParser.LiteralContext context);
+	Result VisitSpecificInt([NotNull] EsmParser.SpecificIntContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsmParser.arbitraryInt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitArbitraryInt([NotNull] EsmParser.ArbitraryIntContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsmParser.instanceType"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitInstanceType([NotNull] EsmParser.InstanceTypeContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsmParser.sizedLiteral"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSizedLiteral([NotNull] EsmParser.SizedLiteralContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsmParser.anyLiteral"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAnyLiteral([NotNull] EsmParser.AnyLiteralContext context);
 }

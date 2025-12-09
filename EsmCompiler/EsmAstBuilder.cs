@@ -1,15 +1,19 @@
 ﻿using System.Text;
 using Antlr4.Runtime;
 using EsmCompiler.Util;
+using EsmCore;
+using EsmRuntime;
 
 namespace EsmCompiler;
 
-public class EsmAstBuilder(CompilationLogger logger, FileData file) : EsmBaseVisitor<BaseNode> {
+public class EsmAstBuilder(CompilationLogger logger, FileData file) : EsmParserBaseVisitor<BaseNode> {
     
     internal CompilationLogger Logger { get; } = logger;
     FileData File { get; } = file;
 
-    public override StoreLocal VisitStoreToVar(EsmParser.StoreToVarContext context) 
+    
+    
+    public override StoreIdentifier VisitStoreToPointer(EsmParser.StoreToPointerContext context) 
         => new(context.Identifier().GetText(), context.InFile(File));
 
     public override Goto VisitGoto(EsmParser.GotoContext context)
@@ -20,57 +24,62 @@ public class EsmAstBuilder(CompilationLogger logger, FileData file) : EsmBaseVis
 
     public override Exit VisitExit(EsmParser.ExitContext context) 
         => new(context.InFile(File));
+    
+    
 
-    public override FinalizedStmt VisitLoadConst(EsmParser.LoadConstContext context) {
-        EsmParser.LiteralContext lit = context.lit;
+    public override FinalizedStmt VisitPushConst(EsmParser.PushConstContext context) {
+        EsmParser.SizedLiteralContext lit = context.lit;
         FilePos pos = lit.InFile(File);
-
-        if (lit.str != null) {
+        FixedSizeType type = FixedSizeType.ByIndex(context.type.type.Type);
+        
+        /*if (lit.str != null) {
             var inspecs = LiteralUtil.RegularEscape(pos, lit.str.Text, out var result);
             foreach (var err in inspecs) logger.LogInspection(err);
             return new LoadStr(Encoding.ASCII.GetBytes(result + "\0"), pos);
         }
-        
+        */
 
-        byte b = 0;
-        if (lit.@int != null && !byte.TryParse(lit.@int.Text, out b)) {
-            Logger.LogInspection(new InvalidLiteralErr(pos, lit.@int.Text, "integer", null));
+
+        ConstantNode node;
+        if (lit.@int != null) {
+            var inspecs = LiteralUtil.ParseInt(pos, lit.@int.Text, type, out node);
+            foreach (var err in inspecs) logger.LogInspection(err);
         } else if (lit.@char != null) {
-            var inspec = LiteralUtil.RegularEscapeChar(pos, lit.@char.Text, out var result);
+            var inspec = LiteralUtil.RegularEscapeChar(pos, lit.@char.Text, out char result);
             if (inspec != null) {
                 logger.LogInspection(inspec.Value);
             }
 
-            
-            if (result > byte.MaxValue) {
-                Logger.LogInspection(new InvalidLiteralErr(pos, lit.@char.Text, "character", null));
-            }
-            b = unchecked((byte)result);
 
-        }
+            if (type == FixedSizeType.U8 || type == FixedSizeType.I8 || result > byte.MaxValue) {
+                Logger.LogInspection(new InvalidLiteralErr(pos, lit.@char.Text, "8-bit character", null));
+            }
+
+            node = LiteralUtil.CreateIntLiteral(pos, result, type);
+        } else throw new InvalidOperationException();
         
-        return new LoadConst(b, context.InFile(File));
+        return node;
     }
 
-    public override Input VisitLoadInput(EsmParser.LoadInputContext context)
+    public override Input VisitPushInput(EsmParser.PushInputContext context)
         => new(InputMode.Of(context.io.io.Type), context.InFile(File));
     
     public override Print VisitPrint(EsmParser.PrintContext context)
         => new(PrintMode.Of(context.io.io.Type), context.InFile(File));
     
-    public override LoadLocal VisitLoadLocal(EsmParser.LoadLocalContext context)
+    public override LoadMem VisitPushMem(EsmParser.PushMemContext context)
         => new(context.loc.Text, context.InFile(File));
 
-    public override DecLocal VisitVarDec(EsmParser.VarDecContext context)
-        => new(context.id.Text, context.InFile(File));
+    public override AllocMem VisitAllocMem(EsmParser.AllocMemContext context)
+        => new(context.id.Text, FixedSizeType.ByIndex(context.type.type.Type), context.InFile(File));
 
     public override SizedStmt VisitToStack(EsmParser.ToStackContext context)
-        => (SizedStmt) context.load.Accept(this);
+        => (SizedStmt) context.push.Accept(this);
 
     public override SizedStmt VisitOperationPerform(EsmParser.OperationPerformContext context) {
         FilePos pos = context.InFile(File);
         return context.op.op.Type switch {
-            EsmLexer.BwAnd => new BitAnd(pos),
+            EsmLexer.BwAnd => new BitAnd(pos, FixedTypeExtIII,
             EsmLexer.BwOr => new BitOr(pos),
             EsmLexer.BwXor => new BitXor(pos),
             EsmLexer.BwNot => new BitNot(pos),

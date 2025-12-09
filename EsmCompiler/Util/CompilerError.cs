@@ -52,6 +52,9 @@ public enum InspecId : ushort {
     InvalidEscSeq =  0x2 | Error | Syntax,
     InvalidLiteral = 0x3 | Error | Syntax,
     
+    // Syntax Warnings
+    PotentialOctal = 0x1 | Warning | Syntax,
+    
     // Semantic Errors
     JumpOverVarDec =    0x1 | Error | Semantic,
     VarAlreadyDec =     0x2 | Error | Semantic,
@@ -90,6 +93,13 @@ public readonly struct JumpOverVarDec(FilePos pos, string variable, string desti
     public FilePos Pos { get; } = pos;
     public string? Hint { get; } = $"Move declaration of \"{variable}\" to before the label \"{destination}\"";
     public InspecId Id { get; } = InspecId.JumpOverVarDec;
+}
+
+public readonly struct PossibleOctal(FilePos pos, string val) : ICompilerInspection {
+    public string Message { get; } = $"Integer literal with traditional octal syntax: \"{val}\" being parsed as decimal";
+    public FilePos Pos { get; } = pos;
+    public string? Hint { get; } = $"Replace with \"0o{val[1..]}\" or \"{val[1..]}\"";
+    public InspecId Id { get; } = InspecId.PotentialOctal;
 }
 
 public readonly struct VarAlreadyDec(FilePos pos, string variable) : ICompilerInspection {
