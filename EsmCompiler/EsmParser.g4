@@ -13,7 +13,7 @@ statement
 ;
 
 baseStmt
-    : Op specificInt opMode? op = stackOp ';' #operatonPerform
+    : Op specificInt op = stackOp ';' #operatonPerform
     | Cast specificInt '->' specificInt ';' #castOperation
     | Alloc id = Identifier ':' type = instanceType ('=' anyLiteral)? ';' #allocMem
     | Let id = Identifier ':' type = instanceType ';' #localVar
@@ -44,8 +44,7 @@ stackOp
     | op = '<<'
     | op = '>>'
     | op = '+>>'
-    | op = '+'
-    | op = '-'
+    | opMode ambigOp
     | op = '*'
     | op = '/'
     | op = '%'
@@ -54,6 +53,10 @@ stackOp
     | op = '!'
 ;
 
+ambigOp
+    : op = '+'
+    | op = '-'
+;
 pushClause
     : type = specificInt lit = sizedLiteral #pushConst
     | loc = /*'@' */Identifier #pushMem

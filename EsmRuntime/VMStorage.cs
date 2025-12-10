@@ -83,17 +83,6 @@ public unsafe ref struct OpStack(byte* startPtr, int length) {
         return T.FromSpan(res);
     }
 
-    /*[Obsolete("Use generic func")]
-    public u8 Pop() => _offs == -1
-        ? throw new StackUnderflowError("Operand stack is empty!")
-        : this[_offs--];
-
-    [Obsolete("Use generic func")]
-    public void Push(u8 value) {
-        if (_offs == _span.Length - 1) throw new StackOverflowError("Operand stack is full!");
-        this[++_offs] = value;
-    }*/
-    
     public void Push<T>(T value) where T: struct, ISizedValue<T>, allows ref struct {
         int size = T.ByteCount;
         if (_offs == _span.Length - size) throw new StackOverflowError("Operand stack is full!");

@@ -18,6 +18,7 @@ public readonly record struct usize(usize__impl val):
     INumberFormattable,
     IBitwiseOperators<usize, usize, usize>,
     IAdditionOperators<usize, usize, usize>,
+    ISubtractionOperators<usize, usize, usize>,
     IMultiplyOperators<usize, usize, usize>,
     IDivisionOperators<usize, usize, usize>,
     IModulusOperators<usize, usize, usize>,
@@ -81,6 +82,8 @@ public readonly record struct usize(usize__impl val):
     public static usize operator ~(usize value) => new(~value.val);
 
     public static usize operator +(usize left, usize right) => new(left.val + right.val);
+    
+    public static usize operator -(usize left, usize right) => new(left.val - right.val);
 
     public static usize operator *(usize left, usize right) => new(left.val * right.val);
 

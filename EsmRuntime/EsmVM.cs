@@ -240,6 +240,47 @@ public static partial class EsmVM {
                     break;
                 }
                 
+                
+                case OpCode.Plus8: {
+                    stack.Push(BinaryPlus(stack.Pop<u8>(), stack.Pop<u8>()));
+                    break;
+                }
+                
+                case OpCode.Plus16: {
+                    stack.Push(BinaryPlus(stack.Pop<u16>(), stack.Pop<u16>()));
+                    break;
+                }
+                                
+                case OpCode.Plus32: {
+                    stack.Push(BinaryPlus(stack.Pop<u32>(), stack.Pop<u32>()));
+                    break;
+                }
+                                                
+                case OpCode.Plus64: {
+                    stack.Push(BinaryPlus(stack.Pop<u64>(), stack.Pop<u64>()));
+                    break;
+                }
+                
+                case OpCode.Minus8: {
+                    stack.Push(BinaryMinus(stack.Pop<u8>(), stack.Pop<u8>()));
+                    break;
+                }
+                
+                case OpCode.Minus16: {
+                    stack.Push(BinaryMinus(stack.Pop<u16>(), stack.Pop<u16>()));
+                    break;
+                }
+                                
+                case OpCode.Minus32: {
+                    stack.Push(BinaryMinus(stack.Pop<u32>(), stack.Pop<u32>()));
+                    break;
+                }
+                                                
+                case OpCode.Minus64: {
+                    stack.Push(BinaryMinus(stack.Pop<u64>(), stack.Pop<u64>()));
+                    break;
+                }
+                
                 // print
                 case OpCode.PrintAscii: {
                     PrintAscii(stack.Pop<u8>());
