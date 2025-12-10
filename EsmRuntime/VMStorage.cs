@@ -65,20 +65,10 @@ public unsafe ref struct OpStack(byte* startPtr, int length) {
     
     int _offs = -1;
     readonly Span<byte> _span = new(startPtr, length);
-
-    public readonly byte* Loc(int offset) => startPtr + offset;
-
+    
     public u8 this[Index offset] {
         get => _span[^(offset.GetOffset(_span.Length) + 1)];
         set => _span[^(offset.GetOffset(_span.Length) + 1)] = value;
-    }
-
-    internal int LastIndexOf(u8 b) {
-        for (int i = _offs; i >= 0; i--) {
-            if (this[i] == b) return i;
-        }
-
-        return -1;
     }
 
     public T Pop<T>() where T : struct, ISizedValue<T>, allows ref struct {
@@ -92,29 +82,17 @@ public unsafe ref struct OpStack(byte* startPtr, int length) {
         _offs -= size;
         return T.FromSpan(res);
     }
-    
-    internal ReadOnlySpan<byte> Pop(int count) {
-        if (_offs + 1 < count) throw new StackUnderflowError($"Tried to pop {count} elements from operand stack with size {_offs + 1}");
-        else if (count == 0) return _span[^0..];
-        ReadOnlySpan<byte> res = this[(_offs - count + 1)..(_offs+1)];
-        _offs -= count;
-        return res;
-    }
-    
-    internal ReadOnlySpan<byte> PopTo(int index) 
-        => Pop(_offs - index);
-    
-    internal ReadOnlySpan<byte> PopStr() 
-        => Pop(_offs - LastIndexOf((byte) '\0') + 1)[..^1];
 
+    /*[Obsolete("Use generic func")]
     public u8 Pop() => _offs == -1
         ? throw new StackUnderflowError("Operand stack is empty!")
         : this[_offs--];
 
+    [Obsolete("Use generic func")]
     public void Push(u8 value) {
         if (_offs == _span.Length - 1) throw new StackOverflowError("Operand stack is full!");
         this[++_offs] = value;
-    }
+    }*/
     
     public void Push<T>(T value) where T: struct, ISizedValue<T>, allows ref struct {
         int size = T.ByteCount;
@@ -138,7 +116,7 @@ public unsafe ref struct FrameStack(byte* start, int length) {
     int NextAvailableOffset => _offs == -1 ? 0 : _offs + *(start + _offs);
 
     public Frame Curr { get; private set; } = default;
-
+    
     public Frame Pop() {
         switch (_offs) {
             case -1: throw new StackUnderflowError("Cannot pop frame stack as it is empty!");
@@ -261,23 +239,26 @@ public readonly unsafe ref struct Frame(byte* start, OffsetTable table) {
     }
 }
 
-public unsafe ref struct Heap(byte* start, int length) {
-    public readonly int Length = length;
+public unsafe ref struct Heap(byte* start, int size) {
+    public readonly int Size = size;
 
     int _endCursor = 0;
     // int _startCursor = 0;
 
-    public byte* this[usize offset] {
+    public usize this[usize addr] {
         get {
-            CheckOffset(offset);
-            return start + offset - 1;
+            CheckAddr(addr);
+            return  (usize) (start + addr);
         }
     }
+
+    public usize Transform(usize addr) => (usize) (start + addr);
+
 
     public Reference<T> AllocateUnsized<T>(ReadOnlySpan<byte> data) where T: struct, IByteSerializable<T>, allows ref struct {
         int u = data.Length;
         _endCursor += u;
-        byte* ptr = start + Length - _endCursor;
+        byte* ptr = start + Size - _endCursor;
         Span<byte> dest = new(ptr, u);
         data.CopyTo(dest);
         T value = T.FromSpan(dest);
@@ -287,13 +268,13 @@ public unsafe ref struct Heap(byte* start, int length) {
     
     // TODO
     public void Free<T>(Reference<T> reference) where T: struct, IByteSerializable<T>, allows ref struct {
-
+        
     }
 
-    public Span<byte> this[Range range] => new Span<byte>(start, Length)[range];
+    public Span<byte> this[Range range] => new Span<byte>(start, Size)[range];
 
-    void CheckOffset(usize offset) {
-        if (offset >= Length) throw new MemoryAccessError($"Invalid index {offset} for length {Length + 1}");
+    void CheckAddr(usize offset) {
+        if (offset >= Size) throw new MemoryAccessError($"Invalid index {offset} for heap with size {Size}");
     }
 }
 

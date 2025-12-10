@@ -56,12 +56,12 @@ public interface IEsmParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStatement([NotNull] EsmParser.StatementContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>operationPerform</c>
+	/// Visit a parse tree produced by the <c>operatonPerform</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitOperationPerform([NotNull] EsmParser.OperationPerformContext context);
+	Result VisitOperatonPerform([NotNull] EsmParser.OperatonPerformContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>castOperation</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.

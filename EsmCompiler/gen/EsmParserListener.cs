@@ -71,17 +71,17 @@ public interface IEsmParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitStatement([NotNull] EsmParser.StatementContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>operationPerform</c>
+	/// Enter a parse tree produced by the <c>operatonPerform</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterOperationPerform([NotNull] EsmParser.OperationPerformContext context);
+	void EnterOperatonPerform([NotNull] EsmParser.OperatonPerformContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>operationPerform</c>
+	/// Exit a parse tree produced by the <c>operatonPerform</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitOperationPerform([NotNull] EsmParser.OperationPerformContext context);
+	void ExitOperatonPerform([NotNull] EsmParser.OperatonPerformContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>castOperation</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.

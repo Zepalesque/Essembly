@@ -1,21 +1,26 @@
 ﻿namespace EsmRuntime.Common;
 
 public enum OpCode : byte {
-    AllocStr,
-    Push8,
-    Push16,
+    AllocStr, // Allocate a string to memory
+    Push8, // Push 8 bits to the operand stack
+    Push16, // ...
     Push32,
     Push64,
-    PushMem,
-    StoreMem8,
-    StoreMem16,
+    PushMemPtr, // Push the address of a value in memory
+    PushLocPtr, // Push the address of an index in the current local frame
+    Deref8, // Try to dereference the address on the stack and push it as an 8-bit integer
+    Deref16, // ...
+    Deref32,
+    Deref64,
+    StoreMem8, // Pop 8 bits from the operand stack and store it to a given address
+    StoreMem16, // ...
     StoreMem32,
     StoreMem64,
-    StoreLoc8,
-    StoreLoc16,
+    StoreLoc8, // Pop 8 bits from the operand stack and store it to a given local variable
+    StoreLoc16, // ...
     StoreLoc32,
     StoreLoc64,
-    Exit,
+    Exit, // Pop 8 bits from the stack and end the program with said exit code
     Jump,
     JumpIfFalse,
     JumpIfTrue,

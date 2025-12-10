@@ -506,6 +506,37 @@ public partial class EsmParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
+	public partial class OperatonPerformContext : BaseStmtContext {
+		public StackOpContext op;
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Op() { return GetToken(EsmParser.Op, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public SpecificIntContext specificInt() {
+			return GetRuleContext<SpecificIntContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Semi() { return GetToken(EsmParser.Semi, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public StackOpContext stackOp() {
+			return GetRuleContext<StackOpContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public OpModeContext opMode() {
+			return GetRuleContext<OpModeContext>(0);
+		}
+		public OperatonPerformContext(BaseStmtContext context) { CopyFrom(context); }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.EnterOperatonPerform(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IEsmParserListener typedListener = listener as IEsmParserListener;
+			if (typedListener != null) typedListener.ExitOperatonPerform(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitOperatonPerform(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
 	public partial class StoreToPointerContext : BaseStmtContext {
 		public IToken id;
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Store() { return GetToken(EsmParser.Store, 0); }
@@ -637,37 +668,6 @@ public partial class EsmParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class OperationPerformContext : BaseStmtContext {
-		public StackOpContext op;
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Op() { return GetToken(EsmParser.Op, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public SpecificIntContext specificInt() {
-			return GetRuleContext<SpecificIntContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Semi() { return GetToken(EsmParser.Semi, 0); }
-		[System.Diagnostics.DebuggerNonUserCode] public StackOpContext stackOp() {
-			return GetRuleContext<StackOpContext>(0);
-		}
-		[System.Diagnostics.DebuggerNonUserCode] public OpModeContext opMode() {
-			return GetRuleContext<OpModeContext>(0);
-		}
-		public OperationPerformContext(BaseStmtContext context) { CopyFrom(context); }
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void EnterRule(IParseTreeListener listener) {
-			IEsmParserListener typedListener = listener as IEsmParserListener;
-			if (typedListener != null) typedListener.EnterOperationPerform(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override void ExitRule(IParseTreeListener listener) {
-			IEsmParserListener typedListener = listener as IEsmParserListener;
-			if (typedListener != null) typedListener.ExitOperationPerform(this);
-		}
-		[System.Diagnostics.DebuggerNonUserCode]
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IEsmParserVisitor<TResult> typedVisitor = visitor as IEsmParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitOperationPerform(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
 
 	[RuleVersion(0)]
 	public BaseStmtContext baseStmt() {
@@ -679,7 +679,7 @@ public partial class EsmParser : Parser {
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case Op:
-				_localctx = new OperationPerformContext(_localctx);
+				_localctx = new OperatonPerformContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
 				State = 51;
@@ -697,7 +697,7 @@ public partial class EsmParser : Parser {
 				}
 
 				State = 56;
-				((OperationPerformContext)_localctx).op = stackOp();
+				((OperatonPerformContext)_localctx).op = stackOp();
 				State = 57;
 				Match(Semi);
 				}

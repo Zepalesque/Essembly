@@ -76,7 +76,7 @@ public record LoadMem(string VarName, FilePos Pos) : UnfinalizedStmt(2, Pos) {
     public string VarName { get; set; } = VarName;
 }
 
-public record LoadHeap(byte Index, FilePos Pos) : OneOpStmt(EsmRuntime.Common.OpCode.PushMem, Index, Pos) {
+public record LoadHeap(byte Index, FilePos Pos) : OneOpStmt(EsmRuntime.Common.OpCode.PushMemPtr, Index, Pos) {
     public byte Index { get; set; } = Index;
 }
 
@@ -84,21 +84,13 @@ public record StoreIdentifier(string VarName, FilePos Pos) : UnfinalizedStmt(2, 
     public string VarName { get; set; } = VarName;
 }
 
-public record StoreMem(ushort Index, FixedSizeType Type, FilePos Pos) : FinalizedStmt {
+public record StoreMem(ushort Index, FixedSizeType Type, FilePos Pos) : FinalizedStmt(Pos) {
     public ushort Index { get; set; } = Index;
-    public override ReadOnlySpan<byte> OpCode => FixedTypeExtIII.
-}
-public record StoreMem16(int Index, FilePos Pos) : OneOpStmt(EsmRuntime.Common.OpCode.StoreMem16, Index, Pos) {
-    public int Index { get; set; } = Index;
-}
-
-public record StoreMem32(int Index, FilePos Pos) : OneOpStmt(EsmRuntime.Common.OpCode.StoreMem32, Index, Pos) {
-    public int Index { get; set; } = Index;
+    readonly byte[] _op = [(byte) Type.MemStorage];
+    public override ReadOnlySpan<byte> OpCode => _op;
+    public FixedSizeType Type { get; set; } = Type;
 }
 
-public record StoreMem64(int Index, FilePos Pos) : OneOpStmt(EsmRuntime.Common.OpCode.StoreMem64, Index, Pos) {
-    public int Index { get; set; } = Index;
-}
 
 public record Exit(FilePos Pos) : NoOpStmt(EsmRuntime.Common.OpCode.Exit, Pos);
 

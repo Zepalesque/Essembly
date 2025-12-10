@@ -8,7 +8,8 @@ namespace EsmCompiler;
 
 public static partial class EsmCompiler {
     static ReadOnlySpan<StmtInfo> Analyze(Span<SizedStmt> stmts, CompilationLogger logger) {
-        Dictionary<string, VariableInfo> variables = new();
+        Dictionary<string, VariableInfo> locals = new();
+        Dictionary<string, VariableInfo> memory = new();
         Dictionary<string, int> labels = new();
         List<StmtInfo> stmtInfo = [];
         
@@ -29,9 +30,9 @@ public static partial class EsmCompiler {
             }
             
             
-            if (stmt is AllocMem(var name, _)) {
-                var id = (byte) variables.Count;
-                if (!variables.TryAdd(name, new(index, id))) {
+            if (stmt is AllocMem(var name, var type, _)) {
+                var id = (byte) locals.Count;
+                if (!locals.TryAdd(name, new(index, id))) {
                     logger.LogInspection(new VarAlreadyDec(pos, name));
                 }
             } else if (stmt is FinalizedStmt f) {
@@ -47,8 +48,8 @@ public static partial class EsmCompiler {
             FilePos pos = stmt.Pos;
             
             if (stmt is StoreIdentifier(var name, _)) {
-                if (!variables.TryGetValue(name, out VariableInfo info)) {
-                    string[] typos = variables.Keys.Filter(s => TypoPossible(name, s));
+                if (!locals.TryGetValue(name, out VariableInfo info)) {
+                    string[] typos = locals.Keys.Filter(s => TypoPossible(name, s));
                     string? hint = typos.Length == 0
                         ? null
                         : $"Did you mean any of: [{typos.Aggregate((s, s1) => $"{s}, {s1}")}]?";
@@ -60,8 +61,8 @@ public static partial class EsmCompiler {
                     stmt = mem;
                 }
             } else if (stmt is LoadMem(var name1, _)) {
-                if (!variables.TryGetValue(name1, out VariableInfo info)) {
-                    string[] typos = variables.Keys.Filter(s => TypoPossible(name1, s));
+                if (!locals.TryGetValue(name1, out VariableInfo info)) {
+                    string[] typos = locals.Keys.Filter(s => TypoPossible(name1, s));
                     string? hint = typos.Length == 0
                         ? null
                         : $"Did you mean any of: [{typos.Aggregate((s, s1) => $"{s}, {s1}")}]?";
@@ -83,7 +84,7 @@ public static partial class EsmCompiler {
                 } else {
                     int offset = labelPos - index;
 
-                    var vars = variables.ToArray();
+                    var vars = locals.ToArray();
                     int aux = index;
                     var invalid = vars.Filter(idx => idx.Value.BitIndex > int.Min(labelPos, aux) && idx.Value.BitIndex <= int.Max(labelPos, aux));
 
@@ -122,7 +123,7 @@ public static partial class EsmCompiler {
         return dist <= thresh;
     }
 
-    readonly record struct VariableInfo(int BitIndex, int Size, byte Id);
+    readonly record struct VariableInfo(int BitIndex, FixedSizeType Size, byte Id);
     readonly record struct StmtInfo(int BitIndex, FinalizedStmt Stmt): IComparable<StmtInfo> {
         public int CompareTo(StmtInfo other) => BitIndex.CompareTo(other.BitIndex);
     }

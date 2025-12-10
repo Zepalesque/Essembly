@@ -62,7 +62,7 @@ public static partial class EsmVM {
             var opcode = (OpCode) program[pc];
             switch (opcode) {
                 case OpCode.Push8: 
-                    stack.Push(LoadConst(program, ref pc));
+                    stack.Push(LoadConst<u8>(program, ref pc));
                     break;
                 case OpCode.Push16: 
                     stack.Push(LoadConst<u16>(program, ref pc));
@@ -77,12 +77,12 @@ public static partial class EsmVM {
                     AllocRef<StringSlice>(program, ref pc, ref heap);
                     break;
                 }
-                case OpCode.PushMem: {
+                case OpCode.PushMemPtr: {
                     stack.Push(LoadMem(program, ref pc, ref heap));
                     break;
                 }
                 case OpCode.StoreMem8: {
-                    StoreMem(program, ref pc, ref heap, stack.Pop());
+                    StoreMem(program, ref pc, ref heap, stack.Pop<u8>());
                     break;
                 }
                 case OpCode.StoreMem16: {
@@ -96,12 +96,12 @@ public static partial class EsmVM {
                     break;
                 }
                 case OpCode.Exit: {
-                    return Exit(stack.Pop());
+                    return Exit(stack.Pop<u8>());
                 }
                     
                 // Unary
                 case OpCode.Not8: {
-                    stack.Push(UnaryNot(stack.Pop()));
+                    stack.Push(UnaryNot(stack.Pop<u8>()));
                     break;
                 }
                 
@@ -109,10 +109,20 @@ public static partial class EsmVM {
                     stack.Push(UnaryNot(stack.Pop<u16>()));
                     break;
                 }
+                
+                case OpCode.Not32: {
+                    stack.Push(UnaryNot(stack.Pop<u32>()));
+                    break;
+                }
+                
+                case OpCode.Not64: {
+                    stack.Push(UnaryNot(stack.Pop<u64>()));
+                    break;
+                }
                     
                 // Binary
                 case OpCode.And8: {
-                    stack.Push(BinaryAnd(stack.Pop(), stack.Pop()));
+                    stack.Push(BinaryAnd(stack.Pop<u8>(), stack.Pop<u8>()));
                     break;
                 }
                 
@@ -121,8 +131,17 @@ public static partial class EsmVM {
                     break;
                 }
                 
+                case OpCode.And32: {
+                    stack.Push(BinaryAnd(stack.Pop<u32>(), stack.Pop<u32>()));
+                    break;
+                }
+                case OpCode.And64: {
+                    stack.Push(BinaryAnd(stack.Pop<u64>(), stack.Pop<u64>()));
+                    break;
+                }
+                
                 case OpCode.Or8: {
-                    stack.Push(BinaryOr(stack.Pop(), stack.Pop()));
+                    stack.Push(BinaryOr(stack.Pop<u8>(), stack.Pop<u8>()));
                     break;
                 }
                 
@@ -130,9 +149,19 @@ public static partial class EsmVM {
                     stack.Push(BinaryOr(stack.Pop<u16>(), stack.Pop<u16>()));
                     break;
                 }
-                
+
+                case OpCode.Or32: {
+                    stack.Push(BinaryOr(stack.Pop<u32>(), stack.Pop<u32>()));
+                    break;
+                }
+
+                case OpCode.Or64: {
+                    stack.Push(BinaryOr(stack.Pop<u64>(), stack.Pop<u64>()));
+                    break;
+                }
+
                 case OpCode.Xor8: {
-                    stack.Push(BinaryXor(stack.Pop(), stack.Pop()));
+                    stack.Push(BinaryXor(stack.Pop<u8>(), stack.Pop<u8>()));
                     break;
                 }
                 
@@ -141,8 +170,18 @@ public static partial class EsmVM {
                     break;
                 }
                 
+                case OpCode.Xor32: {
+                    stack.Push(BinaryXor(stack.Pop<u32>(), stack.Pop<u32>()));
+                    break;
+                }            
+                
+                case OpCode.Xor64: {
+                    stack.Push(BinaryXor(stack.Pop<u64>(), stack.Pop<u64>()));
+                    break;
+                }
+                
                 case OpCode.Left8: {
-                    stack.Push(BinaryLeft(stack.Pop(), stack.Pop()));
+                    stack.Push(BinaryLeft(stack.Pop<u8>(), stack.Pop<u8>()));
                     break;
                 }
                 
@@ -150,19 +189,39 @@ public static partial class EsmVM {
                     stack.Push(BinaryLeft(stack.Pop<u16>(), stack.Pop<u16>()));
                     break;
                 }
-                
+                                
+                case OpCode.Left32: {
+                    stack.Push(BinaryLeft(stack.Pop<u32>(), stack.Pop<u32>()));
+                    break;
+                }
+                                                
+                case OpCode.Left64: {
+                    stack.Push(BinaryLeft(stack.Pop<u64>(), stack.Pop<u64>()));
+                    break;
+                }
+
                 case OpCode.RightI8: {
-                    stack.Push(BinaryRight(stack.Pop(), stack.Pop()));
+                    stack.Push(BinaryRight(stack.Pop<i8>(), stack.Pop<i8>()));
                     break;
                 }
                 
                 case OpCode.RightI16: {
-                    stack.Push(BinaryRight(stack.Pop<u16>(), stack.Pop<u16>()));
+                    stack.Push(BinaryRight(stack.Pop<i16>(), stack.Pop<i16>()));
+                    break;
+                }
+                
+                case OpCode.RightI32: {
+                    stack.Push(BinaryRight(stack.Pop<i32>(), stack.Pop<i32>()));
+                    break;
+                }
+                
+                case OpCode.RightI64: {
+                    stack.Push(BinaryRight(stack.Pop<i64>(), stack.Pop<i64>()));
                     break;
                 }
                 
                 case OpCode.RightU8: {
-                    stack.Push(BinaryURight(stack.Pop(), stack.Pop()));
+                    stack.Push(BinaryURight(stack.Pop<u8>(), stack.Pop<u8>()));
                     break;
                 }
                 
@@ -170,10 +229,20 @@ public static partial class EsmVM {
                     stack.Push(BinaryURight(stack.Pop<u16>(), stack.Pop<u16>()));
                     break;
                 }
-                    
+                
+                case OpCode.RightU32: {
+                    stack.Push(BinaryURight(stack.Pop<u32>(), stack.Pop<u32>()));
+                    break;
+                }
+                
+                case OpCode.RightU64: {
+                    stack.Push(BinaryURight(stack.Pop<u64>(), stack.Pop<u64>()));
+                    break;
+                }
+                
                 // print
                 case OpCode.PrintAscii: {
-                    PrintAscii(stack.Pop());
+                    PrintAscii(stack.Pop<u8>());
                     break;
                 }
                 case OpCode.PrintUtf16: {
@@ -181,11 +250,11 @@ public static partial class EsmVM {
                     break;
                 }
                 case OpCode.PrintU8: {
-                    PrintDecimal(stack.Pop());
+                    PrintInteger(stack.Pop<u8>());
                     break;
                 }
                 case OpCode.PrintU16: {
-                    PrintDecimal(stack.Pop<u16>());
+                    PrintInteger(stack.Pop<u16>());
                     break;
                 }
                 
@@ -207,7 +276,7 @@ public static partial class EsmVM {
                     if (_debug) Debug("Awaiting u8 decimal input...");
                     string input = Console.ReadLine() ?? "";
                     if (byte.TryParse(input, NumberStyles.Integer, null, out var result))
-                        stack.Push(result);
+                        stack.Push<u8>(result);
                     else throw new InvalidFormatError($"Invalid decimal u8: {input}");
 
                     break;

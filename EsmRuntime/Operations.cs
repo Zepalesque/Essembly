@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Unicode;
 using EsmRuntime.Common.Types;
@@ -9,164 +10,294 @@ using JetBrains.Annotations;
 namespace EsmRuntime;
 
 public static partial class EsmVM {
+    [MethodImpl(MethodImplOptions.AggressiveInlining), Obsolete("Use generic func")]
     static u8 LoadConst(ReadOnlySpan<byte> program, ref int pc) {
         u8 val = program[++pc];
-        if (_debug) Debug($"Pushing {val} to stack");
+        #if DEBUG
+        Debug($"Pushing {val} to stack");
+        #endif
         return val;
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static T LoadConst<T>(ReadOnlySpan<byte> program, ref int pc) where T: struct, ISizedValue<T> {
         T val = T.FromSpan(program[(pc + 1)..(pc + T.ByteCount + 1)]);
         pc += T.ByteCount;
-        if (_debug) Debug($"Pushing {val} to stack");
+        #if DEBUG
+        Debug($"Pushing {val} to stack");
+        #endif
         return val;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static unsafe void AllocRef<T>(ReadOnlySpan<byte> program, ref int pc, ref Heap heap) where T: struct, IByteSerializable<T>, IBytecodeSerializable<T>, allows ref struct {
         
-        usize loc = usize.FromSpan(program[(pc + 1)..(pc + usize.ByteCount + 1)]);
-        pc += usize.ByteCount + 1;
+        pc++;
+        usize addr = usize.FromProgram(program, ref pc);
 
         fixed (byte* ptr = &program[pc]) {
             var data = T.DataToSerialize(ptr);
             var reference = heap.AllocateUnsized<T>(data);
-            if (_debug) Debug($"Allocating a {reference.Dereference().InstanceSize}-byte memory block and storing to {loc.Hex}");
-            reference.ToPtr(heap[loc]);
+            #if DEBUG
+            Debug($"Allocating a {reference.Dereference().InstanceSize}-byte memory block and storing to &{addr.Hex}");
+            #endif
+            reference.ToPtr((byte*) heap[addr]);
         }
 
 
     }
 
-    static unsafe u8 LoadMem(ReadOnlySpan<byte> program, ref int pc, ref Heap mem) {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static usize LoadMem(ReadOnlySpan<byte> program, ref int pc, ref Heap mem) {
         pc++;
-        usize addr = usize.FromProgram(program[++pc..], ref pc);
-        if (_debug) Debug($"Attempting to get @.{addr:X2}");
-        byte* ptr = mem[addr];
-        var val = (u8) (*ptr);
-        if (_debug) Debug($"Pushing @.{addr:X2} ({val}) to stack");
-        return val;
+        usize addr = usize.FromProgram(program, ref pc);
+        #if DEBUG
+        Debug($"Attempting to get @.{addr:X2}");
+        #endif
+        usize result = mem.Transform(addr);
+        #if DEBUG
+        Debug($"Pushing &{addr.Hex}");
+        #endif
+        return result;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static Reference<T> LoadMem<T>(ReadOnlySpan<byte> program, ref int pc, ref Heap mem) where T : struct, ISizedValue<T> {
+        usize loc = LoadMem(program, ref pc, ref mem);
+        return new(loc);
     }
 
-    static void StoreMem<T>(ReadOnlySpan<byte> program, ref int pc, ref Heap mem, T val)  where T : struct, ISizedValue<T> {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static void StoreMem<T>(ReadOnlySpan<byte> program, ref int pc, ref Heap mem, T val) where T : struct, ISizedValue<T> {
         usize addr = usize.FromSpan(program[++pc..(pc + usize.ByteCount)]);
-        if (_debug) Debug($"Storing {val} to &.{addr:X2}");
+        #if DEBUG
+        Debug($"Storing {val} to &.{addr.Hex}");
+        #endif
         pc += usize.ByteCount - 1;
         var span = mem[(int)addr..(int)(addr + T.ByteCount)];
         val.ToSpan(span);
     }
-
+    
+    // TODO: Jump table for local frames
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static void Jump(ReadOnlySpan<byte> program, ref int pc, ref OpStack stack, bool? cond) {
-        int? res;
-        string? jumpMsg = null;
+        
         if (cond == null) {
             int jump = unchecked((sbyte) program[++pc]) - 2;
-            res = pc + jump;
-            if (_debug) jumpMsg = $"Jumping: #{pc} + {jump} = #{res}";
+            int res = pc + jump;
+            
+            #if DEBUG
+            Debug($"Jumping: #{pc} + {jump} = #{res}");
+            #endif
+            
+     
+            pc = res;
+            
         } else {
             var top = stack.Pop<boolean>();
             if (top == cond.Value) {
                 int jump = unchecked((sbyte) program[++pc]) - 2;
-                res = pc + jump;
+                int res = pc + jump;
+
+                #if DEBUG
+                string msgCond = cond.Value ? "false" : "true";
+                Debug($"stack.Pop() is {msgCond}, jumping: #{pc} + {jump} = #{res}");
+                #endif
+                pc = res;
                 
-                if (_debug) {
-                    string msgCond = cond.Value ? "false" : "true";
-                    jumpMsg = $"stack.Pop() is {msgCond}, jumping: #{pc} + {jump} = #{res}";
-                }
             } else {
-                res = null;
-                if (_debug) {
-                    string val = !cond.Value ? "true" : "false";
-                    jumpMsg = $"stack.Pop() is {val}, skipping jump";
-                }
+                #if DEBUG
+                string val = !cond.Value ? "true" : "false";
+                Debug($"stack.Pop() is {val}, skipping jump");
+                #endif
+                
                 pc++;
             }
         }
 
-
-
-        if (_debug) Debug(jumpMsg!);
-        if (res != null) {
-            pc = res.Value;
-        }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static u8 Exit(u8 code) {
-        if (_debug) Debug($"User-specified exit: {code}");
+        
+        #if DEBUG
+        Debug($"User-specified exit: {code}");
+        #endif
+        
         return code;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static T UnaryNot<T>(T val) where T: struct, ISizedValue<T>, IBitwiseOperators<T, T, T> {
         T res = ~val;
-        if (_debug) Debug($"~{val}: -> {val} ~= -> {res}");
+        
+        #if DEBUG
+        Debug($"~{val}: -> {val} => -> {res}");
+        #endif
+        
         return res;
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static T BinaryAnd<T>(T a, T b) where T: struct, ISizedValue<T>, IBitwiseOperators<T, T, T> {
         T res = a & b;
-        if (_debug) Debug($"{a} & {b}: -> {b}, {a} &= -> {res}");
+        
+        #if DEBUG
+        Debug($"{a} & {b}: -> {b}, {a} => -> {res}");
+        #endif
+        
         return res;
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static T BinaryOr<T>(T a, T b) where T: struct, ISizedValue<T>, IBitwiseOperators<T, T, T>  {
         T res = a | b;
-        if (_debug) Debug($"{a} | {b}: -> {b}, {a} |= -> {res}");
+        
+        #if DEBUG
+        Debug($"{a} | {b}: -> {b}, {a} => -> {res}");
+        #endif
+        
         return res;
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static T BinaryXor<T>(T a, T b) where T: struct, ISizedValue<T>, IBitwiseOperators<T, T, T>  {
         T res = a ^ b;
-        if (_debug) Debug($"{a} ^ {b}: -> {b}, {a} ^= -> {res}");
+        
+        #if DEBUG
+        Debug($"{a} ^ {b}: -> {b}, {a} => -> {res}");
+        #endif
+        
         return res;
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static T BinaryLeft<T>(T a, T b) where T: struct, ISizedValue<T>, IShiftOperators<T, T, T>  {
         T res = a << b;
-        if (_debug) Debug($"{a} << {b}: -> {b}, {a} <<= -> {res}");
+        
+        #if DEBUG
+        Debug($"{a} << {b}: -> {b}, {a} => -> {res}");
+        #endif
+        
         return res;
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static T BinaryRight<T>(T a, T b) where T: struct, ISizedValue<T>, IShiftOperators<T, T, T>  {
         T res = a >> b;
-        if (_debug) Debug($"{a} >>> {b}: -> {b}, {a} >>= -> {res}");
+       
+       #if DEBUG
+        Debug($"{a} +>> {b}: -> {b}, {a} => -> {res}");
+        #endif
+        
         return res;
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static T BinaryURight<T>(T a, T b) where T: struct, ISizedValue<T>, IShiftOperators<T, T, T>  {
         T res = a >>> b;
-        if (_debug) Debug($"{a} >> {b}: -> {b}, {a} >>= -> {res}");
+        
+        #if DEBUG
+        Debug($"{a} >> {b}: -> {b}, {a} => -> {res}");
+        #endif
+        
+        return res;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static T BinaryPlus<T>(T a, T b) where T: struct, ISizedValue<T>, IAdditionOperators<T, T, T>  {
+        T res = a + b;
+        #if DEBUG
+        Debug($"{a} + {b}: -> {b}, {a} => -> {res}");
+        #endif
+        return res;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static T BinaryMinus<T>(T a, T b) where T: struct, ISizedValue<T>, ISubtractionOperators<T, T, T>  {
+        T res = a - b;
+        #if DEBUG
+        Debug($"{a} - {b}: -> {b}, {a} => -> {res}");
+        #endif
+        return res;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static T BinaryMult<T>(T a, T b) where T: struct, ISizedValue<T>, IMultiplyOperators<T, T, T>  {
+        T res = a * b;
+        #if DEBUG
+        Debug($"{a} * {b}: -> {b}, {a} => -> {res}");
+        #endif
         return res;
     }
 
-    static void PrintBinary<T>(T val) where T : struct, ISizedValue<T>, INumberFormattable {
-        if (_debug) Debug($"Printing stack.Pop(): {val} formatted {val.Bin}");
-        Console.Write(val.Bin);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static T BinaryDiv<T>(T a, T b) where T: struct, ISizedValue<T>, IDivisionOperators<T, T, T>  {
+        T res = a / b;
+        #if DEBUG
+        Debug($"{a} / {b}: -> {b}, {a} => -> {res}");
+        #endif
+        return res;
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static T BinaryMod<T>(T a, T b) where T: struct, ISizedValue<T>, IModulusOperators<T, T, T>  {
+        T res = a % b;
+        #if DEBUG
+        Debug($"{a} % {b}: -> {b}, {a} => -> {res}");
+        #endif
+        return res;
+    }
     
-    static void PrintDecimal<T>(T val) where T : struct, ISizedValue<T>, INumberFormattable {
-        if (_debug) Debug($"Printing stack.Pop(): {val} formatted {val.Dec}");
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static boolean BinaryEqual<T>(T a, T b) where T: struct, ISizedValue<T>, IEqualityOperators<T, T, bool>  {
+        boolean res = a == b;
+        #if DEBUG
+        Debug($"{a} == {b}: -> {b}, {a} => -> {res}");
+        #endif
+        return res;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static boolean BinaryNEqual<T>(T a, T b) where T: struct, ISizedValue<T>, IEqualityOperators<T, T, bool>  {
+        boolean res = a != b;
+        #if DEBUG
+        Debug($"{a} == {b}: -> {b}, {a} => -> {res}");
+        #endif
+        return res;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static void PrintInteger<T>(T val) where T : struct, ISizedValue<T>, INumberFormattable {
+        #if DEBUG
+        Debug($"Printing stack.Pop(): {val} formatted {val.Dec}");
+        #endif
         Console.Write(val.Dec);
     }
     
-    static void PrintHex<T>(T val) where T : struct, ISizedValue<T>, INumberFormattable {
-        if (_debug) Debug($"Printing stack.Pop(): {val} formatted {val.Hex}");
-        Console.Write(val.Hex);
-    }
-    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static void PrintAscii<T>(T val) where T : struct, ISizedValue<T>, IAsciiFormattable<T> {
-        if (_debug) Debug($"Printing stack.Pop(): {val} formatted \'{(char) val}\'");
+        #if DEBUG
+        Debug($"Printing stack.Pop(): {val} formatted \'{(char) val}\'");
+        #endif
         Console.Write((char) val);
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static void PrintUtf16<T>(T val) where T : struct, ISizedValue<T>, IUtf16Formattable<T> {
-        if (_debug) Debug($"Printing stack.Pop(): {val} formatted \'{(char) val}\'");
+        #if DEBUG
+        Debug($"Printing stack.Pop(): {val} formatted \'{(char) val}\'");
+        #endif
         Console.Write((char) val);
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static void PrintString(ref OpStack stack) {
         var s = stack.Pop<Reference<StringSlice>>();
         StringSlice slice = s.Dereference();
-        if (_debug) Debug($"Printing string to console: \"{slice.ToString()}\"");
+        #if DEBUG
+        Debug($"Printing string to console: \"{slice.ToString()}\"");
+        #endif
 
         foreach (byte b in slice.Utf8.Bytes) {
             Console.Write(b);

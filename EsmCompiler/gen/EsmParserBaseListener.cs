@@ -84,19 +84,19 @@ public partial class EsmParserBaseListener : IEsmParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStatement([NotNull] EsmParser.StatementContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by the <c>operationPerform</c>
+	/// Enter a parse tree produced by the <c>operatonPerform</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterOperationPerform([NotNull] EsmParser.OperationPerformContext context) { }
+	public virtual void EnterOperatonPerform([NotNull] EsmParser.OperatonPerformContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by the <c>operationPerform</c>
+	/// Exit a parse tree produced by the <c>operatonPerform</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitOperationPerform([NotNull] EsmParser.OperationPerformContext context) { }
+	public virtual void ExitOperatonPerform([NotNull] EsmParser.OperatonPerformContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>castOperation</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
