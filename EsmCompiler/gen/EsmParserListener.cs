@@ -41,6 +41,26 @@ public interface IEsmParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitBase([NotNull] EsmParser.BaseContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsmParser.block"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterBlock([NotNull] EsmParser.BlockContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsmParser.block"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitBlock([NotNull] EsmParser.BlockContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsmParser.blockInner"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterBlockInner([NotNull] EsmParser.BlockInnerContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsmParser.blockInner"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitBlockInner([NotNull] EsmParser.BlockInnerContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsmParser.statement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -63,29 +83,17 @@ public interface IEsmParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitOperationPerform([NotNull] EsmParser.OperationPerformContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>promotion</c>
+	/// Enter a parse tree produced by the <c>castOperation</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterPromotion([NotNull] EsmParser.PromotionContext context);
+	void EnterCastOperation([NotNull] EsmParser.CastOperationContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>promotion</c>
+	/// Exit a parse tree produced by the <c>castOperation</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitPromotion([NotNull] EsmParser.PromotionContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>demotion</c>
-	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterDemotion([NotNull] EsmParser.DemotionContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>demotion</c>
-	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitDemotion([NotNull] EsmParser.DemotionContext context);
+	void ExitCastOperation([NotNull] EsmParser.CastOperationContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>allocMem</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
@@ -237,18 +245,6 @@ public interface IEsmParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitPushMem([NotNull] EsmParser.PushMemContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>pushInput</c>
-	/// labeled alternative in <see cref="EsmParser.pushClause"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterPushInput([NotNull] EsmParser.PushInputContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>pushInput</c>
-	/// labeled alternative in <see cref="EsmParser.pushClause"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitPushInput([NotNull] EsmParser.PushInputContext context);
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsmParser.ifCond"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -268,16 +264,6 @@ public interface IEsmParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitSpecificInt([NotNull] EsmParser.SpecificIntContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsmParser.arbitraryInt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterArbitraryInt([NotNull] EsmParser.ArbitraryIntContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsmParser.arbitraryInt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitArbitraryInt([NotNull] EsmParser.ArbitraryIntContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsmParser.instanceType"/>.
 	/// </summary>

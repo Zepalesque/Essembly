@@ -22,6 +22,7 @@
 
     <ItemGroup>
       <Folder Include="gen\" />
+      <Folder Include="OpTree\" />
     </ItemGroup>
 
 </Project>

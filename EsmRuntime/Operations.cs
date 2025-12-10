@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Text;
+using System.Text.Unicode;
 using EsmRuntime.Common.Types;
 using EsmRuntime.Debug;
 using JetBrains.Annotations;
@@ -21,18 +22,19 @@ public static partial class EsmVM {
         return val;
     }
 
-    static void AllocStr(ReadOnlySpan<byte> program, ref int pc, ref Heap heap) {
+    static unsafe void AllocRef<T>(ReadOnlySpan<byte> program, ref int pc, ref Heap heap) where T: struct, IByteSerializable<T>, IBytecodeSerializable<T>, allows ref struct {
+        
         usize loc = usize.FromSpan(program[(pc + 1)..(pc + usize.ByteCount + 1)]);
-        pc += usize.ByteCount;
-        int start = pc + 1;
-        do {
-            pc++; 
-        } while (program[pc] != '\0');
+        pc += usize.ByteCount + 1;
 
-        var span = program[start..(pc+1)];
-        if (_debug) Debug($"Pushing \"{StringTransformation.Escape(Encoding.ASCII.GetString(span))}\" to stack");
+        fixed (byte* ptr = &program[pc]) {
+            var data = T.DataToSerialize(ptr);
+            var reference = heap.AllocateUnsized<T>(data);
+            if (_debug) Debug($"Allocating a {reference.Dereference().InstanceSize}-byte memory block and storing to {loc.Hex}");
+            reference.ToPtr(heap[loc]);
+        }
 
-        heap.AllocateUnsized(loc, span);
+
     }
 
     static unsafe u8 LoadMem(ReadOnlySpan<byte> program, ref int pc, ref Heap mem) {
@@ -61,20 +63,20 @@ public static partial class EsmVM {
             res = pc + jump;
             if (_debug) jumpMsg = $"Jumping: #{pc} + {jump} = #{res}";
         } else {
-            u8 top = stack.Pop();
-            if (top == 0 == cond.Value) {
+            var top = stack.Pop<boolean>();
+            if (top == cond.Value) {
                 int jump = unchecked((sbyte) program[++pc]) - 2;
                 res = pc + jump;
                 
                 if (_debug) {
-                    string msgCond = cond.Value ? "==" : "!=";
-                    jumpMsg = $"stack.Pop() {msgCond} 0, jumping: #{pc} + {jump} = #{res}";
+                    string msgCond = cond.Value ? "false" : "true";
+                    jumpMsg = $"stack.Pop() is {msgCond}, jumping: #{pc} + {jump} = #{res}";
                 }
             } else {
                 res = null;
                 if (_debug) {
-                    string msgCond = !cond.Value ? "==" : "!=";
-                    jumpMsg = $"stack.Pop() {msgCond} 0, skipping jump";
+                    string val = !cond.Value ? "true" : "false";
+                    jumpMsg = $"stack.Pop() is {val}, skipping jump";
                 }
                 pc++;
             }
@@ -162,11 +164,12 @@ public static partial class EsmVM {
     }
     
     static void PrintString(ref OpStack stack) {
-        var s = stack.Pop<str>();
-        if (_debug) Debug($"Printing string to console: \"{s.ToString()}\"");
+        var s = stack.Pop<Reference<StringSlice>>();
+        StringSlice slice = s.Dereference();
+        if (_debug) Debug($"Printing string to console: \"{slice.ToString()}\"");
 
-        foreach (byte b in s.ToStringSpan()) {
-            Console.Write((char) b);
+        foreach (byte b in slice.Utf8.Bytes) {
+            Console.Write(b);
         }
     }
 }

@@ -127,11 +127,3 @@ public static partial class EsmCompiler {
         public int CompareTo(StmtInfo other) => BitIndex.CompareTo(other.BitIndex);
     }
 }
-
-internal static class FixedTypeExtIII {
-    extension(FixedSizeType self) {
-   
-    }
-    
-    
-}

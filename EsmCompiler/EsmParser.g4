@@ -1,17 +1,20 @@
 parser grammar EsmParser;
 options { tokenVocab=EsmLexer; language=CSharp; }
 
-base: statement* EOF;
+base: blockInner? EOF;
+
+block: '{' blockInner? '}';
+blockInner: statement+;
 
 statement
     : stmt = baseStmt
     | label = LabelId ':' stmt = baseStmt
+    | frame = block
 ;
 
 baseStmt
-    : Op specificInt opMode? op = stackOp ';' #operationPerform
-    | Promote arbitraryInt '->' specificInt ';' #promotion
-    | Demote arbitraryInt '->' arbitraryInt ';' #demotion
+    : Op specificInt opMode? op = stackOp ';' #operatonPerform
+    | Cast specificInt '->' specificInt ';' #castOperation
     | Alloc id = Identifier ':' type = instanceType ('=' anyLiteral)? ';' #allocMem
     | Let id = Identifier ':' type = instanceType ';' #localVar
     | Free id = Identifier ';' #freeMem
@@ -46,19 +49,20 @@ stackOp
     | op = '*'
     | op = '/'
     | op = '%'
+    | op = '=='
+    | op = '!='
+    | op = '!'
 ;
 
 pushClause
     : type = specificInt lit = sizedLiteral #pushConst
     | loc = /*'@' */Identifier #pushMem
-    | Input io = ioMode #pushInput
 ;
 
-ifCond: not = Bang? Zero;
+ifCond: value = (True|False);
 
 
 specificInt: type = U8|type = U16|type = U32|type = U64|type = I8|type = I16|type = I32|type = I64;
-arbitraryInt: type = X8|type = X16|type = X32|type = X64;
 
 instanceType: type = U8|type = U16|type = U32|type = U64|type = I8|type = I16|type = I32|type = I64
     | ('&' type = Str)

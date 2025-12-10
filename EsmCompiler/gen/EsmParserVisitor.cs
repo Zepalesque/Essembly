@@ -38,6 +38,18 @@ public interface IEsmParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitBase([NotNull] EsmParser.BaseContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsmParser.block"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitBlock([NotNull] EsmParser.BlockContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsmParser.blockInner"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitBlockInner([NotNull] EsmParser.BlockInnerContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsmParser.statement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -51,19 +63,12 @@ public interface IEsmParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitOperationPerform([NotNull] EsmParser.OperationPerformContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>promotion</c>
+	/// Visit a parse tree produced by the <c>castOperation</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitPromotion([NotNull] EsmParser.PromotionContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>demotion</c>
-	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitDemotion([NotNull] EsmParser.DemotionContext context);
+	Result VisitCastOperation([NotNull] EsmParser.CastOperationContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>allocMem</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
@@ -153,13 +158,6 @@ public interface IEsmParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitPushMem([NotNull] EsmParser.PushMemContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>pushInput</c>
-	/// labeled alternative in <see cref="EsmParser.pushClause"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPushInput([NotNull] EsmParser.PushInputContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsmParser.ifCond"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -171,12 +169,6 @@ public interface IEsmParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitSpecificInt([NotNull] EsmParser.SpecificIntContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsmParser.arbitraryInt"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitArbitraryInt([NotNull] EsmParser.ArbitraryIntContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsmParser.instanceType"/>.
 	/// </summary>

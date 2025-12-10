@@ -48,6 +48,30 @@ public partial class EsmParserBaseListener : IEsmParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitBase([NotNull] EsmParser.BaseContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsmParser.block"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterBlock([NotNull] EsmParser.BlockContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsmParser.block"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitBlock([NotNull] EsmParser.BlockContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsmParser.blockInner"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterBlockInner([NotNull] EsmParser.BlockInnerContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsmParser.blockInner"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitBlockInner([NotNull] EsmParser.BlockInnerContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsmParser.statement"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -74,33 +98,19 @@ public partial class EsmParserBaseListener : IEsmParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitOperationPerform([NotNull] EsmParser.OperationPerformContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by the <c>promotion</c>
+	/// Enter a parse tree produced by the <c>castOperation</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPromotion([NotNull] EsmParser.PromotionContext context) { }
+	public virtual void EnterCastOperation([NotNull] EsmParser.CastOperationContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by the <c>promotion</c>
+	/// Exit a parse tree produced by the <c>castOperation</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPromotion([NotNull] EsmParser.PromotionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by the <c>demotion</c>
-	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterDemotion([NotNull] EsmParser.DemotionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>demotion</c>
-	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitDemotion([NotNull] EsmParser.DemotionContext context) { }
+	public virtual void ExitCastOperation([NotNull] EsmParser.CastOperationContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>allocMem</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
@@ -278,20 +288,6 @@ public partial class EsmParserBaseListener : IEsmParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitPushMem([NotNull] EsmParser.PushMemContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by the <c>pushInput</c>
-	/// labeled alternative in <see cref="EsmParser.pushClause"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPushInput([NotNull] EsmParser.PushInputContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>pushInput</c>
-	/// labeled alternative in <see cref="EsmParser.pushClause"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPushInput([NotNull] EsmParser.PushInputContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsmParser.ifCond"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -315,18 +311,6 @@ public partial class EsmParserBaseListener : IEsmParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitSpecificInt([NotNull] EsmParser.SpecificIntContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsmParser.arbitraryInt"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterArbitraryInt([NotNull] EsmParser.ArbitraryIntContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsmParser.arbitraryInt"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitArbitraryInt([NotNull] EsmParser.ArbitraryIntContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsmParser.instanceType"/>.
 	/// <para>The default implementation does nothing.</para>

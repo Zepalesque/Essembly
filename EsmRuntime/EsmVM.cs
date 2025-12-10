@@ -1,6 +1,7 @@
 ﻿using System.CommandLine;
 using System.Globalization;
 using System.Text;
+using EsmRuntime.Common;
 using EsmRuntime.Common.Types;
 
 namespace EsmRuntime;
@@ -60,23 +61,23 @@ public static partial class EsmVM {
         for (var pc = 0; pc < program.Length; pc++) {
             var opcode = (OpCode) program[pc];
             switch (opcode) {
-                case OpCode.Load8: 
+                case OpCode.Push8: 
                     stack.Push(LoadConst(program, ref pc));
                     break;
-                case OpCode.Load16: 
+                case OpCode.Push16: 
                     stack.Push(LoadConst<u16>(program, ref pc));
                     break;
-                case OpCode.Load32: 
+                case OpCode.Push32: 
                     stack.Push(LoadConst<u32>(program, ref pc));
                     break;
-                case OpCode.Load64: 
+                case OpCode.Push64: 
                     stack.Push(LoadConst<u64>(program, ref pc));
                     break;
                 case OpCode.AllocStr: {
-                    AllocStr(program, ref pc, ref heap);
+                    AllocRef<StringSlice>(program, ref pc, ref heap);
                     break;
                 }
-                case OpCode.LoadMem: {
+                case OpCode.PushMem: {
                     stack.Push(LoadMem(program, ref pc, ref heap));
                     break;
                 }
@@ -90,7 +91,7 @@ public static partial class EsmVM {
                 }
                     
                 // Jump statements
-                case OpCode.Jump: case OpCode.JumpIfZero: case OpCode.JumpIfNZero: {
+                case OpCode.Jump: case OpCode.JumpIfFalse: case OpCode.JumpIfTrue: {
                     Jump(program, ref pc, ref stack, opcode.JumpCondition);
                     break;
                 }
@@ -150,12 +151,12 @@ public static partial class EsmVM {
                     break;
                 }
                 
-                case OpCode.Right8: {
+                case OpCode.RightI8: {
                     stack.Push(BinaryRight(stack.Pop(), stack.Pop()));
                     break;
                 }
                 
-                case OpCode.Right16: {
+                case OpCode.RightI16: {
                     stack.Push(BinaryRight(stack.Pop<u16>(), stack.Pop<u16>()));
                     break;
                 }

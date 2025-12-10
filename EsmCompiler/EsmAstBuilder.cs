@@ -1,7 +1,5 @@
-﻿using System.Text;
-using Antlr4.Runtime;
+﻿using Antlr4.Runtime;
 using EsmCompiler.Util;
-using EsmCore;
 using EsmRuntime;
 
 namespace EsmCompiler;
@@ -19,7 +17,7 @@ public class EsmAstBuilder(CompilationLogger logger, FileData file) : EsmParserB
     public override Goto VisitGoto(EsmParser.GotoContext context)
         => context.condition == null
             ? new(Label(context.label), null, context.InFile(File))
-            : new(Label(context.label), context.condition.not == null,
+            : new(Label(context.label), context.condition.value.Type == EsmLexer.True,
                 context.InFile(File));
 
     public override Exit VisitExit(EsmParser.ExitContext context) 
@@ -43,11 +41,11 @@ public class EsmAstBuilder(CompilationLogger logger, FileData file) : EsmParserB
         ConstantNode node;
         if (lit.@int != null) {
             var inspecs = LiteralUtil.ParseInt(pos, lit.@int.Text, type, out node);
-            foreach (var err in inspecs) logger.LogInspection(err);
+            foreach (var err in inspecs) Logger.LogInspection(err);
         } else if (lit.@char != null) {
             var inspec = LiteralUtil.RegularEscapeChar(pos, lit.@char.Text, out char result);
             if (inspec != null) {
-                logger.LogInspection(inspec.Value);
+                Logger.LogInspection(inspec.Value);
             }
 
 
@@ -62,10 +60,10 @@ public class EsmAstBuilder(CompilationLogger logger, FileData file) : EsmParserB
     }
 
     public override Input VisitPushInput(EsmParser.PushInputContext context)
-        => new(InputMode.Of(context.io.io.Type), context.InFile(File));
+        => new(IoMode.FromToken(context.io.io.Type), context.InFile(File));
     
     public override Print VisitPrint(EsmParser.PrintContext context)
-        => new(PrintMode.Of(context.io.io.Type), context.InFile(File));
+        => new(IoMode.FromToken(context.io.io.Type), context.InFile(File));
     
     public override LoadMem VisitPushMem(EsmParser.PushMemContext context)
         => new(context.loc.Text, context.InFile(File));
@@ -79,7 +77,7 @@ public class EsmAstBuilder(CompilationLogger logger, FileData file) : EsmParserB
     public override SizedStmt VisitOperationPerform(EsmParser.OperationPerformContext context) {
         FilePos pos = context.InFile(File);
         return context.op.op.Type switch {
-            EsmLexer.BwAnd => new BitAnd(pos, FixedTypeExtIII,
+            EsmLexer.BwAnd => new BitAnd(pos),
             EsmLexer.BwOr => new BitOr(pos),
             EsmLexer.BwXor => new BitXor(pos),
             EsmLexer.BwNot => new BitNot(pos),

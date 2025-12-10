@@ -1,6 +1,50 @@
-﻿using EsmRuntime.Common.Types;
+﻿using EsmRuntime.Common;
+using EsmRuntime.Common.Types;
 
-namespace EsmRuntime;
+namespace EsmRuntime.Common {
+
+public readonly unsafe ref struct Slice<T>(ReadOnlySpan<byte> bytes): IByteSerializable<Slice<T>> where T: struct, ISizedValue<T>, allows ref struct {
+    readonly ReadOnlySpan<byte> _bytes = bytes;
+
+    public ReadOnlySpan<byte> Bytes => _bytes;
+
+    public T this[int index] {
+        get {
+            int start = usize.ByteCount + index * T.ByteCount;
+            int end = start + T.ByteCount;
+            return T.FromSpan(_bytes[start..end]);
+        }
+    }
+
+    public usize Length => usize.FromSpan(_bytes[..usize.ByteCount]);
+
+    public void ToSpan(Span<byte> span) {
+        usize length = Length;
+        length.ToSpan(span[..usize.ByteCount]);
+        for (usize i = 0; i < length; i++) {
+            int start = usize.ByteCount + T.ByteCount * i;
+            int end = start + T.ByteCount;
+            Span<byte> varSpan = span[start..end];
+            this[i].ToSpan(varSpan);
+        }
+    }
+    public void ToPtr(byte* ptr) {
+        ToSpan(new(ptr, InstanceSize));
+    }
+
+    public static Slice<T> FromSpan(ReadOnlySpan<byte> bytes) 
+        => new(bytes);
+
+    public static Slice<T> FromPtr(byte* ptr) {
+        usize length = usize.FromPtr(ptr);
+        return new(new(ptr, usize.ByteCount + length * T.ByteCount));
+    }
+    public int InstanceSize => usize.ByteCount + _bytes.Length * T.ByteCount;
+}
+
+}
+
+namespace EsmRuntime {
 
 // end-based
 public unsafe ref struct OpStack(byte* startPtr, int length) {
@@ -37,7 +81,7 @@ public unsafe ref struct OpStack(byte* startPtr, int length) {
         return -1;
     }
 
-    public T Pop<T>() where T : struct, ISizedValue<T> {
+    public T Pop<T>() where T : struct, ISizedValue<T>, allows ref struct {
         int size = T.ByteCount;
         
         if (_offs + 1 < T.ByteCount) throw new StackUnderflowError(
@@ -88,7 +132,7 @@ public unsafe ref struct OpStack(byte* startPtr, int length) {
     }
 }
 
-public unsafe ref struct Registry(byte* start, int length) {
+public unsafe ref struct FrameStack(byte* start, int length) {
     int _offs = -1;
 
     int NextAvailableOffset => _offs == -1 ? 0 : _offs + *(start + _offs);
@@ -100,12 +144,14 @@ public unsafe ref struct Registry(byte* start, int length) {
             case -1: throw new StackUnderflowError("Cannot pop frame stack as it is empty!");
             case 0: {
                 Frame prev = Curr;
+                prev.Clear();
                 Curr = default;
                 _offs = -1;
                 return prev;
             }
             default: {
                 Frame prev = Curr;
+                prev.Clear();
                 usize prevSize = usize.FromPtr(start + _offs - usize.ByteCount);
                 _offs -= prevSize;
                 Curr = Frame.FromPtr(start + _offs);
@@ -115,52 +161,83 @@ public unsafe ref struct Registry(byte* start, int length) {
     }
     
     public void Push(byte* operand) {
-        byte operandSize = *operand;
-        byte* varDecStart = operand + 1;
-        byte tableSize = operandSize;
-        // one usize for header, one for var count, size of operand for offset table ...
-        usize frameSize = usize.ByteCount * 2 + tableSize;
         int newOffs = NextAvailableOffset;
         byte* frameStart = start + newOffs;
-        Span<byte> tableSpan = new(start + newOffs + usize.ByteCount * 2, tableSize);
-        for (var i = 0; i < operandSize; i += usize.ByteCount) {
-            usize size = usize.FromPtr(varDecStart + i);
-            frameSize.ToSpan(tableSpan[i..(i+usize.ByteCount)]);
-            usize partialOffs = size + usize.ByteCount;
-            size.ToPtr(frameStart + frameSize);
-            frameSize += partialOffs;
-        }
+        var varSizes = Slice<usize>.FromPtr(operand);
+        var table = OffsetTable.CreateFromSizes(varSizes, frameStart + usize.ByteCount,
+            out usize fullSize);
         
-        if (_offs + frameSize >= length)
+        fullSize.ToPtr(frameStart);
+        
+        if (_offs + fullSize >= length)
             throw new StackOverflowError("Frame stack is full!");
 
-        // ... and another for size in footer
-        frameSize += usize.ByteCount;
+        for (var i = 0; i < varSizes.Length; i++) {
+            usize offset = table[i];
+            usize varSize = varSizes[i];
+            
+            varSize.ToPtr(frameStart + offset);
+        }
         
-        Span<byte> alloc = new(start + newOffs, frameSize);
-        frameSize.ToSpan(alloc[..usize.ByteCount]);
-        frameSize.ToSpan(alloc[^usize.ByteCount..]);
-        OffsetTable table = new(tableSpan);
+        
+        fullSize.ToPtr(frameStart + fullSize - usize.ByteCount);
+        
         var frame = new Frame(frameStart, table);
         Curr = frame;
         _offs = NextAvailableOffset;
     }
 }
 
-public readonly unsafe ref struct OffsetTable(ReadOnlySpan<byte> span) {
-    readonly ReadOnlySpan<byte> _span = span;
-    public usize this[byte index] => usize.FromSpan(_span[(index * usize.ByteCount)..(index * usize.ByteCount + usize.ByteCount)]);
+public readonly unsafe ref struct OffsetTable(Slice<usize> offsets): IByteSerializable<OffsetTable> {
+    readonly Slice<usize> _offsets = offsets;
+    public usize this[int index] => _offsets[index];
+
+    
+    public static OffsetTable CreateFromSizes(Slice<usize> sizes, byte* dest, out usize frameSize) {
+        sizes.Length.ToPtr(dest);
+        usize tableSize = usize.ByteCount + sizes.Bytes.Length;
+        usize partialFrameSize = tableSize;
+        for (var i = 0; i < sizes.Length; i++) {
+            usize size = sizes[i];
+            byte* offsetLoc = dest + usize.ByteCount + i * usize.ByteCount;
+            partialFrameSize.ToPtr(offsetLoc);
+            usize partialOffs = size + usize.ByteCount;
+            partialFrameSize += partialOffs;
+        }
+
+        frameSize = partialFrameSize + usize.ByteCount;
+
+        return new(Slice<usize>.FromPtr(dest));
+    }
+
+    
+    public int InstanceSize => (_offsets.Length + 1) * usize.ByteCount;
+    
+    public void ToSpan(Span<byte> bytes) {
+        fixed (byte* b = &bytes[0]) 
+            ToPtr(b);
+    }
+    public void ToPtr(byte* ptr) {
+        _offsets.Length.ToPtr(ptr);
+        for (var i = 0; i < _offsets.Length; i ++)
+            this[i].ToPtr(ptr + usize.ByteCount + i * usize.ByteCount);
+    }
+
+    public static OffsetTable FromSpan(ReadOnlySpan<byte> bytes) {
+        var slice = Slice<usize>.FromSpan(bytes);
+        return new(slice);
+    }
+
+    public static OffsetTable FromPtr(byte* ptr) {
+        var slice = Slice<usize>.FromPtr(ptr);
+        return new(slice);
+    }
 }
 
 public readonly unsafe ref struct Frame(byte* start, OffsetTable table) {
     public usize Size => usize.FromPtr(start);
 
-    OffsetTable Table {
-        get {
-            int tableSize = usize.ByteCount * usize.FromPtr(start + usize.ByteCount);
-            return new(new(start + 2*usize.ByteCount, tableSize));
-        }
-    }
+    OffsetTable Table { get; } = table;
 
     public Span<byte> this[byte index] {
         get {
@@ -172,11 +249,15 @@ public readonly unsafe ref struct Frame(byte* start, OffsetTable table) {
         }
     }
     
-    
     public static Frame FromPtr(byte* ptr) {
-        usize varNum = usize.FromPtr(ptr + usize.ByteCount);
-        OffsetTable table = new(new(ptr + (2 * usize.ByteCount), usize.ByteCount * varNum));
+        OffsetTable table = OffsetTable.FromPtr(ptr + usize.ByteCount);
         return new(ptr, table);
+    }
+
+    public void Clear() {
+        usize size = usize.FromPtr(start);
+        var byteSpan = new Span<byte>(start, size);
+        byteSpan.Clear();
     }
 }
 
@@ -193,23 +274,20 @@ public unsafe ref struct Heap(byte* start, int length) {
         }
     }
 
-    public void AllocateUnsized(usize loc, ReadOnlySpan<byte> data) {
+    public Reference<T> AllocateUnsized<T>(ReadOnlySpan<byte> data) where T: struct, IByteSerializable<T>, allows ref struct {
         int u = data.Length;
-        byte* ptr = start + Length - _endCursor - u;
-        data.CopyTo(new (ptr, u));
-        ptr -= usize.ByteCount;
-        ((usize)u).ToSpan(new(ptr, usize.ByteCount));
-        _endCursor += u + usize.ByteCount;
-
-        var addr = (usize) ptr;
-
-        addr.ToPtr((byte*) loc);
+        _endCursor += u;
+        byte* ptr = start + Length - _endCursor;
+        Span<byte> dest = new(ptr, u);
+        data.CopyTo(dest);
+        T value = T.FromSpan(dest);
+        
+        return Reference<T>.CreateAt(ptr, value);
     }
     
-    public void Free(usize loc) {
-        byte* ptr = (byte*) loc;
+    // TODO
+    public void Free<T>(Reference<T> reference) where T: struct, IByteSerializable<T>, allows ref struct {
 
-        usize length = usize.FromPtr(ptr);
     }
 
     public Span<byte> this[Range range] => new Span<byte>(start, Length)[range];
@@ -217,5 +295,7 @@ public unsafe ref struct Heap(byte* start, int length) {
     void CheckOffset(usize offset) {
         if (offset >= Length) throw new MemoryAccessError($"Invalid index {offset} for length {Length + 1}");
     }
+}
+
 }
 

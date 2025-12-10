@@ -20,7 +20,7 @@ Colon: ':';
 Op: 'operate';
 
 Arrow: '->';
-Equal: '=';
+Equal: '='; Equal2: '=='; BangEq: '!=';
 BwAnd: '&';
 BwOr: '|';
 BwNot: '~';
@@ -34,9 +34,13 @@ Times: '*';
 Slash: '/';
 Mod: '%';
 
+LCurly: '{';
+RCurly: '}';
+
 Exit: 'exit';
 
-
+True: 'true';
+False: 'false';
 
 // Load
 Push: 'push';
@@ -52,8 +56,7 @@ Alloc: 'alloc';
 // Stack operations
 
 
-Promote: 'promote';
-Demote: 'demote';
+Cast: 'cast';
 
 I8:  'i8';
 I16: 'i16';
@@ -64,10 +67,6 @@ U16: 'u16';
 U32: 'u32';
 U64: 'u64';
 // Arbitrary
-X8:  'x8';
-X16: 'x16';
-X32: 'x32';
-X64: 'x64';
 
 
 
