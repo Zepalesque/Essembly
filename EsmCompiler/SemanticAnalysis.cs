@@ -1,7 +1,5 @@
 ﻿using EsmCompiler.Util;
-using EsmCore;
 using EsmRuntime;
-using EsmRuntime.Common.Types;
 using Quickenshtein;
 
 namespace EsmCompiler;
@@ -32,7 +30,7 @@ public static partial class EsmCompiler {
             
             if (stmt is AllocMem(var name, var type, _)) {
                 var id = (byte) locals.Count;
-                if (!locals.TryAdd(name, new(index, id))) {
+                if (!locals.TryAdd(name, new(index, type, id))) {
                     logger.LogInspection(new VarAlreadyDec(pos, name));
                 }
             } else if (stmt is FinalizedStmt f) {
@@ -56,7 +54,7 @@ public static partial class EsmCompiler {
                     
                     logger.LogInspection(new UndefVar(pos, name, hint));
                 } else {
-                    var mem = new StoreMem(info.Id, info.Type pos);
+                    var mem = new StoreMem(info.Id, info.Type, pos);
                     stmtInfo.Add(new(index, mem));
                     stmt = mem;
                 }

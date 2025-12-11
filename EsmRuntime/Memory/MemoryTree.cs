@@ -5,15 +5,16 @@ namespace EsmRuntime.Memory;
 
 using static NativeMemory;
 
-public unsafe ref struct IntervalNode(usize low, usize high) {
-    IntervalNode* _left = null;
+// TODO: Refactor or even rewrite as a RB Tree (red black)
+public unsafe ref struct MemoryTree(usize low, usize high) {
+    MemoryTree* _left = null;
     usize _low = low, _high = high;
-    IntervalNode* _right = null;
+    MemoryTree* _right = null;
     usize _maxInterval = high - low;
     usize _leftmostFree = low, _rightmostFree = high;
-    IntervalNode* _parent = null;
+    MemoryTree* _parent = null;
     
-    internal static bool TryFree(ref IntervalNode* self, usize from, usize to) {
+    public static bool TryFree(ref MemoryTree* self, usize from, usize to) {
         if (self == null) {
             self = Create(from, to);
             return true;
@@ -54,7 +55,7 @@ public unsafe ref struct IntervalNode(usize low, usize high) {
         return false;
     }
     
-    static void TryMergeLeft(ref IntervalNode* self) {
+    static void TryMergeLeft(ref MemoryTree* self) {
         if (self->_left == null) return;
         ref var pre = ref RightMostChild(ref self->_left);
         if (pre->_high == self->_low) {
@@ -71,7 +72,7 @@ public unsafe ref struct IntervalNode(usize low, usize high) {
         }
     }
    
-    static void TryMergeRight(ref IntervalNode* self) {
+    static void TryMergeRight(ref MemoryTree* self) {
         if (self->_right == null) return;
 
         ref var succ = ref LeftMostChild(ref self->_right);
@@ -91,7 +92,12 @@ public unsafe ref struct IntervalNode(usize low, usize high) {
     }
 
     // Me when i binary search the binary tree (i hate this)
-    internal static bool TryAllocate(ref IntervalNode* self, usize size, out byte* start) {
+    public static bool TryAllocate(ref MemoryTree* self, usize size, out byte* start) {
+        if (self == null) {
+            start = null;
+            return false;
+        }
+        
         usize max = self->_maxInterval;
         if (size > max) {
             start = null;
@@ -180,7 +186,7 @@ public unsafe ref struct IntervalNode(usize low, usize high) {
     }
 
 
-    static void Recalc(ref IntervalNode* self) {
+    static void Recalc(ref MemoryTree* self) {
         if (self == null) return;
         self->_maxInterval = self->RecalculateMaxInterval();
         self->_leftmostFree = self->RecalculateLeftmost();
@@ -212,30 +218,42 @@ public unsafe ref struct IntervalNode(usize low, usize high) {
     }
     
 
-    static ref IntervalNode* LeftMostChild(ref IntervalNode* self) {
+    static ref MemoryTree* LeftMostChild(ref MemoryTree* self) {
         if (self->_left == null) return ref self;
         return ref LeftMostChild(ref self->_left);
     }
     
     
-    static ref IntervalNode* RightMostChild(ref IntervalNode* self) {
+    static ref MemoryTree* RightMostChild(ref MemoryTree* self) {
         if (self->_right == null) return ref self;
         return ref RightMostChild(ref self->_right);
     }
 
 
-    public static IntervalNode* Create(usize from, usize to) {
+    public static MemoryTree* Create(usize from, usize to) {
 
         // no need for it to be zeroed, we overwrite it immediately anyway
         // surprised this method call doesnt need unsafe also
-        void* ptr = Alloc((nuint) sizeof(IntervalNode));
+        void* ptr = Alloc((nuint) sizeof(MemoryTree));
 
-        IntervalNode node = new(from, to);
+        MemoryTree node = new(from, to);
 
-        IntervalNode* treePtr = (IntervalNode*) ptr;
+        MemoryTree* treePtr = (MemoryTree*) ptr;
         
         *treePtr = node;
 
         return treePtr;
+    }
+
+    public static string DebugVisualize(ref MemoryTree* self, int ansiCode = 0) {
+        string colorCode = $"\e[0;9{ansiCode % 6 + 1}m";
+        if (self == null) return $"{colorCode}{{}}\e[0m";
+
+        ref MemoryTree* selfLeft = ref self->_left;
+        ref MemoryTree* selfRight = ref self->_right;
+        
+        string left = selfLeft == null ? "" : "\e[0m" + DebugVisualize(ref selfLeft, ansiCode + 1) + $"{colorCode}, ";
+        string right = selfRight == null ? "" : ", \e[0m" + DebugVisualize(ref selfRight, ansiCode + 1);
+        return $"{colorCode}::{{ {left}[{self->_low}, {self->_high}){right}{colorCode} }}\e[0m";
     }
 }

@@ -10,7 +10,7 @@ public readonly unsafe ref struct StringSlice(Slice<u8> utf8) : IByteSerializabl
     
     public Slice<u8> Utf8 => _utf8;
 
-    public static ReadOnlySpan<byte> DataToSerialize(byte* start) {
+    public static ReadOnlySpan<byte> FromBytecode(byte* start) {
         var i = 0;
         while (*(start + i) != '\0') {
             i++;
@@ -18,6 +18,21 @@ public readonly unsafe ref struct StringSlice(Slice<u8> utf8) : IByteSerializabl
 
         return new(start, i);
     }
+
+    public Span<byte> ToBytecode(Func<int, nuint> generator) {
+        int size = _utf8.Length - usize.ByteCount + 1;
+        
+        nuint addr = generator(size);
+        
+        var ptr = (byte*) addr;
+
+        _utf8.Bytes[usize.ByteCount..].CopyTo(new Span<byte>(ptr, size - 1));
+
+        *(ptr + size - 1) = 0x00;
+
+        return new(ptr, size);
+    }
+
 
     public override string ToString() => Encoding.ASCII.GetString(_utf8.Bytes);
     

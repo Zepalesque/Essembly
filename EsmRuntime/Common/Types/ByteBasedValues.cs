@@ -15,9 +15,11 @@ public interface IByteSerializable<out T> where T: struct, IByteSerializable<T>,
 }
 
 public interface IBytecodeSerializable<out T> where T : struct, IByteSerializable<T>, allows ref struct {
-    public static abstract unsafe ReadOnlySpan<byte> DataToSerialize(byte* start);
-}
+    public static abstract unsafe ReadOnlySpan<byte> FromBytecode(byte* start);
+    public unsafe Span<byte> ToBytecode(Func<int, nuint> generator);
     
+}
+
 public interface ISizedValue<out T> : IByteSerializable<T> where T : struct, ISizedValue<T>, allows ref struct {
     public static abstract int ByteCount { get; }
     int IByteSerializable<T>.InstanceSize => T.ByteCount;

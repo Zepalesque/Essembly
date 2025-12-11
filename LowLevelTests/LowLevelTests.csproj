@@ -10,18 +10,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
-      <PackageReference Include="Quickenshtein" Version="1.5.1" />
-      <PackageReference Include="System.CommandLine" Version="2.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
+      <ProjectReference Include="..\EsmCompiler\EsmCompiler.csproj" />
       <ProjectReference Include="..\EsmRuntime\EsmRuntime.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="gen\" />
-      <Folder Include="OpTree\" />
     </ItemGroup>
 
 </Project>

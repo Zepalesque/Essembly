@@ -13,10 +13,10 @@ namespace EsmRuntime;
 public static partial class EsmVM {
     public static readonly usize NullAddr = 0;
 
-    public static unsafe void* MemStart { get; private set; }
+    public static unsafe void* MemStart { get; set; }
     public static unsafe nuint MemAddr => (nuint) MemStart;
 
-    public static unsafe IntervalNode* HeapMemoryTree;
+    public static unsafe MemoryTree* HeapMemoryTree;
     
 
     static bool _debug;
@@ -51,7 +51,7 @@ public static partial class EsmVM {
         
         var alloc = (byte*) NativeMemory.AllocZeroed(memSize);
         
-        IntervalNode* node = IntervalNode.Create(0, heapSize);
+        MemoryTree* node = MemoryTree.Create(0, heapSize);
         
         HeapMemoryTree = node;
         

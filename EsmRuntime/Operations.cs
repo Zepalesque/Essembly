@@ -37,7 +37,7 @@ public static partial class EsmVM {
         usize addr = usize.FromProgram(program, ref pc);
 
         fixed (byte* ptr = &program[pc]) {
-            var data = T.DataToSerialize(ptr);
+            var data = T.FromBytecode(ptr);
             var reference = heap.AllocateUnsized<T>(data);
             #if DEBUG
             Debug($"Allocating a {reference.Dereference().InstanceSize}-byte memory block and storing to &{addr.Hex}");

@@ -1,8 +1,7 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
+
 using EsmCompiler.Util;
-using EsmCore;
-using EsmRuntime;
 using EsmRuntime.Common;
 
 namespace EsmCompiler;

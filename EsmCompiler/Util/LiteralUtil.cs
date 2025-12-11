@@ -1,8 +1,6 @@
 ﻿using System.Globalization;
 using System.Numerics;
 using System.Text.RegularExpressions;
-using EsmCore;
-using EsmRuntime;
 
 namespace EsmCompiler.Util;
 

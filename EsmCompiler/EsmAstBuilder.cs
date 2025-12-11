@@ -92,8 +92,9 @@ public class EsmAstBuilder(CompilationLogger logger, FileData file) : EsmParserB
         return context.label != null ? new LabeledStmt(Label(context.label), stmt, context.InFile(File)) : stmt;
     }
 
-    // public Span<SizedStmt> Build(EsmParser.BaseContext context) 
-        // => context.statement().Map(VisitStatement).AsSpan();
+    // TODO
+    public Span<SizedStmt> Build(EsmParser.BaseContext context) 
+        => context.blockInner().statement().Map(VisitStatement).AsSpan();
 
     Label Label(IToken token) => new(token.Text, token.InFile(File));
 }

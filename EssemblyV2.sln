@@ -1,10 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EsmCore", "EsmCore\EsmCore.csproj", "{DE35CF38-DDA8-48F5-807D-EE008000BB1D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EsmCompiler", "EsmCompiler\EsmCompiler.csproj", "{69754F1E-76B9-4F00-824B-2AA66A21A3B7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EsmRuntime", "EsmRuntime\EsmRuntime.csproj", "{96765B51-A568-4BC5-A119-9C5C9143396A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowLevelTests", "LowLevelTests\LowLevelTests.csproj", "{206DDCF4-A69C-4B4B-AD6A-B222E827018B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,10 +12,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DE35CF38-DDA8-48F5-807D-EE008000BB1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DE35CF38-DDA8-48F5-807D-EE008000BB1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DE35CF38-DDA8-48F5-807D-EE008000BB1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DE35CF38-DDA8-48F5-807D-EE008000BB1D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{69754F1E-76B9-4F00-824B-2AA66A21A3B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{69754F1E-76B9-4F00-824B-2AA66A21A3B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69754F1E-76B9-4F00-824B-2AA66A21A3B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -24,5 +20,9 @@ Global
 		{96765B51-A568-4BC5-A119-9C5C9143396A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96765B51-A568-4BC5-A119-9C5C9143396A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96765B51-A568-4BC5-A119-9C5C9143396A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{206DDCF4-A69C-4B4B-AD6A-B222E827018B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{206DDCF4-A69C-4B4B-AD6A-B222E827018B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{206DDCF4-A69C-4B4B-AD6A-B222E827018B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{206DDCF4-A69C-4B4B-AD6A-B222E827018B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
