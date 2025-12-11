@@ -56,12 +56,12 @@ public interface IEsmParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitStatement([NotNull] EsmParser.StatementContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>operatonPerform</c>
+	/// Visit a parse tree produced by the <c>operationPerform</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitOperatonPerform([NotNull] EsmParser.OperatonPerformContext context);
+	Result VisitOperationPerform([NotNull] EsmParser.OperationPerformContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>castOperation</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
@@ -143,6 +143,12 @@ public interface IEsmParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitStackOp([NotNull] EsmParser.StackOpContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsmParser.ambigOp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAmbigOp([NotNull] EsmParser.AmbigOpContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>pushConst</c>
 	/// labeled alternative in <see cref="EsmParser.pushClause"/>.

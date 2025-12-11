@@ -6,6 +6,7 @@ public enum ErrorType : byte {
     MemoryAccess   = 0010,
     InvalidFormat  = 0011,
     InvalidIndex   = 0100,
+    NullAccess     = 0101,
 }
 
 public abstract class RuntimeError : Exception {
@@ -37,4 +38,10 @@ public class InvalidFormatError: RuntimeError {
 public class InvalidIndexError: RuntimeError {
     public InvalidIndexError(): base(ErrorType.InvalidIndex) {}
     public InvalidIndexError(string message) : base(message, ErrorType.InvalidIndex) {}
+}
+
+public class NullAccessError : RuntimeError {
+    public NullAccessError() : base(ErrorType.NullAccess) {}
+    public NullAccessError(string message) : base(message, ErrorType.NullAccess) {}
+
 }

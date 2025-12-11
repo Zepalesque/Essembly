@@ -84,19 +84,19 @@ public partial class EsmParserBaseListener : IEsmParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStatement([NotNull] EsmParser.StatementContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by the <c>operatonPerform</c>
+	/// Enter a parse tree produced by the <c>operationPerform</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterOperatonPerform([NotNull] EsmParser.OperatonPerformContext context) { }
+	public virtual void EnterOperationPerform([NotNull] EsmParser.OperationPerformContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by the <c>operatonPerform</c>
+	/// Exit a parse tree produced by the <c>operationPerform</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitOperatonPerform([NotNull] EsmParser.OperatonPerformContext context) { }
+	public virtual void ExitOperationPerform([NotNull] EsmParser.OperationPerformContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>castOperation</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
@@ -259,6 +259,18 @@ public partial class EsmParserBaseListener : IEsmParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStackOp([NotNull] EsmParser.StackOpContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsmParser.ambigOp"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterAmbigOp([NotNull] EsmParser.AmbigOpContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsmParser.ambigOp"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitAmbigOp([NotNull] EsmParser.AmbigOpContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>pushConst</c>
 	/// labeled alternative in <see cref="EsmParser.pushClause"/>.

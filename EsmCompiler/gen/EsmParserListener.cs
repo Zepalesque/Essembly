@@ -71,17 +71,17 @@ public interface IEsmParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitStatement([NotNull] EsmParser.StatementContext context);
 	/// <summary>
-	/// Enter a parse tree produced by the <c>operatonPerform</c>
+	/// Enter a parse tree produced by the <c>operationPerform</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterOperatonPerform([NotNull] EsmParser.OperatonPerformContext context);
+	void EnterOperationPerform([NotNull] EsmParser.OperationPerformContext context);
 	/// <summary>
-	/// Exit a parse tree produced by the <c>operatonPerform</c>
+	/// Exit a parse tree produced by the <c>operationPerform</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitOperatonPerform([NotNull] EsmParser.OperatonPerformContext context);
+	void ExitOperationPerform([NotNull] EsmParser.OperationPerformContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>castOperation</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
@@ -220,6 +220,16 @@ public interface IEsmParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitStackOp([NotNull] EsmParser.StackOpContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsmParser.ambigOp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterAmbigOp([NotNull] EsmParser.AmbigOpContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsmParser.ambigOp"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitAmbigOp([NotNull] EsmParser.AmbigOpContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>pushConst</c>
 	/// labeled alternative in <see cref="EsmParser.pushClause"/>.

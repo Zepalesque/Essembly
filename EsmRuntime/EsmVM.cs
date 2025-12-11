@@ -1,16 +1,22 @@
 ﻿using System.CommandLine;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 using EsmRuntime.Common;
 using EsmRuntime.Common.Types;
+using EsmRuntime.Memory;
+using EsmRuntime.Storage;
 
 namespace EsmRuntime;
 
 // ReSharper disable once InconsistentNaming
 public static partial class EsmVM {
+    public static readonly usize NullAddr = 0;
 
-    public static unsafe byte* Mem { get; private set; }
-    public static unsafe nuint MemAddr => (nuint) Mem;
+    public static unsafe void* MemStart { get; private set; }
+    public static unsafe nuint MemAddr => (nuint) MemStart;
+
+    public static unsafe IntervalNode* HeapMemoryTree;
     
 
     static bool _debug;
@@ -38,12 +44,21 @@ public static partial class EsmVM {
         return b;
     }
 
-    static unsafe u8 Run(ReadOnlySpan<byte> program, int memorySize, int frameStackSize, int opStackSize) {
-        byte* alloc = stackalloc byte[memorySize + opStackSize];
-        Mem = alloc;
-        if (!CheckPtrSize(memorySize) || !CheckPtrSize(opStackSize)) return ExitCode.Failure;
-        var mem = new Heap(alloc, memorySize);
-        var stack = new OpStack(alloc + memorySize, opStackSize);
+    static unsafe u8 Run(ReadOnlySpan<byte> program, nuint heapSize, nuint frameStackSize, nuint opStackSize) {
+        // byte* alloc = stackalloc byte[memorySize + opStackSize];
+
+        nuint memSize = heapSize + opStackSize;
+        
+        var alloc = (byte*) NativeMemory.AllocZeroed(memSize);
+        
+        IntervalNode* node = IntervalNode.Create(0, heapSize);
+        
+        HeapMemoryTree = node;
+        
+        MemStart = alloc;
+        if (!CheckPtrSize(heapSize) || !CheckPtrSize(opStackSize)) return ExitCode.Failure;
+        var mem = new Heap(alloc, (int) heapSize);
+        var stack = new OpStack(alloc + heapSize, (int) opStackSize);
         try {
             var exit = Run(program, ref mem, ref stack);
             Console.WriteLine();
@@ -54,7 +69,7 @@ public static partial class EsmVM {
         }
     }
 
-    static bool CheckPtrSize(int memorySize) => memorySize - 1 <= usize.MaxValue;
+    static bool CheckPtrSize(nuint memorySize) => memorySize - 1 <= usize.MaxValue;
 
 
     static u8? Run(ReadOnlySpan<byte> program, ref Heap heap, ref OpStack stack) {

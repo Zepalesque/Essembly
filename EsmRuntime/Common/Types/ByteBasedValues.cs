@@ -4,18 +4,7 @@
 
 namespace EsmRuntime.Common.Types;
 
-public interface INumberFormattable {
-    public string Bin { get; }
-    public string Hex { get; }
-    public string Dec { get; }
-}
 
-public interface IAsciiFormattable<in T> where T : struct, IAsciiFormattable<T>, allows ref struct {
-    public static abstract explicit operator char(T value);
-}
-public interface IUtf16Formattable<in T> where T : struct, IUtf16Formattable<T>, allows ref struct {
-    public static abstract explicit operator char(T value);
-}
 
 public interface IByteSerializable<out T> where T: struct, IByteSerializable<T>, allows ref struct {
     void ToSpan(Span<byte> span);
@@ -35,42 +24,19 @@ public interface ISizedValue<out T> : IByteSerializable<T> where T : struct, ISi
     
 }
 
-public unsafe interface IReference<out T>: ISizedValue<T> where T : struct, IReference<T>, allows ref struct {
-    public byte* Start { get; }
-
-    static T IByteSerializable<T>.FromSpan(ReadOnlySpan<byte> span) {
-        usize addr = usize.FromSpan(span);
-        return T.FromRefPtr((byte*)addr);
-    }
-
-    static T IByteSerializable<T>.FromPtr(byte* ptr) => T.FromSpan(new(ptr, ByteCount));
-
-    static int ISizedValue<T>.ByteCount => ByteCount;
-    
-    public new static int ByteCount => usize.ByteCount;
-
-    int ByteCountInMemory { get; }
-
-    static abstract T FromRefPtr(byte* ptr);
-
-    void IByteSerializable<T>.ToSpan(Span<byte> span) {
-        var addr = (usize)Start;
-        addr.ToSpan(span);
-    }
-
-    void IByteSerializable<T>.ToPtr(byte* ptr) => ToSpan(new(ptr, ByteCount));
-}
 
 public readonly unsafe ref struct Reference<T>(usize address): ISizedValue<Reference<T>> where T : struct, IByteSerializable<T>, allows ref struct {
+    public usize Address { get; } = address;
+    
     public void ToSpan(Span<byte> span) {
-        address.ToSpan(span);
+        Address.ToSpan(span);
     }
     public void ToPtr(byte* ptr) {
-        address.ToPtr(ptr);
+        Address.ToPtr(ptr);
     }
 
     public T Dereference() {
-        var ptr = (byte*) address;
+        var ptr = (byte*) Address;
         return T.FromPtr(ptr);
     }
 
@@ -82,7 +48,7 @@ public readonly unsafe ref struct Reference<T>(usize address): ISizedValue<Refer
 
     public static Reference<T> FromSpan(ReadOnlySpan<byte> bytes)
         => new(usize.FromSpan(bytes));
-
+    
     public static Reference<T> FromPtr(byte* ptr) 
         => new(usize.FromPtr(ptr));
     public static int ByteCount => usize.ByteCount;

@@ -13,7 +13,7 @@ statement
 ;
 
 baseStmt
-    : Op specificInt op = stackOp ';' #operatonPerform
+    : Op specificInt op = stackOp ';' #operationPerform
     | Cast specificInt '->' specificInt ';' #castOperation
     | Alloc id = Identifier ':' type = instanceType ('=' anyLiteral)? ';' #allocMem
     | Let id = Identifier ':' type = instanceType ';' #localVar

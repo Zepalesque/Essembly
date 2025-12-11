@@ -1,6 +1,7 @@
 ﻿// ReSharper disable InconsistentNaming
 
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 // ReSharper disable UseSymbolAlias
 #pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
@@ -27,18 +28,29 @@ public readonly record struct u8(byte value):
     IAdditiveIdentity<u8, u8>,
     IMultiplicativeIdentity<u8, u8>,
     IComparable<u8> {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator u8(byte val) => new(val);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator byte(u8 val) => val.value;
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator ~(u8 self) => unchecked((byte)~self.value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator &(u8 a, u8 b) => unchecked((byte)(a.value & b.value));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator |(u8 a, u8 b) => unchecked((byte)(a.value | b.value));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator ^(u8 a, u8 b) => unchecked((byte)(a.value ^ b.value));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator <<(u8 a, u8 b) => unchecked((byte)(a.value << b.value));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator >>(u8 a, u8 b) => unchecked((byte)(a.value >> b.value));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator >>>(u8 a, u8 b) => unchecked((byte)(a.value >>> b.value));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static explicit operator char(u8 val) => (char) val.value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static explicit operator u8(char val) => new(unchecked((byte)val));
 
     public string Bin => $"{value:B8}";
@@ -46,52 +58,75 @@ public readonly record struct u8(byte value):
     public string Dec => $"{value:D}";
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(u8 other) => value.CompareTo(other.value);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator %(u8 left, u8 right) => unchecked((byte) (left.value % right.value));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator +(u8 value) => value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override string ToString() => value.ToString();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(object? obj) => value.CompareTo(obj);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ToString(string? format, IFormatProvider? formatProvider) 
         => value.ToString(format, formatProvider);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) 
         => value.TryFormat(destination, out charsWritten, format, provider);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 Parse(string s, IFormatProvider? provider) => byte.Parse(s, provider);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator +(u8 left, u8 right) => unchecked((byte) (left.value + right.value));
     
     public static u8 AdditiveIdentity { get; } = 0;
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator >(u8 left, u8 right) => left.value > right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator >=(u8 left, u8 right) => left.value >= right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator <(u8 left, u8 right) => left.value < right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator <=(u8 left, u8 right) => left.value <= right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator --(u8 value) => value - 1;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator /(u8 left, u8 right) => unchecked((byte) (left.value / right.value));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator ++(u8 value) => value + 1;
     public static u8 MultiplicativeIdentity { get; } = 1;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator *(u8 left, u8 right) => unchecked((byte) (left.value * right.value));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator -(u8 left, u8 right) => unchecked((byte) (left.value - right.value));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 operator -(u8 value) => unchecked((byte)-value.value);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe u8 FromPtr(byte* ptr) => FromSpan(new(ptr, ByteCount));
     public static int ByteCount => 1;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ToSpan(Span<byte> span) => span[0] = this;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe void ToPtr(byte* ptr) => ToSpan(new(ptr, ByteCount));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u8 FromSpan(ReadOnlySpan<byte> bytes) => bytes[0];
 }
 
@@ -116,15 +151,24 @@ public readonly record struct u16(ushort value):
     IComparable<u16>,
     IMinMaxValue<u16>
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator u16(ushort val) => new(val);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator ushort(u16 val) => val.value;
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator ~(u16 self) => unchecked((ushort)~self.value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator &(u16 a, u16 b) => unchecked((ushort)(a.value & b.value));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator |(u16 a, u16 b) => unchecked((ushort)(a.value | b.value));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator ^(u16 a, u16 b) => unchecked((ushort)(a.value ^ b.value));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator <<(u16 a, u16 b) => unchecked((ushort)(a.value << b.value));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator >>(u16 a, u16 b) => unchecked((ushort)(a.value >> b.value));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator >>>(u16 a, u16 b) => unchecked((ushort)(a.value >>> b.value));
 
 
@@ -133,56 +177,82 @@ public readonly record struct u16(ushort value):
     public string Dec => $"{value:D}";
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(u16 other) => value.CompareTo(other.value);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator %(u16 left, u16 right) => unchecked((ushort) (left.value % right.value));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator +(u16 value) => value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static explicit operator char(u16 value) => (char) value.value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override string ToString() => value.ToString();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(object? obj) => value.CompareTo(obj);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ToString(string? format, IFormatProvider? formatProvider) 
         => value.ToString(format, formatProvider);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) 
         => value.TryFormat(destination, out charsWritten, format, provider);
-
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 Parse(string s, IFormatProvider? provider) => ushort.Parse(s, provider);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator +(u16 left, u16 right) => unchecked((ushort) (left.value + right.value));
     
     public static u16 AdditiveIdentity { get; } = 0;
+   
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator >(u16 left, u16 right) => left.value > right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator >=(u16 left, u16 right) => left.value >= right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator <(u16 left, u16 right) => left.value < right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator <=(u16 left, u16 right) => left.value <= right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator --(u16 value) => value - 1;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator /(u16 left, u16 right) => unchecked((ushort) (left.value / right.value));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator ++(u16 value) => value + 1;
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator *(u16 left, u16 right) => unchecked((ushort) (left.value * right.value));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator -(u16 left, u16 right) => unchecked((ushort) (left.value - right.value));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 operator -(u16 value) => unchecked((ushort)-value.value);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe u16 FromPtr(byte* ptr) => FromSpan(new(ptr, ByteCount));
     public static u16 MultiplicativeIdentity { get; } = 1;
     public static int ByteCount => 2;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ToSpan(Span<byte> span) {
         span[0] = unchecked((byte) (value >>> 8));
         span[1] = unchecked((byte) (value & 0xFFFF));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe void ToPtr(byte* ptr) => ToSpan(new(ptr, ByteCount));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u16 FromSpan(ReadOnlySpan<byte> bytes) 
         => unchecked((ushort) ((bytes[0] << 8) | bytes[1]));
 
@@ -208,16 +278,27 @@ public readonly record struct u32(uint value):
     IUnaryNegationOperators<u32, u32>,
     IAdditiveIdentity<u32, u32>,
     IMultiplicativeIdentity<u32, u32>,
-    IComparable<u32> {
+    IComparable<u32>,
+    IMinMaxValue<u32>
+{
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator u32(uint val) => new(val);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator uint(u32 val) => val.value;
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator ~(u32 self) => ~self.value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator &(u32 a, u32 b) => a.value & b.value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator |(u32 a, u32 b) => a.value | b.value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator ^(u32 a, u32 b) => a.value ^ b.value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator <<(u32 a, u32 b) => unchecked(a.value << (int) b.value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator >>(u32 a, u32 b) => unchecked(a.value >> (int) b.value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator >>>(u32 a, u32 b) => unchecked(a.value >>> (int) b.value);
 
 
@@ -226,49 +307,71 @@ public readonly record struct u32(uint value):
     public string Dec => $"{value:D}";
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(u32 other) => value.CompareTo(other.value);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator %(u32 left, u32 right) => left.value % right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator +(u32 value) => value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static explicit operator char(u32 value) => (char) value.value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override string ToString() => value.ToString();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(object? obj) => value.CompareTo(obj);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ToString(string? format, IFormatProvider? formatProvider) 
         => value.ToString(format, formatProvider);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) 
         => value.TryFormat(destination, out charsWritten, format, provider);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 Parse(string s, IFormatProvider? provider) => uint.Parse(s, provider);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator +(u32 left, u32 right) => unchecked(left.value + right.value);
     
     public static u32 AdditiveIdentity { get; } = 0;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator >(u32 left, u32 right) => left.value > right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator >=(u32 left, u32 right) => left.value >= right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator <(u32 left, u32 right) => left.value < right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator <=(u32 left, u32 right) => left.value <= right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator --(u32 value) => value - 1;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator /(u32 left, u32 right) => left.value / right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator ++(u32 value) => value + 1;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator *(u32 left, u32 right) => unchecked(left.value * right.value);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator -(u32 left, u32 right) => unchecked(left.value - right.value);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 operator -(u32 value) => unchecked((uint)-value.value);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe u32 FromPtr(byte* ptr) => FromSpan(new(ptr, ByteCount));
     public static u32 MultiplicativeIdentity { get; } = 1;
     public static int ByteCount => 4;
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ToSpan(Span<byte> span) {
         span[0] = unchecked((byte) (value >>> 24));
         span[1] = unchecked((byte) (value >>> 16));
@@ -276,10 +379,15 @@ public readonly record struct u32(uint value):
         span[3] = unchecked((byte) (value & 0xFF));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe void ToPtr(byte* ptr) => ToSpan(new(ptr, ByteCount));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u32 FromSpan(ReadOnlySpan<byte> bytes) 
         => unchecked((uint) ((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]));
+
+    public static u32 MaxValue => uint.MaxValue;
+    public static u32 MinValue => uint.MinValue;
 }
 
 
@@ -301,15 +409,24 @@ public readonly record struct u64(ulong value):
     IAdditiveIdentity<u64, u64>,
     IMultiplicativeIdentity<u64, u64>,
     IComparable<u64> {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator u64(ulong val) => new(val);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator ulong(u64 val) => val.value;
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator ~(u64 self) => ~self.value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator &(u64 a, u64 b) => a.value & b.value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator |(u64 a, u64 b) => a.value | b.value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator ^(u64 a, u64 b) => a.value ^ b.value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator <<(u64 a, u64 b) => unchecked(a.value << (int) b.value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator >>(u64 a, u64 b) => unchecked(a.value >> (int) b.value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator >>>(u64 a, u64 b) => unchecked(a.value >>> (int) b.value);
 
 
@@ -318,51 +435,73 @@ public readonly record struct u64(ulong value):
     public string Dec => $"{value:D}";
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(u64 other) => value.CompareTo(other.value);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator %(u64 left, u64 right) => left.value % right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator +(u64 value) => value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static explicit operator char(u64 value) => (char) value.value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override string ToString() => value.ToString();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(object? obj) => value.CompareTo(obj);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string ToString(string? format, IFormatProvider? formatProvider) 
         => value.ToString(format, formatProvider);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) 
         => value.TryFormat(destination, out charsWritten, format, provider);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 Parse(string s, IFormatProvider? provider) => ulong.Parse(s, provider);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator +(u64 left, u64 right) => unchecked(left.value + right.value);
     
     public static u64 AdditiveIdentity { get; } = 0;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator >(u64 left, u64 right) => left.value > right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator >=(u64 left, u64 right) => left.value >= right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator <(u64 left, u64 right) => left.value < right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator <=(u64 left, u64 right) => left.value <= right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator --(u64 value) => value - 1;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator /(u64 left, u64 right) => left.value / right.value;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator ++(u64 value) => value + 1;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator *(u64 left, u64 right) => unchecked(left.value * right.value);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator -(u64 left, u64 right) => unchecked(left.value - right.value);
     
     
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 operator -(u64 value) => unchecked(0u - value.value);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe u64 FromPtr(byte* ptr) => FromSpan(new(ptr, ByteCount));
     public static u64 MultiplicativeIdentity { get; } = 1;
     public static int ByteCount => 8;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ToSpan(Span<byte> span) {
         span[0] = unchecked((byte) (value >>> 56));
         span[1] = unchecked((byte) (value >>> 48));
@@ -374,8 +513,10 @@ public readonly record struct u64(ulong value):
         span[7] = unchecked((byte) (value & 0xFF));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe void ToPtr(byte* ptr) => ToSpan(new(ptr, ByteCount));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static u64 FromSpan(ReadOnlySpan<byte> bytes) 
         => (ulong) bytes[0] << 56
         | ((ulong) bytes[1] << 48)

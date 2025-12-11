@@ -56,7 +56,7 @@ public static partial class EsmCompiler {
                     
                     logger.LogInspection(new UndefVar(pos, name, hint));
                 } else {
-                    var mem = new StoreMem(info.Id, pos);
+                    var mem = new StoreMem(info.Id, info.Type pos);
                     stmtInfo.Add(new(index, mem));
                     stmt = mem;
                 }
@@ -123,7 +123,7 @@ public static partial class EsmCompiler {
         return dist <= thresh;
     }
 
-    readonly record struct VariableInfo(int BitIndex, FixedSizeType Size, byte Id);
+    readonly record struct VariableInfo(int BitIndex, FixedSizeType Type, byte Id);
     readonly record struct StmtInfo(int BitIndex, FinalizedStmt Stmt): IComparable<StmtInfo> {
         public int CompareTo(StmtInfo other) => BitIndex.CompareTo(other.BitIndex);
     }

@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Unicode;
 using EsmRuntime.Common.Types;
 using EsmRuntime.Debug;
+using EsmRuntime.Storage;
 using JetBrains.Annotations;
 // ReSharper disable InconsistentNaming
 

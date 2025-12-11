@@ -75,7 +75,7 @@ public partial class EsmParserBaseVisitor<Result> : AbstractParseTreeVisitor<Res
 	/// <return>The visitor result.</return>
 	public virtual Result VisitStatement([NotNull] EsmParser.StatementContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>operatonPerform</c>
+	/// Visit a parse tree produced by the <c>operationPerform</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -84,7 +84,7 @@ public partial class EsmParserBaseVisitor<Result> : AbstractParseTreeVisitor<Res
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitOperatonPerform([NotNull] EsmParser.OperatonPerformContext context) { return VisitChildren(context); }
+	public virtual Result VisitOperationPerform([NotNull] EsmParser.OperationPerformContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by the <c>castOperation</c>
 	/// labeled alternative in <see cref="EsmParser.baseStmt"/>.
@@ -214,6 +214,16 @@ public partial class EsmParserBaseVisitor<Result> : AbstractParseTreeVisitor<Res
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitStackOp([NotNull] EsmParser.StackOpContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsmParser.ambigOp"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitAmbigOp([NotNull] EsmParser.AmbigOpContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by the <c>pushConst</c>
 	/// labeled alternative in <see cref="EsmParser.pushClause"/>.
