@@ -25,7 +25,7 @@ class Program {
         var alloc = (byte*) AllocZeroed((nuint) size);
         EsmVM.MemStart = alloc;
         
-        MemoryTree* tree = MemoryTree.Create(0, size);
+        HeapTree* tree = HeapTree.Create(0, size);
         
         bool exit = false;
 
@@ -34,7 +34,7 @@ class Program {
         }
     }
 
-    static unsafe void PerformTreeOperation(ref bool exit, ref MemoryTree* tree) {
+    static unsafe void PerformTreeOperation(ref bool exit, ref HeapTree* tree) {
         
         WriteLine();
         WriteLine("--OPTIONS--");
@@ -57,7 +57,7 @@ class Program {
         }
     }
 
-    static unsafe void PerformFree(ref MemoryTree* tree) {
+    static unsafe void PerformFree(ref HeapTree* tree) {
         int start, end;
                 
         do {
@@ -71,12 +71,12 @@ class Program {
         
         WriteLine($"Attempting to free the range [{start}, {end})...");
         
-        WriteLine(MemoryTree.TryFree(ref tree, start, end)
+        WriteLine(HeapTree.TryFree(ref tree, start, end)
             ? $"Success! Freed [{start}, {end}) from memory"
             : "Failure, could not free the range. Perhaps it was already free?");
     }
 
-    static unsafe void PerformAllocation(ref MemoryTree* tree) {
+    static unsafe void PerformAllocation(ref HeapTree* tree) {
         int size;
         
         do {
@@ -85,15 +85,15 @@ class Program {
         
         WriteLine($"Attempting to allocate {size} bytes...");
 
-        WriteLine(MemoryTree.TryAllocate(ref tree, size, out byte* start)
+        WriteLine(HeapTree.TryAllocate(ref tree, size, out byte* start)
             ? $"Success! Allocated starting at &{(usize) start}"
             : "Failure, could not allocate.");
     }
     
-    static unsafe void Visualize(ref MemoryTree* tree) {
+    static unsafe void Visualize(ref HeapTree* tree) {
         WriteLine("Visualizing tree...");
         WriteLine();
-        WriteLine(MemoryTree.DebugVisualize(ref tree));
+        WriteLine(HeapTree.DebugVisualize(ref tree));
         
     }
 }

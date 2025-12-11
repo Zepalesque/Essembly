@@ -16,7 +16,7 @@ public static partial class EsmVM {
     public static unsafe void* MemStart { get; set; }
     public static unsafe nuint MemAddr => (nuint) MemStart;
 
-    public static unsafe MemoryTree* HeapMemoryTree;
+    public static unsafe HeapTree* HeapMemoryTree;
     
 
     static bool _debug;
@@ -51,11 +51,12 @@ public static partial class EsmVM {
         
         var alloc = (byte*) NativeMemory.AllocZeroed(memSize);
         
-        MemoryTree* node = MemoryTree.Create(0, heapSize);
-        
+        HeapTree* node = HeapTree.Create(1, heapSize + 1, false);
+
         HeapMemoryTree = node;
-        
         MemStart = alloc;
+        
+        
         if (!CheckPtrSize(heapSize) || !CheckPtrSize(opStackSize)) return ExitCode.Failure;
         var mem = new Heap(alloc, (int) heapSize);
         var stack = new OpStack(alloc + heapSize, (int) opStackSize);

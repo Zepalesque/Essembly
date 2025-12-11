@@ -52,7 +52,7 @@ public unsafe ref struct ReferenceHeap(byte* start, int size) {
     public Reference<T> Allocate<T>(ReadOnlySpan<byte> data) where T: struct, IByteSerializable<T>, allows ref struct {
         usize u = data.Length;
         _cursor += u;
-        if (!MemoryTree.TryAllocate(ref EsmVM.HeapMemoryTree, u, out byte* ptr))
+        if (!HeapTree.TryAllocate(ref EsmVM.HeapMemoryTree, u, out byte* ptr))
             throw new MemoryAccessError("No memory left :(");
         Span<byte> dest = new(ptr, u);
         data.CopyTo(dest);
@@ -65,13 +65,13 @@ public unsafe ref struct ReferenceHeap(byte* start, int size) {
         usize loc = reference.Address;
         if (loc == EsmVM.NullAddr)
             throw new NullAccessError("Attempted to free the null pointer!");
-        if (loc < (usize)start || loc >= (usize)start +  Size) {
+        if (loc < (usize)Start || loc >= (usize)Start +  Size) {
             throw new MemoryAccessError($"Free address {loc} is outside heap bounds");
         }
         
         usize size = reference.Dereference().InstanceSize;
         
-        if (!MemoryTree.TryFree(ref EsmVM.HeapMemoryTree, reference.Address, reference.Address + size))
+        if (!HeapTree.TryFree(ref EsmVM.HeapMemoryTree, reference.Address, reference.Address + size))
             throw new MemoryAccessError("Already free!");
     }
 
