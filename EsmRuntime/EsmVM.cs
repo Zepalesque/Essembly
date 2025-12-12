@@ -13,6 +13,7 @@ namespace EsmRuntime;
 // ReSharper disable once InconsistentNaming
 public static partial class EsmVM {
     public static readonly usize NullAddr = 0;
+    public static readonly usize UnitAddr = 1;
 
     public static unsafe void* MemStart { get; set; }
     public static unsafe nuint MemAddr => (nuint) MemStart;
@@ -52,7 +53,7 @@ public static partial class EsmVM {
         
         var alloc = (byte*) NativeMemory.AllocZeroed(memSize);
         
-        HeapTree* node = HeapTree.Create(1, heapSize + 1, false);
+        HeapTree* node = HeapTree.Create(2, heapSize + 2, false);
 
         HeapMemoryTree = node;
         MemStart = alloc;
@@ -62,7 +63,7 @@ public static partial class EsmVM {
         var mem = new ReferenceHeap(alloc, (int) heapSize);
         var stack = new OpStack(alloc + heapSize, (int) opStackSize);
         try {
-            var exit = Run(program, ref mem, ref stack);
+            var exit = Run(program, in mem, ref stack);
             Console.WriteLine();
             return exit == null ? ExitCode.Unterminated : exit.Value == ExitCode.Success ? exit.Value : exit.Value | ExitCode.UserExit;
         } catch (RuntimeError e) {
@@ -95,6 +96,11 @@ public static partial class EsmVM {
                 
                 case OpCode.AllocStr: {
                     stack.Push(AllocRef<StringSlice>(program, &pc, heap));
+                    break;
+                }
+
+                case OpCode.FreeHeap: {
+                    heap.Free(stack.Pop<Reference<Unit>>());
                     break;
                 }
                 

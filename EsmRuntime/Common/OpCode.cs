@@ -2,6 +2,8 @@
 
 public enum OpCode : byte {
     AllocStr, // Allocate a string to memory
+    AllocSlice,
+    FreeHeap,
     Push8, // Push 8 bits to the operand stack
     Push16, // ...
     Push32,

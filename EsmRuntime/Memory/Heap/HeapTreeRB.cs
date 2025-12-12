@@ -18,7 +18,6 @@ public unsafe ref partial struct HeapTree {
         if (b != null) b->_parent = selfPrev; // Ensure proper relinking before...
         selfPrev->_right = b; // ... changing X's right child to B
         
-        
         Recalc(ref selfPrev); // Recalc(X)
         self->_left = selfPrev; // Y.left = X
         Recalc(ref self); // Recalc(Y)

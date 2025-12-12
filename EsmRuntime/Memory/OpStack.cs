@@ -33,7 +33,7 @@ public unsafe ref struct OpStack(byte* startPtr, int length) {
         if (_offs + 1 < T.ByteCount) throw new StackUnderflowError(
             $"Tried to pop element of size {T.ByteCount} from operand stack with size {_offs + 1}"
         );
-        if (size == 0) return T.FromSpan(_span[^0..]);
+        if (size == 0) return T.FromSpan(ReadOnlySpan<byte>.Empty);
         ReadOnlySpan<byte> res = this[(_offs - size + 1)..(_offs+1)];
         _offs -= size;
         return T.FromSpan(res);

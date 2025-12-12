@@ -51,11 +51,30 @@ class Program {
         switch (c) {
             case 'a': PerformAllocation(ref tree); break;
             case 'f': PerformFree(ref tree); break;
-            // case 'q': PerformQuery(ref tree); break;
+            case 'q': PerformQuery(ref tree); break;
             case 'v': Visualize(ref tree); break;
             case 'e': exit = true; break;
             default: WriteLine($"Invalid option: {c}"); break;
         }
+    }
+
+    static unsafe void PerformQuery(ref HeapTree* tree) {
+        int start, end;
+                
+        do {
+            WriteLine("Please input the start to the interval to query.");
+        } while (!int.TryParse(ReadLine(), out start));
+
+        
+        do {
+            WriteLine("Please input the end to the interval to query.");
+        } while (!int.TryParse(ReadLine(), out end));
+        
+               
+        WriteLine($"Checking the range [{start}, {end})...");
+
+        WriteLine(HeapTree.IsFree(ref tree, start, end) ? $"[{start}, {end}) is free." 
+            : $"[{start}, {end}) is allocated.");
     }
 
     static unsafe void PerformFree(ref HeapTree* tree) {

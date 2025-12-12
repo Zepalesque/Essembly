@@ -31,12 +31,12 @@ public unsafe ref partial struct HeapTree {
                 }
                 else if (self->_left != null && self->_right == null) {
                     var l = self->_left; 
-                    Free(self); 
+                    AlignedFree(self); 
                     self = l; 
                 }
                 else if (self->_right != null && self->_left == null) {
                     var r = self->_right; 
-                    Free(self); 
+                    AlignedFree(self); 
                     self = r;
                 } else {
                     ref var leftmost = ref LeftMostChild(ref self->_right);
@@ -50,7 +50,7 @@ public unsafe ref partial struct HeapTree {
                     leftmost = leftmostVal->_right;
                     if (leftmost != null) leftmost->_parent = leftmostParent;
                     
-                    Free(leftmostVal);
+                    AlignedFree(leftmostVal);
                     
                     var traversal = leftmostParent;
                     while (traversal != null && traversal != self) {

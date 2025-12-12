@@ -35,7 +35,7 @@ public unsafe ref partial struct HeapTree(usize low, usize high, bool isRed) {
 
         // no need for it to be zeroed, we overwrite it immediately anyway
         // surprised this method call doesnt need unsafe also
-        void* ptr = Alloc((nuint) sizeof(HeapTree));
+        void* ptr = AlignedAlloc((nuint) sizeof(HeapTree), 16);
 
         HeapTree node = new(from, to, isRed);
 

@@ -1,6 +1,4 @@
-﻿// ReSharper disable InconsistentNaming
-
-#pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
+﻿
 
 namespace EsmRuntime.Common.Types;
 
@@ -86,7 +84,8 @@ public readonly unsafe ref struct Reference<T>(usize address): ISizedValue<Refer
     public static Reference<T> FromBytecode(byte* start) => throw new InvalidOperationException();
 }
 
-public unsafe ref struct Box<T>(T value): IBytecodeSerializable<Box<T>>, IByteSerializable<Box<T>>
+// TODO: Move to compiler
+public unsafe ref struct Embed<T>(T value): IBytecodeSerializable<Embed<T>>, IByteSerializable<Embed<T>>
     where T : struct, IByteSerializable<T>, allows ref struct {
     T _value = value;
     public usize ValSize => _value.InstanceSize;
@@ -103,16 +102,22 @@ public unsafe ref struct Box<T>(T value): IBytecodeSerializable<Box<T>>, IByteSe
         _value.ToPtr(ptr + usize.ByteCount);
     }
 
-    public static Box<T> FromSpan(ReadOnlySpan<byte> bytes) 
+    public static Embed<T> FromSpan(ReadOnlySpan<byte> bytes) 
         => new(T.FromSpan(bytes[usize.ByteCount..]));
     public int InstanceSize => usize.ByteCount + ValSize;
     
-    static Box<T> IBytecodeSerializable<Box<T>>.FromBytecode(byte* start, int* pc) {
+    static Embed<T> IBytecodeSerializable<Embed<T>>.FromBytecode(byte* start, int* pc) {
         usize size = usize.FromPtr(start);
-        Box<T> self = new(T.FromSpan(new(start + usize.ByteCount, size)));
+        Embed<T> self = new(T.FromSpan(new(start + usize.ByteCount, size)));
         *pc += self.InstanceSize;
         return self;
     }
 
-    public Span<byte> ToBytecode(Func<int, nuint> generator) => throw new NotImplementedException();
+    public Span<byte> ToBytecode(Func<int, nuint> generator) {
+        int size = InstanceSize;
+        nuint addr = generator(size);
+        byte* ptr = (byte*) addr;
+        ToPtr(ptr);
+        return new(ptr, size);
+    }
 }
