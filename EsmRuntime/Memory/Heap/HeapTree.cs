@@ -47,7 +47,7 @@ public unsafe ref partial struct HeapTree(usize low, usize high, bool isRed) {
     }
 
     public static string DebugVisualize(ref HeapTree* self, int ansiCode = 0) {
-        string colorCode = $"\e[0;9{ansiCode % 6 + 1}m";
+        string colorCode = $"\e[0;9{ColorCode(ansiCode)}m";
         if (self == null) return $"{colorCode}{{}}\e[0m";
 
         ref HeapTree* selfLeft = ref self->_left;
@@ -56,6 +56,18 @@ public unsafe ref partial struct HeapTree(usize low, usize high, bool isRed) {
         string left = selfLeft == null ? "" : "\e[0m" + DebugVisualize(ref selfLeft, ansiCode + 1) + $"{colorCode}, ";
         string right = selfRight == null ? "" : ", \e[0m" + DebugVisualize(ref selfRight, ansiCode + 1);
         return $"{colorCode}::{{ {left}[{self->_low}, {self->_high}){right}{colorCode} }}\e[0m";
+
+
+        int ColorCode(int i) {
+            return (i % 5) switch {
+                0 => 6,
+                1 => 5,
+                2 => 7,
+                3 => 5,
+                4 => 6,
+                _ => throw new InvalidOperationException()
+            };
+        }
     }
 }
 

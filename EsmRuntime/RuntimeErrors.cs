@@ -35,13 +35,7 @@ public class InvalidFormatError: RuntimeError {
     public InvalidFormatError(string message) : base(message, ErrorType.InvalidFormat) {}
 }
 
-public class InvalidIndexError: RuntimeError {
-    public InvalidIndexError(): base(ErrorType.InvalidIndex) {}
-    public InvalidIndexError(string message) : base(message, ErrorType.InvalidIndex) {}
-}
-
 public class NullAccessError : RuntimeError {
     public NullAccessError() : base(ErrorType.NullAccess) {}
     public NullAccessError(string message) : base(message, ErrorType.NullAccess) {}
-
 }
