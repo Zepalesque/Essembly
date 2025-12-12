@@ -65,7 +65,7 @@ public class EsmAstBuilder(CompilationLogger logger, FileData file) : EsmParserB
     public override Print VisitPrint(EsmParser.PrintContext context)
         => new(IoMode.FromToken(context.io.io.Type), context.InFile(File));
     
-    public override LoadMem VisitPushMem(EsmParser.PushMemContext context)
+    public override PushMem VisitPushMem(EsmParser.PushMemContext context)
         => new(context.loc.Text, context.InFile(File));
 
     public override AllocMem VisitAllocMem(EsmParser.AllocMemContext context)

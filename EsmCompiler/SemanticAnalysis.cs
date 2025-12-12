@@ -58,7 +58,7 @@ public static partial class EsmCompiler {
                     stmtInfo.Add(new(index, mem));
                     stmt = mem;
                 }
-            } else if (stmt is LoadMem(var name1, _)) {
+            } else if (stmt is PushMem(var name1, _)) {
                 if (!locals.TryGetValue(name1, out VariableInfo info)) {
                     string[] typos = locals.Keys.Filter(s => TypoPossible(name1, s));
                     string? hint = typos.Length == 0
@@ -67,7 +67,7 @@ public static partial class EsmCompiler {
                     
                     logger.LogInspection(new UndefVar(pos, name1, hint));
                 } else {
-                    var mem = new LoadHeap(info.Id, pos);
+                    var mem = new PushHeap(info.Id, pos);
                     stmtInfo.Add(new(index, mem));
                     stmt = mem;
                 }

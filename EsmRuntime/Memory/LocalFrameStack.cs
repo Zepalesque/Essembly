@@ -1,7 +1,7 @@
 ﻿using EsmRuntime.Common;
 using EsmRuntime.Common.Types;
 
-namespace EsmRuntime.Storage;
+namespace EsmRuntime.Memory.Heap;
 
 public unsafe ref struct FrameStack(byte* start, int length) {
     int _offs = -1;
@@ -34,8 +34,9 @@ public unsafe ref struct FrameStack(byte* start, int length) {
     public void Push(byte* operand) {
         int newOffs = NextAvailableOffset;
         byte* frameStart = start + newOffs;
-        var varSizes = Slice<usize>.FromPtr(operand);
-        var table = OffsetTable.CreateFromSizes(varSizes, frameStart + usize.ByteCount,
+        usize count = usize.FromPtr(operand);
+        var varSizes = Slice<usize>.FromSpan(new(operand + usize.ByteCount, count * usize.ByteCount));
+        var table = VariableTable.CreateFromSizes(varSizes, frameStart + usize.ByteCount,
             out usize fullSize);
         
         fullSize.ToPtr(frameStart);
@@ -43,7 +44,7 @@ public unsafe ref struct FrameStack(byte* start, int length) {
         if (_offs + fullSize >= length)
             throw new StackOverflowError("Frame stack is full!");
 
-        for (var i = 0; i < varSizes.Length; i++) {
+        for (var i = 0; i < count; i++) {
             usize offset = table[i];
             usize varSize = varSizes[i];
             
@@ -59,12 +60,12 @@ public unsafe ref struct FrameStack(byte* start, int length) {
     }
 }
 
-public readonly unsafe ref struct OffsetTable(Slice<usize> offsets): IByteSerializable<OffsetTable> {
+public readonly unsafe ref struct VariableTable(Slice<usize> offsets): IByteSerializable<VariableTable> {
     readonly Slice<usize> _offsets = offsets;
     public usize this[int index] => _offsets[index];
 
     
-    public static OffsetTable CreateFromSizes(Slice<usize> sizes, byte* dest, out usize frameSize) {
+    public static VariableTable CreateFromSizes(Slice<usize> sizes, byte* dest, out usize frameSize) {
         sizes.Length.ToPtr(dest);
         usize tableSize = usize.ByteCount + sizes.Bytes.Length;
         usize partialFrameSize = tableSize;
@@ -78,7 +79,7 @@ public readonly unsafe ref struct OffsetTable(Slice<usize> offsets): IByteSerial
 
         frameSize = partialFrameSize + usize.ByteCount;
 
-        return new(Slice<usize>.FromPtr(dest));
+        return new(Slice<usize>.FromSpan(new(dest, sizes.Length)));
     }
 
     
@@ -94,25 +95,26 @@ public readonly unsafe ref struct OffsetTable(Slice<usize> offsets): IByteSerial
             this[i].ToPtr(ptr + usize.ByteCount + i * usize.ByteCount);
     }
 
-    public static OffsetTable FromSpan(ReadOnlySpan<byte> bytes) {
+    public static VariableTable FromSpan(ReadOnlySpan<byte> bytes) {
         var slice = Slice<usize>.FromSpan(bytes);
         return new(slice);
     }
 
-    public static OffsetTable FromPtr(byte* ptr) {
-        var slice = Slice<usize>.FromPtr(ptr);
+    public static VariableTable FromPtr(byte* ptr) {
+        usize size = usize.FromPtr(ptr);
+        var slice = Slice<usize>.FromSpan(new (ptr + usize.ByteCount, size * usize.ByteCount));
         return new(slice);
     }
 }
 
-public readonly unsafe ref struct Frame(byte* start, OffsetTable table) {
+public readonly unsafe ref struct Frame(byte* start, VariableTable table) {
     public usize Size => usize.FromPtr(start);
 
-    OffsetTable Table { get; } = table;
+    VariableTable Table { get; } = table;
 
     public Span<byte> this[byte index] {
         get {
-            OffsetTable table = Table;
+            VariableTable table = Table;
             usize offset = table[index];
             byte* ptr = start + offset;
             usize size = usize.FromPtr(ptr);
@@ -121,7 +123,7 @@ public readonly unsafe ref struct Frame(byte* start, OffsetTable table) {
     }
     
     public static Frame FromPtr(byte* ptr) {
-        OffsetTable table = OffsetTable.FromPtr(ptr + usize.ByteCount);
+        VariableTable table = VariableTable.FromPtr(ptr + usize.ByteCount);
         return new(ptr, table);
     }
 

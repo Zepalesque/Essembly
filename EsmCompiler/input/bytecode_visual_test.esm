@@ -1,0 +1,100 @@
+﻿// push_global_frame 5: sizeof(usize), sizeof(usize), sizeof(usize), sizeof(usize), sizeof(usize)
+//  (push new global frame, 5 vars, each sizeof usize)
+
+// alloc_ref "Please input a number.\n\0" (push addr of new reference heap allocation)
+// store_global_var 0, 0 (pop & store said addr to the current global frame's variable #0, let's call it global[0, 0])
+alloc inputStr: &str = "Please input a number.\n";
+
+// push_global_var 0, 0 (push global variable global[0, 0] to operand stack)
+push inputStr;
+
+// out_str (print string from operand stack)
+print &str;
+
+// push_global_var 0, 0
+// free_ref (free the value at the resulting address from the reference heap)
+free inputStr;
+
+// alloc_ref "Please input another number.\n\0"
+// store_global 0, 1
+alloc moreInputs: &str = "Please input another number.\n";
+// alloc_ref "Sum: \0"
+// store_global 0, 2
+alloc sum: &str = "Sum: ";
+// alloc_ref "Want to continue? Press 'y'!\n\0"
+// store_global 0, 3
+alloc continue: &str = "Want to continue? Press 'y'!\n";
+
+
+// push_local_frame 2: 8, 8; 1: indexof(#add_loop) (push a local frame with two 8-bit vars and one jump label
+{
+    let a: u8;
+    let b: u8;
+    
+    // input_u8
+    push input u8;
+    // store_local 0
+    store a;
+    
+    #add_loop:
+    // push_global_var 0, 1
+    push moreInputs;
+    
+    // input_u8
+    push input u8;
+    // store_local 1
+    store b;
+    
+    // push_local_var 1
+    push b;
+    // push_local_var 0
+    push a;
+    // add_u8
+    operate u8 binary +;
+    // store_local 0;
+    store a;
+
+    // push_global_var 0, 2
+    push sum;
+    // out_str
+    print &str;
+    
+    // push_local_var 0
+    push a;
+    // out_u8
+    print u8;
+    
+    // push_u8 '\n'
+    push u8 '\n';
+    // out_char8 (out_ascii?)
+    print ascii;
+    
+    // push_global_var 0, 3
+    push continue;
+    // out_str
+    print &str;
+    
+    // in_char8
+    push input ascii;
+    // push_u8 'y'
+    push u8 'y';
+    // equal_u8
+    operate u8 ==;
+    
+    goto #add_loop if true; // jump_true 0
+} // pop_local_frame
+
+// push_global_var 0, 3
+// free_ref
+free continue;
+// push_global_var 0, 2
+// free_ref
+free sum;
+// push_global_var 0, 1
+// free_ref
+free moreInputs;
+// push_u8 0x00
+
+push u8 0;
+// exit (pops global)
+exit;

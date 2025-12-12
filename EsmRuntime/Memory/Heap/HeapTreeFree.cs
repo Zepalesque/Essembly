@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using EsmRuntime.Common.Types;
 
-namespace EsmRuntime.Memory;
+namespace EsmRuntime.Memory.Heap;
 using static NativeMemory;
 
 public unsafe ref partial struct HeapTree {

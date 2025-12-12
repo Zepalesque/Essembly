@@ -67,15 +67,15 @@ public record AllocMem(string VarName, FixedSizeType Type,  FilePos Pos) : Unfin
     public string VarName { get; set; } = VarName;
 }
 
-public record LocalVar(string VarName, FixedSizeType Type, FilePos Pos) : UnfinalizedStmt(0, Pos) {
+public record PushLocal(string VarName, FixedSizeType Type, FilePos Pos) : UnfinalizedStmt(0, Pos) {
     public string VarName { get; set; } = VarName;
 }
 
-public record LoadMem(string VarName, FilePos Pos) : UnfinalizedStmt(2, Pos) {
+public record PushMem(string VarName, FilePos Pos) : UnfinalizedStmt(2, Pos) {
     public string VarName { get; set; } = VarName;
 }
 
-public record LoadHeap(byte Index, FilePos Pos) : OneOpStmt(EsmRuntime.Common.OpCode.PushMemPtr, Index, Pos) {
+public record PushHeap(byte Index, FilePos Pos) : OneOpStmt(EsmRuntime.Common.OpCode.PushGlobalAddr, Index, Pos) {
     public byte Index { get; set; } = Index;
 }
 

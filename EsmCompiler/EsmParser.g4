@@ -27,7 +27,7 @@ baseStmt
 
 // IO
 ioMode: io = Ascii| io = Utf16 | ('&' io = Str) |
-    io = U8|io = U16|io = U32|io = U64|io = I8|io = I16|io = I32|io = I64
+    io = U8|io = U16|io = U32|io = U64|io = I8|io = I16|io = I32|io = I64|io = Usize|io = Isize
 ;
 
 

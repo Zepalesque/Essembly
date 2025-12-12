@@ -1,4 +1,4 @@
-﻿namespace EsmRuntime.Memory;
+﻿namespace EsmRuntime.Memory.Heap;
 
 public unsafe ref partial struct HeapTree {
     

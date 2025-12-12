@@ -1,12 +1,11 @@
-﻿using EsmRuntime.Common;
-using EsmRuntime.Common.Types;
-
-namespace EsmRuntime.Common {
+﻿namespace EsmRuntime.Common.Types;
 
 public readonly unsafe ref struct Slice<T>(ReadOnlySpan<byte> bytes): IByteSerializable<Slice<T>> where T: struct, ISizedValue<T>, allows ref struct {
     readonly ReadOnlySpan<byte> _bytes = bytes;
 
     public ReadOnlySpan<byte> Bytes => _bytes;
+    
+    public usize Length { get; } = bytes.Length / T.ByteCount;
 
     public T this[int index] {
         get {
@@ -16,15 +15,10 @@ public readonly unsafe ref struct Slice<T>(ReadOnlySpan<byte> bytes): IByteSeria
         }
     }
 
-    public usize Length => usize.FromSpan(_bytes[..usize.ByteCount]);
-
     public void ToSpan(Span<byte> span) {
-        usize length = Length;
-        length.ToSpan(span[..usize.ByteCount]);
-        for (usize i = 0; i < length; i++) {
-            int start = usize.ByteCount + T.ByteCount * i;
-            int end = start + T.ByteCount;
-            Span<byte> varSpan = span[start..end];
+        for (var i = 0; i < span.Length; i += T.ByteCount) {
+            int end = i + T.ByteCount;
+            var varSpan = span[i..end];
             this[i].ToSpan(varSpan);
         }
     }
@@ -34,23 +28,6 @@ public readonly unsafe ref struct Slice<T>(ReadOnlySpan<byte> bytes): IByteSeria
 
     public static Slice<T> FromSpan(ReadOnlySpan<byte> bytes) 
         => new(bytes);
-
-    public static Slice<T> FromPtr(byte* ptr) {
-        usize length = usize.FromPtr(ptr);
-        return new(new(ptr, usize.ByteCount + length * T.ByteCount));
-    }
+    
     public int InstanceSize => usize.ByteCount + _bytes.Length * T.ByteCount;
 }
-
-}
-
-namespace EsmRuntime {
-
-
-
-
-
-
-
-}
-

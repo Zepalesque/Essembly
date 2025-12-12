@@ -3,6 +3,7 @@ using EsmRuntime.Common.Types;
 using EsmRuntime.Memory;
 using static System.Console;
 using static System.Runtime.InteropServices.NativeMemory;
+using HeapTree = EsmRuntime.Memory.Heap.HeapTree;
 
 namespace LowLevelTests;
 
@@ -38,7 +39,7 @@ class Program {
         
         WriteLine();
         WriteLine("--OPTIONS--");
-        WriteLine("  * a: Allocate a range of memory");
+        WriteLine("  * a: Allocate an amount of memory");
         WriteLine("  * f: Free a range of memory");
         WriteLine("  * q: Query a range");
         WriteLine("  * v: Visualize the tree");

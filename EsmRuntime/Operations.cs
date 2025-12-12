@@ -4,7 +4,8 @@ using System.Text;
 using System.Text.Unicode;
 using EsmRuntime.Common.Types;
 using EsmRuntime.Debug;
-using EsmRuntime.Storage;
+using EsmRuntime.Memory;
+using EsmRuntime.Memory.Heap;
 using JetBrains.Annotations;
 // ReSharper disable InconsistentNaming
 
@@ -12,8 +13,8 @@ namespace EsmRuntime;
 
 public static partial class EsmVM {
     [MethodImpl(MethodImplOptions.AggressiveInlining), Obsolete("Use generic func")]
-    static u8 LoadConst(ReadOnlySpan<byte> program, ref int pc) {
-        u8 val = program[++pc];
+    static unsafe u8 LoadConst(ReadOnlySpan<byte> program, int* pc) {
+        u8 val = program[++*pc];
         #if DEBUG
         Debug($"Pushing {val} to stack");
         #endif
@@ -21,9 +22,9 @@ public static partial class EsmVM {
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static T LoadConst<T>(ReadOnlySpan<byte> program, ref int pc) where T: struct, ISizedValue<T> {
-        T val = T.FromSpan(program[(pc + 1)..(pc + T.ByteCount + 1)]);
-        pc += T.ByteCount;
+    static unsafe T LoadConst<T>(ReadOnlySpan<byte> program, int* pc) where T: struct, ISizedValue<T> {
+        T val = T.FromSpan(program[(*pc + 1)..(*pc + T.ByteCount + 1)]);
+        *pc += T.ByteCount;
         #if DEBUG
         Debug($"Pushing {val} to stack");
         #endif
@@ -31,52 +32,18 @@ public static partial class EsmVM {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static unsafe void AllocRef<T>(ReadOnlySpan<byte> program, ref int pc, ref Heap heap) where T: struct, IByteSerializable<T>, IBytecodeSerializable<T>, allows ref struct {
-        
-        pc++;
-        usize addr = usize.FromProgram(program, ref pc);
+    static unsafe Reference<T> AllocRef<T>(ReadOnlySpan<byte> program, int* pc, ReferenceHeap heap) where T: struct, IByteSerializable<T>, IBytecodeSerializable<T>, allows ref struct {
 
-        fixed (byte* ptr = &program[pc]) {
-            var data = T.FromBytecode(ptr);
-            var reference = heap.AllocateUnsized<T>(data);
+        int ipc = *pc;
+        fixed (byte* ptr = &program[ipc]) {
+            usize addr = usize.FromBytecode(ptr, pc);
+            var data = T.FromBytecode(ptr, pc);
+            var reference = heap.Allocate(data);
             #if DEBUG
             Debug($"Allocating a {reference.Dereference().InstanceSize}-byte memory block and storing to &{addr.Hex}");
             #endif
-            reference.ToPtr((byte*) heap[addr]);
+            return reference;
         }
-
-
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static usize LoadMem(ReadOnlySpan<byte> program, ref int pc, ref Heap mem) {
-        pc++;
-        usize addr = usize.FromProgram(program, ref pc);
-        #if DEBUG
-        Debug($"Attempting to get @.{addr:X2}");
-        #endif
-        usize result = mem.Transform(addr);
-        #if DEBUG
-        Debug($"Pushing &{addr.Hex}");
-        #endif
-        return result;
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static Reference<T> LoadMem<T>(ReadOnlySpan<byte> program, ref int pc, ref Heap mem) where T : struct, ISizedValue<T> {
-        usize loc = LoadMem(program, ref pc, ref mem);
-        return new(loc);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static void StoreMem<T>(ReadOnlySpan<byte> program, ref int pc, ref Heap mem, T val) where T : struct, ISizedValue<T> {
-        usize addr = usize.FromSpan(program[++pc..(pc + usize.ByteCount)]);
-        #if DEBUG
-        Debug($"Storing {val} to &.{addr.Hex}");
-        #endif
-        pc += usize.ByteCount - 1;
-        var span = mem[(int)addr..(int)(addr + T.ByteCount)];
-        val.ToSpan(span);
     }
     
     // TODO: Jump table for local frames

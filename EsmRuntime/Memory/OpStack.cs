@@ -1,6 +1,6 @@
 ﻿using EsmRuntime.Common.Types;
 
-namespace EsmRuntime.Storage;
+namespace EsmRuntime.Memory;
 
 // end-based
 public unsafe ref struct OpStack(byte* startPtr, int length) {
@@ -39,8 +39,8 @@ public unsafe ref struct OpStack(byte* startPtr, int length) {
         return T.FromSpan(res);
     }
 
-    public void Push<T>(T value) where T: struct, ISizedValue<T>, allows ref struct {
-        int size = T.ByteCount;
+    public void Push<T>(T value) where T: struct, IByteSerializable<T>, allows ref struct {
+        int size = value.InstanceSize;
         if (_offs == _span.Length - size) throw new StackOverflowError("Operand stack is full!");
         var span = this[(_offs + 1)..(_offs + size + 1)];
         _offs += size;

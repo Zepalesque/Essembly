@@ -1,6 +1,3 @@
-﻿using EsmRuntime.Common;
-using EsmRuntime.Common.Types;
-
-namespace EsmRuntime.Storage;
+﻿namespace EsmRuntime.Memory;
 
 // public unsafe ref struct GlobalFrameStack(byte* start, int length) 

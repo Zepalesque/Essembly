@@ -11,7 +11,7 @@ namespace EsmRuntime.Common.Types;
 // using uaddr__impl = u32;
 // #endif
 using usize__impl = u16;
-// using isize__impl = i16;
+using isize__impl = i16;
 
 #pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
 public readonly record struct usize(usize__impl val):
@@ -150,4 +150,137 @@ public readonly record struct usize(usize__impl val):
     public int CompareTo(usize other) => throw new NotImplementedException();
     public static usize MaxValue => (usize) usize__impl.MaxValue;
     public static usize MinValue => (usize) usize__impl.MinValue;
+
+    public static unsafe usize FromBytecode(byte* start, int* pc) => throw new NotImplementedException();
+}
+
+// TODO: figure this out
+#pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
+public readonly record struct isize(isize__impl val):
+    ISpanFormattable,
+    ISizedValue<isize>,
+    INumberFormattable,
+    IBitwiseOperators<isize, isize, isize>,
+    IAdditionOperators<isize, isize, isize>,
+    ISubtractionOperators<isize, isize, isize>,
+    IMultiplyOperators<isize, isize, isize>,
+    IDivisionOperators<isize, isize, isize>,
+    IModulusOperators<isize, isize, isize>,
+    IShiftOperators<isize, isize, isize>,
+    IComparisonOperators<isize, isize, bool>,
+    IUnaryPlusOperators<isize, isize>,
+    IUnaryNegationOperators<isize, isize>,
+    IAdditiveIdentity<isize, isize>,
+    IMultiplicativeIdentity<isize, isize>,
+    IComparable<isize>,
+    IMinMaxValue<isize>
+{
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator int(isize self) => self.val;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator isize(int self) => new((isize__impl)self);    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator isize__impl(isize self) => self.val;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator isize(isize__impl self) => new(self);
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ToSpan(Span<byte> span) {
+        val.ToSpan(span);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public unsafe void ToPtr(byte* ptr) => val.ToPtr(ptr);
+
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize FromSpan(ReadOnlySpan<byte> bytes) => new(isize__impl.FromSpan(bytes));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static unsafe isize FromPtr(byte* ptr) => FromSpan(new(ptr, ByteCount));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize FromProgram(ReadOnlySpan<byte> bytes, ref int pc) {
+        var subspan = bytes[pc..(pc += ByteCount)];
+        return FromSpan(subspan);
+    }
+    
+    
+    public static int ByteCount => isize__impl.ByteCount;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public string ToString(string? format, IFormatProvider? formatProvider)
+        => val.ToString(format, formatProvider);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format,
+        IFormatProvider? provider)
+        => val.TryFormat(destination, out charsWritten, format, provider);
+
+    public string Bin => val.Bin;
+
+    public string Hex => val.Hex;
+
+    public string Dec => val.Dec;
+    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize operator &(isize left, isize right) => new(left.val & right.val);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize operator |(isize left, isize right) => new(left.val | right.val);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize operator ^(isize left, isize right) => new(left.val ^ right.val);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize operator ~(isize value) => new(~value.val);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize operator +(isize left, isize right) => new(left.val + right.val);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize operator -(isize left, isize right) => new(left.val - right.val);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize operator *(isize left, isize right) => new(left.val * right.val);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize operator /(isize left, isize right) => new(left.val / right.val);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize operator %(isize left, isize right) => new(left.val % right.val);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize operator <<(isize value, isize shiftAmount) => new(value.val << shiftAmount.val);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize operator >> (isize value, isize shiftAmount) => new(value.val >> shiftAmount.val);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize operator >>> (isize value, isize shiftAmount) => new(value.val >>> shiftAmount.val);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator >(isize left, isize right) => left.val > right.val;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator >=(isize left, isize right) => left.val >= right.val;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator <(isize left, isize right) => left.val < right.val;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator <=(isize left, isize right) => left.val <= right.val;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize operator +(isize value) => value;
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static isize operator -(isize value) => new(-value.val);
+    public static isize AdditiveIdentity { get; } = 0;
+    public static isize MultiplicativeIdentity { get; } = 1;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int CompareTo(isize other) => throw new NotImplementedException();
+    public static isize MaxValue => (isize) isize__impl.MaxValue;
+    public static isize MinValue => (isize) isize__impl.MinValue;
 }

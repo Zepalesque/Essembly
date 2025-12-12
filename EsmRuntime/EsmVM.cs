@@ -5,7 +5,8 @@ using System.Text;
 using EsmRuntime.Common;
 using EsmRuntime.Common.Types;
 using EsmRuntime.Memory;
-using EsmRuntime.Storage;
+using EsmRuntime.Memory.Heap;
+using HeapTree = EsmRuntime.Memory.Heap.HeapTree;
 
 namespace EsmRuntime;
 
@@ -58,7 +59,7 @@ public static partial class EsmVM {
         
         
         if (!CheckPtrSize(heapSize) || !CheckPtrSize(opStackSize)) return ExitCode.Failure;
-        var mem = new Heap(alloc, (int) heapSize);
+        var mem = new ReferenceHeap(alloc, (int) heapSize);
         var stack = new OpStack(alloc + heapSize, (int) opStackSize);
         try {
             var exit = Run(program, ref mem, ref stack);
@@ -73,36 +74,44 @@ public static partial class EsmVM {
     static bool CheckPtrSize(nuint memorySize) => memorySize - 1 <= usize.MaxValue;
 
 
-    static u8? Run(ReadOnlySpan<byte> program, ref Heap heap, ref OpStack stack) {
+    static unsafe u8? Run(ReadOnlySpan<byte> program, in ReferenceHeap heap, ref OpStack stack) {
         for (var pc = 0; pc < program.Length; pc++) {
             var opcode = (OpCode) program[pc];
             switch (opcode) {
                 case OpCode.Push8: 
-                    stack.Push(LoadConst<u8>(program, ref pc));
+                    stack.Push(LoadConst<u8>(program, &pc));
                     break;
                 case OpCode.Push16: 
-                    stack.Push(LoadConst<u16>(program, ref pc));
+                    stack.Push(LoadConst<u16>(program, &pc));
                     break;
                 case OpCode.Push32: 
-                    stack.Push(LoadConst<u32>(program, ref pc));
+                    stack.Push(LoadConst<u32>(program, &pc));
                     break;
                 case OpCode.Push64: 
-                    stack.Push(LoadConst<u64>(program, ref pc));
+                    stack.Push(LoadConst<u64>(program, &pc));
                     break;
+                
+                
+                
                 case OpCode.AllocStr: {
-                    AllocRef<StringSlice>(program, ref pc, ref heap);
+                    stack.Push(AllocRef<StringSlice>(program, &pc, heap));
                     break;
                 }
-                case OpCode.PushMemPtr: {
-                    stack.Push(LoadMem(program, ref pc, ref heap));
+                
+                case OpCode.Deref: {
+                    stack.Push(stack.Pop<Reference<Slice<u8>>>().Dereference());
                     break;
                 }
-                case OpCode.StoreMem8: {
-                    StoreMem(program, ref pc, ref heap, stack.Pop<u8>());
+                case OpCode.PushGlobalAddr: {
+                    // stack.Push(PushHeapRef(program, &pc, heap));
                     break;
                 }
-                case OpCode.StoreMem16: {
-                    StoreMem(program, ref pc, ref heap, stack.Pop<u16>());
+                case OpCode.StoreGlobal8: {
+                    // StoreMem(ref stack, ref heap, stack.Pop<u8>());
+                    break;
+                }
+                case OpCode.StoreGlobal16: {
+                    // StoreMem(program, ref pc, ref heap, stack.Pop<u16>());
                     break;
                 }
                     

@@ -44,15 +44,15 @@ public static class FixedSizeExt {
 
         public OpCode MemStorage
             => self switch {
-                FixedSizeType.I8 => OpCode.StoreMem8,
-                FixedSizeType.I16 => OpCode.StoreMem16,
-                FixedSizeType.I32 => OpCode.StoreMem32,
-                FixedSizeType.I64 => OpCode.StoreMem64,
-                FixedSizeType.U8 => OpCode.StoreMem8,
-                FixedSizeType.U16 => OpCode.StoreMem16,
-                FixedSizeType.U32 => OpCode.StoreMem32,
-                FixedSizeType.U64 => OpCode.StoreMem64,
-                FixedSizeType.StrPointer => OpCode.StoreMem16,
+                FixedSizeType.I8 => OpCode.StoreGlobal8,
+                FixedSizeType.I16 => OpCode.StoreGlobal16,
+                FixedSizeType.I32 => OpCode.StoreGlobal32,
+                FixedSizeType.I64 => OpCode.StoreGlobal64,
+                FixedSizeType.U8 => OpCode.StoreGlobal8,
+                FixedSizeType.U16 => OpCode.StoreGlobal16,
+                FixedSizeType.U32 => OpCode.StoreGlobal32,
+                FixedSizeType.U64 => OpCode.StoreGlobal64,
+                FixedSizeType.StrPointer => OpCode.StoreGlobal16,
                 _ => throw new InvalidOperationException()
             };
 

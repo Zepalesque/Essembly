@@ -26,7 +26,8 @@ public readonly record struct i8(sbyte value):
     IUnaryNegationOperators<i8, i8>,
     IAdditiveIdentity<i8, i8>,
     IMultiplicativeIdentity<i8, i8>,
-    IComparable<i8> {
+    IComparable<i8>,
+    IMinMaxValue<i8> {
     public static implicit operator i8(sbyte val) => new(val);
     public static implicit operator sbyte(i8 val) => val.value;
     
@@ -93,6 +94,9 @@ public readonly record struct i8(sbyte value):
     public unsafe void ToPtr(byte* ptr) => ToSpan(new(ptr, ByteCount));
 
     public static i8 FromSpan(ReadOnlySpan<byte> bytes) => unchecked((sbyte) bytes[0]);
+    
+    public static i8 MaxValue { get; } = sbyte.MaxValue;
+    public static i8 MinValue { get; } = sbyte.MinValue;
 }
 
 
@@ -113,7 +117,8 @@ public readonly record struct i16(short value):
     IUnaryNegationOperators<i16, i16>,
     IAdditiveIdentity<i16, i16>,
     IMultiplicativeIdentity<i16, i16>,
-    IComparable<i16> {
+    IComparable<i16>,
+    IMinMaxValue<i16> {
     public static implicit operator i16(short val) => new(val);
     public static implicit operator short(i16 val) => val.value;
     
@@ -183,6 +188,9 @@ public readonly record struct i16(short value):
 
     public static i16 FromSpan(ReadOnlySpan<byte> bytes) 
         => unchecked((short) ((bytes[0] << 8) | bytes[1]));
+    
+    public static i16 MaxValue { get; } = short.MaxValue;
+    public static i16 MinValue { get; } = short.MinValue;
 }
 
 
@@ -203,7 +211,8 @@ public readonly record struct i32(int value):
     IUnaryNegationOperators<i32, i32>,
     IAdditiveIdentity<i32, i32>,
     IMultiplicativeIdentity<i32, i32>,
-    IComparable<i32> {
+    IComparable<i32>,
+    IMinMaxValue<i32> {
     public static implicit operator i32(int val) => new(val);
     public static implicit operator int(i32 val) => val.value;
     
@@ -275,6 +284,9 @@ public readonly record struct i32(int value):
 
     public static i32 FromSpan(ReadOnlySpan<byte> bytes) 
         => (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+
+    public static i32 MaxValue { get; } = int.MaxValue;
+    public static i32 MinValue { get; } = int.MinValue;
 }
 
 
