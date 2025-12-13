@@ -60,7 +60,7 @@ public unsafe ref partial struct HeapTree {
             var preLeft = pre->_left; 
             var preParent = pre->_parent;
 
-            Free(pre);
+            AlignedFree(pre);
         
             pre = preLeft;
         
