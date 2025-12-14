@@ -2,7 +2,7 @@
 
 namespace EsmRuntime.Memory.Heap;
 
-public unsafe ref struct Heap(byte* start, int size) {
+/*public unsafe ref struct Heap(byte* start, int size) {
     
     public readonly int Size = size;
 
@@ -25,7 +25,7 @@ public unsafe ref struct Heap(byte* start, int size) {
         byte* ptr = start + Size - _endCursor;
         Span<byte> dest = new(ptr, u);
         data.CopyTo(dest);
-        T value = T.FromSpan(dest);
+        T value = T.FromFatPtr(dest);
         
         return Reference<T>.CreateAt(ptr, value);
     }
@@ -40,11 +40,11 @@ public unsafe ref struct Heap(byte* start, int size) {
     void CheckAddr(usize offset) {
         if (offset >= Size) throw new MemoryAccessError($"Invalid index {offset} for heap with size {Size}");
     }
-}
+}*/
 
-public readonly unsafe ref struct ReferenceHeap(byte* start, int size) {
+public readonly unsafe ref struct ReferenceHeap(byte* start, nint size) {
     byte* Start { get; } = start;
-    int Size { get; } = size;
+    nint Size { get; } = size;
     
     public Reference<T> Allocate<T>(T value) where T: struct, IByteSerializable<T>, allows ref struct {
         usize u = value.InstanceSize;

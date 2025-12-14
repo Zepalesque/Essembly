@@ -1,4 +1,8 @@
 ﻿// ReSharper disable InconsistentNaming
+
+using System.Runtime.CompilerServices;
+using static System.Runtime.CompilerServices.Unsafe;
+
 #pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
 namespace EsmRuntime.Common.Types;
 
@@ -8,19 +12,25 @@ public readonly record struct boolean(bool value) : ISizedValue<boolean> {
     public static implicit operator boolean(bool val) => new(val);
     public static implicit operator bool(boolean val) => val.value;
 
-    public void ToSpan(Span<byte> span) {
-        span[0] = (byte) (value ? 1 : 0);
+    public static usize ByteCount => 1;
+    public static unsafe boolean FromPtr(byte* ptr)
+        => ReadUnaligned<bool>(ptr);
+
+    public unsafe void ToPtr(byte* ptr) 
+        => WriteUnaligned(ptr, value);
+
+    public static unsafe boolean FromFatPtr(byte* ptr, usize size)
+        => FromPtr(ptr);
+
+    public static unsafe boolean FromBytecode(byte* start, int* pc) {
+        *pc += sizeof(bool);
+        return ReadUnaligned<bool>(start);
     }
-    public unsafe void ToPtr(byte* ptr) {
-        *ptr = (byte) (value ? 1 : 0);
+
+    public unsafe FatPtr ToBytecode(delegate*<nuint, byte*> generator) {
+        byte* ptr = generator(sizeof(bool));
+        WriteUnaligned(ptr, value);
+        return new(ptr, sizeof(bool));
     }
-
-    public static boolean FromSpan(ReadOnlySpan<byte> bytes) 
-        => bytes[0] != 0;
-
-    public static unsafe boolean FromPtr(byte* ptr) 
-        => *ptr != 0;
-
-    public static int ByteCount => 1;
 }
     

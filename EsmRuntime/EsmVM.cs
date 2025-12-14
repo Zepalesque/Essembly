@@ -1,11 +1,13 @@
 ﻿using System.CommandLine;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using EsmRuntime.Common;
 using EsmRuntime.Common.Types;
 using EsmRuntime.Memory;
 using EsmRuntime.Memory.Heap;
+using static EsmRuntime.Constants;
 using HeapTree = EsmRuntime.Memory.Heap.HeapTree;
 
 namespace EsmRuntime;
@@ -16,67 +18,74 @@ public static partial class EsmVM {
     public static readonly usize UnitAddr = 1;
 
     public static unsafe void* MemStart { get; set; }
-    public static unsafe nuint MemAddr => (nuint) MemStart;
+    public static unsafe nuint MemAddrUSize => (nuint) MemStart;
+    public static unsafe nint MemAddrISize => (nint) MemStart;
 
-    public static unsafe HeapTree* HeapMemoryTree;
+    internal static unsafe HeapTree* HeapMemoryTree;
     
 
-    static bool _debug;
-    public static int Main(string[] args) {
+    public static unsafe int Main(string[] args) {
         var inputOption = new Option<FileInfo>("--input");
-        var debugOption = new Option<bool>("--debug");
-        var rootCommand = new RootCommand("The Esm runtime.") { inputOption, debugOption };
-        var parseResult = rootCommand.Parse(args);
+        var rootCommand = new RootCommand("The Esm runtime.") { inputOption };
+        ParseResult parseResult = rootCommand.Parse(args);
         
         
         FileInfo input = parseResult.GetRequiredValue(inputOption);
-        _debug = parseResult.GetValue(debugOption);
         
         Console.WriteLine($"Running program: \"{input.Name}\"");
         Console.WriteLine();
 
         byte[] program = File.ReadAllBytes(input.FullName);
 
-        byte b = Run(program, 256, 256, 256);
-        
-        Console.WriteLine(b == ExitCode.Success
-            ? $"Program finished with exit code: 0x{b:X2}"
-            : $"\e[1;91mProgram finished with exit code: 0x{b:X2}\e[0m");
+        fixed (byte* ptr = &program[0]) {
+            u8 b = Run(new(ptr, (nuint) program.Length), new(256, 256, 256, 256));
 
-        return b;
+            Console.WriteLine(b == ExitCode.Success
+                ? $"Program finished with exit code: 0x{b.Hex}!"
+                : $"\e[1;91mProgram finished with exit code: 0x{b.Hex}!\e[0m");
+
+            return b;
+        }
+    }
+    
+    readonly ref struct MemorySizes(nuint heap, nuint functionStack, nuint globalStack, nuint opStack) {
+        public readonly nuint Heap = heap;
+        public readonly nuint FunctionStack = functionStack;
+        public readonly nuint GlobalStack = globalStack;
+        public readonly nuint OpStack = opStack;
+
+        [MethodImpl(Inline)]
+        public nuint FullSize() => Heap + FunctionStack + GlobalStack + OpStack + 2;
     }
 
-    static unsafe u8 Run(ReadOnlySpan<byte> program, nuint heapSize, nuint frameStackSize, nuint opStackSize) {
-        // byte* alloc = stackalloc byte[memorySize + opStackSize];
-
-        nuint memSize = heapSize + opStackSize;
-        
-        var alloc = (byte*) NativeMemory.AllocZeroed(memSize);
-        
-        HeapTree* node = HeapTree.Create(2, heapSize + 2, false);
-
-        HeapMemoryTree = node;
-        MemStart = alloc;
-        
-        
-        if (!CheckPtrSize(heapSize) || !CheckPtrSize(opStackSize)) return ExitCode.Failure;
-        var mem = new ReferenceHeap(alloc, (int) heapSize);
-        var stack = new OpStack(alloc + heapSize, (int) opStackSize);
+    static unsafe u8 Run(FatPtr program, MemorySizes sizes) {
+        nuint size = sizes.FullSize();
+        var alloc = (byte*) NativeMemory.AlignedAlloc(size, 16);
         try {
-            var exit = Run(program, in mem, ref stack);
-            Console.WriteLine();
-            return exit == null ? ExitCode.Unterminated : exit.Value == ExitCode.Success ? exit.Value : exit.Value | ExitCode.UserExit;
-        } catch (RuntimeError e) {
-            Console.WriteLine($"\e[1;91m{e.GetType().Name} (esmr::{(byte)e.Type:X2}): {e.Message}\e[0m");
-            return (u8) (byte) e.Type | ExitCode.RuntimeError;
+            NativeMemory.Clear(alloc, size);
+            var node = HeapTree.Create(2, sizes.Heap + 2, false);
+
+            HeapMemoryTree = node;
+            MemStart = alloc;
+        
+            var mem = new ReferenceHeap(alloc, (nint) sizes.Heap + 2);
+            var stack = new OpStack(alloc + sizes.Heap + 2, (nint) sizes.OpStack);
+            try {
+                var exit = Run(program, in mem, ref stack);
+                Console.WriteLine();
+                return exit == null ? ExitCode.Unterminated : exit.Value == ExitCode.Success ? exit.Value : exit.Value | ExitCode.UserExit;
+            } catch (RuntimeError e) {
+                Console.WriteLine($"\e[1;91m{e.GetType().Name} (esmr::{(byte)e.Type:X2}): {e.Message}\e[0m");
+                return (u8) (byte) e.Type | ExitCode.RuntimeError;
+            }
+        } catch {
+            NativeMemory.Free(alloc);
+            return ExitCode.Failure;
         }
     }
 
-    static bool CheckPtrSize(nuint memorySize) => memorySize - 1 <= usize.MaxValue;
-
-
-    static unsafe u8? Run(ReadOnlySpan<byte> program, in ReferenceHeap heap, ref OpStack stack) {
-        for (var pc = 0; pc < program.Length; pc++) {
+    static unsafe u8? Run(FatPtr program, in ReferenceHeap heap, ref OpStack stack) {
+        for (var pc = 0; pc < program.Size; pc++) {
             var opcode = (OpCode) program[pc];
             switch (opcode) {
                 case OpCode.Push8: 
@@ -336,7 +345,9 @@ public static partial class EsmVM {
                 }
                     
                 case OpCode.InputAscii: {
-                    if (_debug) Debug("Awaiting character input...");
+                    #if DEBUG
+                    Debug("Awaiting character input...");
+                    #endif
                     stack.Push((u8) Console.ReadKey().KeyChar);
                     Console.WriteLine();
                     break;
@@ -345,7 +356,9 @@ public static partial class EsmVM {
                     
                 case OpCode.InputU8: {
                     Console.WriteLine();
-                    if (_debug) Debug("Awaiting u8 decimal input...");
+                    #if DEBUG
+                    Debug("Awaiting u8 decimal input...");
+                    #endif
                     string input = Console.ReadLine() ?? "";
                     if (byte.TryParse(input, NumberStyles.Integer, null, out var result))
                         stack.Push<u8>(result);
@@ -356,7 +369,9 @@ public static partial class EsmVM {
                 
                 case OpCode.InputU16: {
                     Console.WriteLine();
-                    if (_debug) Debug("Awaiting u16 decimal input...");
+                    #if DEBUG
+                    Debug("Awaiting u16 decimal input...");
+                    #endif
                     string input = Console.ReadLine() ?? "";
                     if (ushort.TryParse(input, NumberStyles.Integer, null, out var result))
                         stack.Push<u16>(result);
@@ -364,16 +379,20 @@ public static partial class EsmVM {
 
                     break;
                 }
-
-                case OpCode.InputStr: {
-                    if (_debug) Debug("Awaiting string input...");
+             
+                case OpCode.AllocInputStr: {
+                    #if DEBUG
+                    Debug("Awaiting string input...");
+                    #endif
                     string input = Console.ReadLine() ?? "";
-
-                    stack.Push((u8) '\0');
-                    stack.Push(Encoding.ASCII.GetBytes(input));
+                    var bytes = Encoding.UTF8.GetBytes(input);
+                    fixed (byte* ptr = &bytes[0]) {
+                        StringSlice slice = new(new(ptr, bytes.Length));
+                        stack.Push(heap.Allocate(slice));
+                    }
                     break;
                 }
-                    
+                
                 default: throw new InvalidOperationException($"Unknown opcode: 0x{(byte)opcode:X2}");
             }
         }

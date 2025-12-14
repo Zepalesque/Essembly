@@ -26,7 +26,7 @@ public unsafe ref partial struct HeapTree {
             if (self->_high - self->_low == size) {
                 start = (byte*) self -> _low;
                 if (self->_left == null && self->_right == null) {
-                    Free(self);
+                    AlignedFree(self);
                     self = null;
                 }
                 else if (self->_left != null && self->_right == null) {

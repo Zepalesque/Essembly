@@ -219,7 +219,7 @@ public static class PrintModeExt {
                 IoMode.I16 => OpCode.InputI16,
                 IoMode.I32 => OpCode.InputI32,
                 IoMode.I64 => OpCode.InputI64,
-                IoMode.Str => OpCode.InputStr,
+                IoMode.Str => OpCode.AllocInputStr,
                 _ => throw new InvalidOperationException()
             };
     }

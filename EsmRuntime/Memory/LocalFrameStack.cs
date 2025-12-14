@@ -1,18 +1,18 @@
 ﻿using EsmRuntime.Common;
 using EsmRuntime.Common.Types;
 
-namespace EsmRuntime.Memory.Heap;
+namespace EsmRuntime.Memory;
 
-public unsafe ref struct FrameStack(byte* start, int length) {
-    int _offs = -1;
+public unsafe ref struct CallStack(byte* start, int length) {
+    nint _offs = -1;
 
-    int NextAvailableOffset => _offs == -1 ? 0 : _offs + *(start + _offs);
+    nint NextAvailableOffset => _offs == -1 ? 0 : _offs + *(start + _offs);
 
     public Frame Curr { get; private set; } = default;
     
     public Frame Pop() {
         switch (_offs) {
-            case -1: throw new StackUnderflowError("Cannot pop frame stack as it is empty!");
+            case -1: throw new StackUnderflowError("Cannot pop call stack as it is empty!");
             case 0: {
                 Frame prev = Curr;
                 prev.Clear();
@@ -32,19 +32,19 @@ public unsafe ref struct FrameStack(byte* start, int length) {
     }
     
     public void Push(byte* operand) {
-        int newOffs = NextAvailableOffset;
+        nint newOffs = NextAvailableOffset;
         byte* frameStart = start + newOffs;
         usize count = usize.FromPtr(operand);
-        var varSizes = Slice<usize>.FromSpan(new(operand + usize.ByteCount, count * usize.ByteCount));
+        var varSizes = Slice<usize>.FromFatPtr(operand + usize.ByteCount, count * usize.ByteCount);
         var table = VariableTable.CreateFromSizes(varSizes, frameStart + usize.ByteCount,
             out usize fullSize);
         
         fullSize.ToPtr(frameStart);
         
         if (_offs + fullSize >= length)
-            throw new StackOverflowError("Frame stack is full!");
+            throw new StackOverflowError("Call stack is full!");
 
-        for (var i = 0; i < count; i++) {
+        for (nuint i = 0; i < count; i++) {
             usize offset = table[i];
             usize varSize = varSizes[i];
             
@@ -62,14 +62,14 @@ public unsafe ref struct FrameStack(byte* start, int length) {
 
 public readonly unsafe ref struct VariableTable(Slice<usize> offsets): IByteSerializable<VariableTable> {
     readonly Slice<usize> _offsets = offsets;
-    public usize this[int index] => _offsets[index];
+    public usize this[nuint index] => _offsets[index];
 
     
     public static VariableTable CreateFromSizes(Slice<usize> sizes, byte* dest, out usize frameSize) {
         sizes.Length.ToPtr(dest);
-        usize tableSize = usize.ByteCount + sizes.Bytes.Length;
+        usize tableSize = usize.ByteCount + sizes.Length;
         usize partialFrameSize = tableSize;
-        for (var i = 0; i < sizes.Length; i++) {
+        for (nuint i = 0; i < sizes.Length; i++) {
             usize size = sizes[i];
             byte* offsetLoc = dest + usize.ByteCount + i * usize.ByteCount;
             partialFrameSize.ToPtr(offsetLoc);
@@ -79,30 +79,26 @@ public readonly unsafe ref struct VariableTable(Slice<usize> offsets): IByteSeri
 
         frameSize = partialFrameSize + usize.ByteCount;
 
-        return new(Slice<usize>.FromSpan(new(dest, sizes.Length)));
+        return new(Slice<usize>.FromFatPtr(dest, sizes.Length));
     }
 
     
-    public int InstanceSize => (_offsets.Length + 1) * usize.ByteCount;
+    public nuint InstanceSize => (_offsets.Length + 1) * usize.ByteCount;
     
-    public void ToSpan(Span<byte> bytes) {
-        fixed (byte* b = &bytes[0]) 
-            ToPtr(b);
-    }
     public void ToPtr(byte* ptr) {
         _offsets.Length.ToPtr(ptr);
-        for (var i = 0; i < _offsets.Length; i ++)
+        for (nuint i = 0; i < _offsets.Length; i ++)
             this[i].ToPtr(ptr + usize.ByteCount + i * usize.ByteCount);
     }
 
-    public static VariableTable FromSpan(ReadOnlySpan<byte> bytes) {
-        var slice = Slice<usize>.FromSpan(bytes);
-        return new(slice);
+    public static VariableTable FromFatPtr(byte* ptr, usize size) {
+        var embed = Embed<Slice<usize>>.FromFatPtr(ptr, size);
+        return new(embed.Value);
     }
 
     public static VariableTable FromPtr(byte* ptr) {
         usize size = usize.FromPtr(ptr);
-        var slice = Slice<usize>.FromSpan(new (ptr + usize.ByteCount, size * usize.ByteCount));
+        var slice = Slice<usize>.FromFatPtr(ptr + usize.ByteCount, size * usize.ByteCount);
         return new(slice);
     }
 }

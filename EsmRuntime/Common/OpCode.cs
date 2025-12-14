@@ -137,9 +137,13 @@ public enum OpCode : byte {
     InputI32,
     InputU64,
     InputI64,
-    InputStr,
+    InputUSize,
+    InputISize,
+    AllocInputStr,
     PushGlobalFrame,
     PopGlobalFrame,
+    PushLocFrame,
+    PopLocFrame,
 }
 
 public static class OpCodeExt {

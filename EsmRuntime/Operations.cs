@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Unicode;
+using EsmRuntime.Common;
 using EsmRuntime.Common.Types;
 using EsmRuntime.Debug;
 using EsmRuntime.Memory;
@@ -13,7 +14,7 @@ namespace EsmRuntime;
 
 public static partial class EsmVM {
     [MethodImpl(MethodImplOptions.AggressiveInlining), Obsolete("Use generic func")]
-    static unsafe u8 LoadConst(ReadOnlySpan<byte> program, int* pc) {
+    static unsafe u8 LoadConst(FatPtr program, int* pc) {
         u8 val = program[++*pc];
         #if DEBUG
         Debug($"Pushing {val} to stack");
@@ -22,9 +23,9 @@ public static partial class EsmVM {
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static unsafe T LoadConst<T>(ReadOnlySpan<byte> program, int* pc) where T: struct, ISizedValue<T> {
-        T val = T.FromSpan(program[(*pc + 1)..(*pc + T.ByteCount + 1)]);
-        *pc += T.ByteCount;
+    static unsafe T LoadConst<T>(FatPtr program, int* pc) where T: struct, ISizedValue<T> {
+        var val = T.FromBytecode(program, pc);
+        *pc += (int) T.ByteCount;
         #if DEBUG
         Debug($"Pushing {val} to stack");
         #endif
@@ -32,23 +33,20 @@ public static partial class EsmVM {
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static unsafe Reference<T> AllocRef<T>(ReadOnlySpan<byte> program, int* pc, ReferenceHeap heap) where T: struct, IByteSerializable<T>, IBytecodeSerializable<T>, allows ref struct {
+    static unsafe Reference<T> AllocRef<T>(FatPtr program, int* pc, ReferenceHeap heap) where T: struct, IByteSerializable<T>, IBytecodeSerializable<T>, allows ref struct {
 
-        int ipc = *pc;
-        fixed (byte* ptr = &program[ipc]) {
-            usize addr = usize.FromBytecode(ptr, pc);
-            var data = T.FromBytecode(ptr, pc);
-            var reference = heap.Allocate(data);
-            #if DEBUG
-            Debug($"Allocating a {reference.Dereference().InstanceSize}-byte memory block and storing to &{addr.Hex}");
-            #endif
-            return reference;
-        }
+        usize addr = usize.FromBytecode(program.Ptr, pc);
+        var data = T.FromBytecode(program.Ptr + *pc, pc);
+        var reference = heap.Allocate(data);
+        #if DEBUG
+        Debug($"Allocating a {reference.Dereference().InstanceSize}-byte memory block and storing to &{addr.Hex}"); 
+        #endif
+        return reference;
     }
     
     // TODO: Jump table for local frames
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static void Jump(ReadOnlySpan<byte> program, ref int pc, ref OpStack stack, bool? cond) {
+    static void Jump(FatPtr program, ref int pc, ref OpStack stack, bool? cond) {
         
         if (cond == null) {
             int jump = unchecked((sbyte) program[++pc]) - 2;
@@ -267,7 +265,7 @@ public static partial class EsmVM {
         Debug($"Printing string to console: \"{slice.ToString()}\"");
         #endif
 
-        foreach (byte b in slice.Utf8.Bytes) {
+        foreach (byte b in slice.Utf8) {
             Console.Write(b);
         }
     }

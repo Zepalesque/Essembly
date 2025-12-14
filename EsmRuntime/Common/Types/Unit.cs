@@ -14,10 +14,15 @@ public struct Unit: ISpanFormattable, ISizedValue<Unit> {
 
     public override string ToString() => "()";
 
-    public void ToSpan(Span<byte> span) { }
+
     public unsafe void ToPtr(byte* ptr) { }
 
-    public static Unit FromSpan(ReadOnlySpan<byte> bytes) => Self;
-    public static int ByteCount => 0;
+    public static unsafe Unit FromFatPtr(byte* ptr, usize size) => Self;
     public static unsafe Unit FromPtr(byte* ptr) => Self;
+
+    public static unsafe Unit FromBytecode(byte* start, int* pc) => Self;
+    
+    public unsafe FatPtr ToBytecode(delegate*<nuint, byte*> generator) => new(null, 0);
+
+    public static usize ByteCount => 0;
 }

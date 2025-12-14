@@ -3,54 +3,27 @@
 namespace EsmRuntime.Memory;
 
 // end-based
-public unsafe ref struct OpStack(byte* startPtr, int length) {
-
-
-    public int Length => _span.Length;
+public unsafe ref struct OpStack(byte* startPtr, nint length) {
     
-    public ReadOnlySpan<byte> Values => this[..(_offs+1)];
-
-    public Span<byte> this[Range range] {
-        get {
-            (int offs, int length) = range.GetOffsetAndLength(_span.Length);
-            int start = length - offs;
-            return _span[^start..^offs];
-            
-        }
-    }
-    
-    int _offs = -1;
-    readonly Span<byte> _span = new(startPtr, length);
-    
-    public u8 this[Index offset] {
-        get => _span[^(offset.GetOffset(_span.Length) + 1)];
-        set => _span[^(offset.GetOffset(_span.Length) + 1)] = value;
-    }
+    nint _offs = -1;
 
     public T Pop<T>() where T : struct, ISizedValue<T>, allows ref struct {
-        int size = T.ByteCount;
+        nuint size = T.ByteCount;
         
-        if (_offs + 1 < T.ByteCount) throw new StackUnderflowError(
+        if (_offs + 1 < (long) T.ByteCount) throw new StackUnderflowError(
             $"Tried to pop element of size {T.ByteCount} from operand stack with size {_offs + 1}"
         );
-        if (size == 0) return T.FromSpan(ReadOnlySpan<byte>.Empty);
-        ReadOnlySpan<byte> res = this[(_offs - size + 1)..(_offs+1)];
-        _offs -= size;
-        return T.FromSpan(res);
+        if (size == 0) return T.FromFatPtr(null, 0);
+        _offs -= (nint) size;
+        return T.FromFatPtr(startPtr + _offs - size + 1, size);
     }
 
-    public void Push<T>(T value) where T: struct, IByteSerializable<T>, allows ref struct {
-        int size = value.InstanceSize;
-        if (_offs == _span.Length - size) throw new StackOverflowError("Operand stack is full!");
-        var span = this[(_offs + 1)..(_offs + size + 1)];
-        _offs += size;
+    public void Push<T>(T value) where T : struct, IByteSerializable<T>, allows ref struct {
+        nuint size = value.InstanceSize;
+        if (_offs + (long) size > length) throw new StackOverflowError("Operand stack is full!");
+        byte* ptr = startPtr + _offs + 1;
+        _offs += (nint) size;
 
-        value.ToSpan(span);
-    }
-
-    public void Push(ReadOnlySpan<byte> value) {
-        var span = this[(_offs + 1)..(_offs + value.Length + 1)];
-        _offs += value.Length;
-        value.CopyTo(span);
+        value.ToPtr(ptr);
     }
 }

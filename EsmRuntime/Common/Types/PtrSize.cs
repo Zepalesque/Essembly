@@ -1,5 +1,9 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
+using static System.BitConverter;
+using static System.Buffers.Binary.BinaryPrimitives;
+using static System.Runtime.CompilerServices.Unsafe;
+using static EsmRuntime.Constants;
 
 // ReSharper disable InconsistentNaming
 
@@ -10,11 +14,10 @@ namespace EsmRuntime.Common.Types;
 // #else
 // using uaddr__impl = u32;
 // #endif
-using usize__impl = u16;
 using isize__impl = i16;
 
 #pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
-public readonly record struct usize(usize__impl val):
+public readonly record struct usize(nuint value):
     ISpanFormattable,
     ISizedValue<usize>,
     INumberFormattable,
@@ -33,130 +36,161 @@ public readonly record struct usize(usize__impl val):
     IComparable<usize>,
     IMinMaxValue<usize>
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator nuint(usize self) => EsmVM.MemAddr + self.val;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator usize(nuint self) => new((usize__impl) (self - EsmVM.MemAddr));    
+    [MethodImpl(Inline)]
+    public static implicit operator nuint(usize self) => EsmVM.MemAddrUSize + self.value;
+    [MethodImpl(Inline)]
+    public static implicit operator usize(nuint self) => new(self - EsmVM.MemAddrUSize);    
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator int(usize self) => self.val;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator usize(int self) => new((usize__impl)self);    
+    [MethodImpl(Inline)]
+    public static implicit operator int(usize self) => (int) self.value;
+    [MethodImpl(Inline)]
+    public static implicit operator usize(int self) => new((nuint)self);    
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static explicit operator usize__impl(usize self) => self.val;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static explicit operator usize(usize__impl self) => new(self);    
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Inline)]
+    public static implicit operator long(usize self) => (long) self.value;
+    [MethodImpl(Inline)]
+    public static implicit operator usize(long self) => new((nuint)self);    
+
+    
+    [MethodImpl(Inline)]
+    public static implicit operator uint(usize self) => (uint) self.value;
+    [MethodImpl(Inline)]
+    public static implicit operator usize(uint self) => new(self);  
+    
+    [MethodImpl(Inline)]
+    public static implicit operator ulong(usize self) => self.value;
+    [MethodImpl(Inline)]
+    public static implicit operator usize(ulong self) => new((nuint) self);  
+    
+    [MethodImpl(Inline)]
     public static unsafe explicit operator byte*(usize self) => (byte*) (nuint) self;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe explicit operator usize(byte* self) => (usize) (nuint) self;
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ToSpan(Span<byte> span) {
-        val.ToSpan(span);
+    [MethodImpl(Inline)]
+    public static unsafe explicit operator usize(byte* self) => (nuint) self;
+
+    [MethodImpl(Inline)]
+    public static unsafe usize FromBytecode(byte* start, int* pc) {
+        *pc += sizeof(ulong);
+        return IsLittleEndian
+            ? ReverseEndianness(ReadUnaligned<ulong>(start))
+            : ReadUnaligned<ulong>(start);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public unsafe void ToPtr(byte* ptr) => val.ToPtr(ptr);
-
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize FromSpan(ReadOnlySpan<byte> bytes) => new(usize__impl.FromSpan(bytes));
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe usize FromPtr(byte* ptr) => FromSpan(new(ptr, ByteCount));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize FromProgram(ReadOnlySpan<byte> bytes, ref int pc) {
-        var subspan = bytes[pc..(pc += ByteCount)];
-        return FromSpan(subspan);
+    [MethodImpl(Inline)]
+    public unsafe FatPtr ToBytecode(delegate*<nuint, byte*> generator) {
+        byte* ptr = generator(sizeof(ulong));
+        WriteUnaligned(ptr, IsLittleEndian ? ReverseEndianness(value) : value);
+        return new(ptr, sizeof(ulong));
     }
+
+    [MethodImpl(Inline)]
+    public unsafe void ToPtr(byte* ptr) {
+        WriteUnaligned(ptr, value);
+    }
+
+    [MethodImpl(Inline)]
+    public static unsafe usize FromFatPtr(byte* ptr, usize size) => FromPtr(ptr);
+
+    [MethodImpl(Inline)]
+    public static unsafe usize FromPtr(byte* ptr) => ReadUnaligned<nuint>(ptr);
     
-    
-    public static int ByteCount => usize__impl.ByteCount;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static usize ByteCount => nuint.Size;
+    [MethodImpl(Inline)]
     public string ToString(string? format, IFormatProvider? formatProvider)
-        => val.ToString(format, formatProvider);
+        => value.ToString(format, formatProvider);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Inline)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format,
         IFormatProvider? provider)
-        => val.TryFormat(destination, out charsWritten, format, provider);
+        => value.TryFormat(destination, out charsWritten, format, provider);
 
-    public string Bin => val.Bin;
+    public string Bin {
+        [MethodImpl(Inline)]
+        get => nuint.Size switch {
+            4 => $"{value:B32}",
+            8 => $"{value:B64}",
+            _ => throw new InvalidOperationException()
+        };
+    }
 
-    public string Hex => val.Hex;
+    public string Hex {
+        [MethodImpl(Inline)]
+        get => nuint.Size switch {
+            4 => $"{value:X8}",
+            8 => $"{value:X16}",
+            _ => throw new InvalidOperationException()
+        };
+    }
 
-    public string Dec => val.Dec;
-    
+    public string Dec {
+        [MethodImpl(Inline)]
+        get => $"{value:D}";
+    }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize operator &(usize left, usize right) => new(left.val & right.val);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize operator |(usize left, usize right) => new(left.val | right.val);
+    [MethodImpl(Inline)]
+    public static usize operator &(usize left, usize right) => new(left.value & right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize operator ^(usize left, usize right) => new(left.val ^ right.val);
+    [MethodImpl(Inline)]
+    public static usize operator |(usize left, usize right) => new(left.value | right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize operator ~(usize value) => new(~value.val);
+    [MethodImpl(Inline)]
+    public static usize operator ^(usize left, usize right) => new(left.value ^ right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize operator +(usize left, usize right) => new(left.val + right.val);
+    [MethodImpl(Inline)]
+    public static usize operator ~(usize value) => new(~value.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize operator -(usize left, usize right) => new(left.val - right.val);
+    [MethodImpl(Inline)]
+    public static usize operator +(usize left, usize right) => new(left.value + right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize operator *(usize left, usize right) => new(left.val * right.val);
+    [MethodImpl(Inline)]
+    public static usize operator -(usize left, usize right) => new(left.value - right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize operator /(usize left, usize right) => new(left.val / right.val);
+    [MethodImpl(Inline)]
+    public static usize operator *(usize left, usize right) => new(left.value * right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize operator %(usize left, usize right) => new(left.val % right.val);
+    [MethodImpl(Inline)]
+    public static usize operator /(usize left, usize right) => new(left.value / right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize operator <<(usize value, usize shiftAmount) => new(value.val << shiftAmount.val);
+    [MethodImpl(Inline)]
+    public static usize operator %(usize left, usize right) => new(left.value % right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize operator >> (usize value, usize shiftAmount) => new(value.val >> shiftAmount.val);
+    [MethodImpl(Inline)]
+    public static usize operator <<(usize value, usize shiftAmount) => new(value.value << (int) shiftAmount.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize operator >>> (usize value, usize shiftAmount) => new(value.val >>> shiftAmount.val);
+    [MethodImpl(Inline)]
+    public static usize operator >> (usize value, usize shiftAmount) => new(value.value >> (int) shiftAmount.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator >(usize left, usize right) => left.val > right.val;
+    [MethodImpl(Inline)]
+    public static usize operator >>> (usize value, usize shiftAmount) => new(value.value >>> (int) shiftAmount.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator >=(usize left, usize right) => left.val >= right.val;
+    [MethodImpl(Inline)]
+    public static bool operator >(usize left, usize right) => left.value > right.value;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator <(usize left, usize right) => left.val < right.val;
+    [MethodImpl(Inline)]
+    public static bool operator >=(usize left, usize right) => left.value >= right.value;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator <=(usize left, usize right) => left.val <= right.val;
+    [MethodImpl(Inline)]
+    public static bool operator <(usize left, usize right) => left.value < right.value;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Inline)]
+    public static bool operator <=(usize left, usize right) => left.value <= right.value;
+
+    [MethodImpl(Inline)]
     public static usize operator +(usize value) => value;
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static usize operator -(usize value) => new(-value.val);
+    [MethodImpl(Inline)]
+    public static usize operator -(usize value) => new(~value.value + 1);
+
     public static usize AdditiveIdentity { get; } = 0;
     public static usize MultiplicativeIdentity { get; } = 1;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int CompareTo(usize other) => throw new NotImplementedException();
-    public static usize MaxValue => (usize) usize__impl.MaxValue;
-    public static usize MinValue => (usize) usize__impl.MinValue;
-
-    public static unsafe usize FromBytecode(byte* start, int* pc) => throw new NotImplementedException();
+    [MethodImpl(Inline)]
+    public int CompareTo(usize other) => value.CompareTo(other.value);
+    public static usize MaxValue => nuint.MaxValue;
+    public static usize MinValue => nuint.MinValue;
 }
 
-// TODO: figure this out
-#pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
-public readonly record struct isize(isize__impl val):
+public readonly record struct isize(nint value):
     ISpanFormattable,
     ISizedValue<isize>,
     INumberFormattable,
@@ -175,112 +209,144 @@ public readonly record struct isize(isize__impl val):
     IComparable<isize>,
     IMinMaxValue<isize>
 {
+    [MethodImpl(Inline)]
+    public static implicit operator nint(isize self) => EsmVM.MemAddrISize + self.value;
+    [MethodImpl(Inline)]
+    public static implicit operator isize(nint self) => new(self - EsmVM.MemAddrISize);    
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator int(isize self) => self.val;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator isize(int self) => new((isize__impl)self);    
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static explicit operator isize__impl(isize self) => self.val;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static explicit operator isize(isize__impl self) => new(self);
+    [MethodImpl(Inline)]
+    public static implicit operator int(isize self) => (int) self.value;
+    [MethodImpl(Inline)]
+    public static implicit operator isize(int self) => new(self);
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ToSpan(Span<byte> span) {
-        val.ToSpan(span);
+    [MethodImpl(Inline)]
+    public static implicit operator long(isize self) => self.value;
+    [MethodImpl(Inline)]
+    public static implicit operator isize(long self) => new((nint) self);  
+    
+    [MethodImpl(Inline)]
+    public static unsafe explicit operator byte*(isize self) => (byte*) (nint) self;
+    [MethodImpl(Inline)]
+    public static unsafe explicit operator isize(byte* self) => (nint) self;
+
+    [MethodImpl(Inline)]
+    public static unsafe isize FromBytecode(byte* start, int* pc) {
+        *pc += sizeof(long);
+        return IsLittleEndian
+            ? ReverseEndianness(ReadUnaligned<long>(start))
+            : ReadUnaligned<long>(start);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public unsafe void ToPtr(byte* ptr) => val.ToPtr(ptr);
-
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize FromSpan(ReadOnlySpan<byte> bytes) => new(isize__impl.FromSpan(bytes));
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe isize FromPtr(byte* ptr) => FromSpan(new(ptr, ByteCount));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize FromProgram(ReadOnlySpan<byte> bytes, ref int pc) {
-        var subspan = bytes[pc..(pc += ByteCount)];
-        return FromSpan(subspan);
+    [MethodImpl(Inline)]
+    public unsafe FatPtr ToBytecode(delegate*<nuint, byte*> generator) {
+        byte* ptr = generator(sizeof(long));
+        WriteUnaligned(ptr, IsLittleEndian ? ReverseEndianness(value) : value);
+        return new(ptr, sizeof(long));
     }
+
+    [MethodImpl(Inline)]
+    public unsafe void ToPtr(byte* ptr) {
+        WriteUnaligned(ptr, value);
+    }
+
+    [MethodImpl(Inline)]
+    public static unsafe isize FromFatPtr(byte* ptr, usize size) => FromPtr(ptr);
+
+    [MethodImpl(Inline)]
+    public static unsafe isize FromPtr(byte* ptr) => ReadUnaligned<nint>(ptr);
     
-    
-    public static int ByteCount => isize__impl.ByteCount;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static usize ByteCount => nint.Size;
+    [MethodImpl(Inline)]
     public string ToString(string? format, IFormatProvider? formatProvider)
-        => val.ToString(format, formatProvider);
+        => value.ToString(format, formatProvider);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Inline)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format,
         IFormatProvider? provider)
-        => val.TryFormat(destination, out charsWritten, format, provider);
+        => value.TryFormat(destination, out charsWritten, format, provider);
 
-    public string Bin => val.Bin;
+    public string Bin {
+        [MethodImpl(Inline)]
+        get => nint.Size switch {
+            4 => $"{value:B32}",
+            8 => $"{value:B64}",
+            _ => throw new InvalidOperationException()
+        };
+    }
 
-    public string Hex => val.Hex;
+    public string Hex {
+        [MethodImpl(Inline)]
+        get => nint.Size switch {
+            4 => $"{value:X8}",
+            8 => $"{value:X16}",
+            _ => throw new InvalidOperationException()
+        };
+    }
 
-    public string Dec => val.Dec;
-    
+    public string Dec {
+        [MethodImpl(Inline)]
+        get => $"{value:D}";
+    }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize operator &(isize left, isize right) => new(left.val & right.val);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize operator |(isize left, isize right) => new(left.val | right.val);
+    [MethodImpl(Inline)]
+    public static isize operator &(isize left, isize right) => new(left.value & right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize operator ^(isize left, isize right) => new(left.val ^ right.val);
+    [MethodImpl(Inline)]
+    public static isize operator |(isize left, isize right) => new(left.value | right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize operator ~(isize value) => new(~value.val);
+    [MethodImpl(Inline)]
+    public static isize operator ^(isize left, isize right) => new(left.value ^ right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize operator +(isize left, isize right) => new(left.val + right.val);
+    [MethodImpl(Inline)]
+    public static isize operator ~(isize value) => new(~value.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize operator -(isize left, isize right) => new(left.val - right.val);
+    [MethodImpl(Inline)]
+    public static isize operator +(isize left, isize right) => new(left.value + right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize operator *(isize left, isize right) => new(left.val * right.val);
+    [MethodImpl(Inline)]
+    public static isize operator -(isize left, isize right) => new(left.value - right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize operator /(isize left, isize right) => new(left.val / right.val);
+    [MethodImpl(Inline)]
+    public static isize operator *(isize left, isize right) => new(left.value * right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize operator %(isize left, isize right) => new(left.val % right.val);
+    [MethodImpl(Inline)]
+    public static isize operator /(isize left, isize right) => new(left.value / right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize operator <<(isize value, isize shiftAmount) => new(value.val << shiftAmount.val);
+    [MethodImpl(Inline)]
+    public static isize operator %(isize left, isize right) => new(left.value % right.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize operator >> (isize value, isize shiftAmount) => new(value.val >> shiftAmount.val);
+    [MethodImpl(Inline)]
+    public static isize operator <<(isize value, isize shiftAmount) => new(value.value << (int) shiftAmount.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize operator >>> (isize value, isize shiftAmount) => new(value.val >>> shiftAmount.val);
+    [MethodImpl(Inline)]
+    public static isize operator >> (isize value, isize shiftAmount) => new(value.value >> (int) shiftAmount.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator >(isize left, isize right) => left.val > right.val;
+    [MethodImpl(Inline)]
+    public static isize operator >>> (isize value, isize shiftAmount) => new(value.value >>> (int) shiftAmount.value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator >=(isize left, isize right) => left.val >= right.val;
+    [MethodImpl(Inline)]
+    public static bool operator >(isize left, isize right) => left.value > right.value;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator <(isize left, isize right) => left.val < right.val;
+    [MethodImpl(Inline)]
+    public static bool operator >=(isize left, isize right) => left.value >= right.value;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator <=(isize left, isize right) => left.val <= right.val;
+    [MethodImpl(Inline)]
+    public static bool operator <(isize left, isize right) => left.value < right.value;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(Inline)]
+    public static bool operator <=(isize left, isize right) => left.value <= right.value;
+
+    [MethodImpl(Inline)]
     public static isize operator +(isize value) => value;
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static isize operator -(isize value) => new(-value.val);
+    [MethodImpl(Inline)]
+    public static isize operator -(isize value) => new(~value.value + 1);
+
     public static isize AdditiveIdentity { get; } = 0;
     public static isize MultiplicativeIdentity { get; } = 1;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int CompareTo(isize other) => throw new NotImplementedException();
-    public static isize MaxValue => (isize) isize__impl.MaxValue;
-    public static isize MinValue => (isize) isize__impl.MinValue;
+    [MethodImpl(Inline)]
+    public int CompareTo(isize other) => value.CompareTo(other.value);
+    public static isize MaxValue => nint.MaxValue;
+    public static isize MinValue => nint.MinValue;
 }
