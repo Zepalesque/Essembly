@@ -316,7 +316,6 @@ public readonly record struct u16(ushort value):
 public readonly record struct u32(uint value): 
     ISpanFormattable,
     INumberFormattable,
-    IUtf16Formattable<u32>,
     ISizedValue<u32>,
     IBitwiseOperators<u32, u32, u32>,
     IAdditionOperators<u32, u32, u32>,
@@ -474,7 +473,6 @@ public readonly record struct u32(uint value):
 public readonly record struct u64(ulong value): 
     ISpanFormattable,
     INumberFormattable,
-    IUtf16Formattable<u64>,
     ISizedValue<u64>,
     IBitwiseOperators<u64, u64, u64>,
     IAdditionOperators<u64, u64, u64>,
@@ -627,3 +625,157 @@ public readonly record struct u64(ulong value):
         get;
     } = ulong.MinValue;
 }
+
+
+/*public readonly record struct u128(UInt128 value):
+    ISpanFormattable,
+    INumberFormattable,
+    ISizedValue<u128>,
+    IBitwiseOperators<u128, u128, u128>,
+    IAdditionOperators<u128, u128, u128>,
+    ISubtractionOperators<u128, u128, u128>,
+    IMultiplyOperators<u128, u128, u128>,
+    IDivisionOperators<u128, u128, u128>,
+    IModulusOperators<u128, u128, u128>,
+    IShiftOperators<u128, u128, u128>,
+    IComparisonOperators<u128, u128, bool>,
+    IUnaryPlusOperators<u128, u128>,
+    IUnaryNegationOperators<u128, u128>,
+    IAdditiveIdentity<u128, u128>,
+    IMultiplicativeIdentity<u128, u128>,
+    IComparable<u128>,
+    IMinMaxValue<u128> {
+    
+    [MethodImpl(Inline)]
+    public static implicit operator u128(UInt128 val) => new(val);
+    [MethodImpl(Inline)]
+    public static implicit operator UInt128(u128 val) => val.value;
+    
+    [MethodImpl(Inline)]
+    public static u128 operator ~(u128 self) => ~self.value;
+    [MethodImpl(Inline)]
+    public static u128 operator &(u128 a, u128 b) => a.value & b.value;
+    [MethodImpl(Inline)]
+    public static u128 operator |(u128 a, u128 b) => a.value | b.value;
+    [MethodImpl(Inline)]
+    public static u128 operator ^(u128 a, u128 b) => a.value ^ b.value;
+    [MethodImpl(Inline)]
+    public static u128 operator <<(u128 a, u128 b) => unchecked(a.value << (int) b.value);
+    [MethodImpl(Inline)]
+    public static u128 operator >>(u128 a, u128 b) => unchecked(a.value >> (int) b.value);
+    [MethodImpl(Inline)]
+    public static u128 operator >>>(u128 a, u128 b) => unchecked(a.value >>> (int) b.value);
+
+
+    public string Bin {
+        [MethodImpl(Inline)] get => $"{value:B64}";
+    }
+
+    public string Hex {
+        [MethodImpl(Inline)] get => $"{value:X16}";
+    }
+
+    public string Dec {
+        [MethodImpl(Inline)] get => $"{value:D}";
+    }
+
+    [MethodImpl(Inline)]
+    public int CompareTo(u128 other) => value.CompareTo(other.value);
+
+    [MethodImpl(Inline)]
+    public static u128 operator %(u128 left, u128 right) => left.value % right.value;
+
+    [MethodImpl(Inline)]
+    public static u128 operator +(u128 value) => value;
+    
+    [MethodImpl(Inline)]
+    public override string ToString() => value.ToString();
+    
+    [MethodImpl(Inline)]
+    public string ToString(string? format, IFormatProvider? formatProvider) 
+        => value.ToString(format, formatProvider);
+
+    [MethodImpl(Inline)]
+    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) 
+        => value.TryFormat(destination, out charsWritten, format, provider);
+
+    [MethodImpl(Inline)]
+    public static u128 operator +(u128 left, u128 right) => unchecked(left.value + right.value);
+    
+    public static u128 AdditiveIdentity { [MethodImpl(Inline)] get; } = (UInt128)0;
+    [MethodImpl(Inline)]
+    public static bool operator >(u128 left, u128 right) => left.value > right.value;
+
+    [MethodImpl(Inline)]
+    public static bool operator >=(u128 left, u128 right) => left.value >= right.value;
+
+    [MethodImpl(Inline)]
+    public static bool operator <(u128 left, u128 right) => left.value < right.value;
+
+    [MethodImpl(Inline)]
+    public static bool operator <=(u128 left, u128 right) => left.value <= right.value;
+
+    [MethodImpl(Inline)]
+    public static u128 operator --(u128 value) => (UInt128)value - 1;
+
+    [MethodImpl(Inline)]
+    public static u128 operator /(u128 left, u128 right) => left.value / right.value;
+
+    [MethodImpl(Inline)]
+    public static u128 operator ++(u128 value) => (UInt128)value + 1;
+    
+    [MethodImpl(Inline)]
+    public static u128 operator *(u128 left, u128 right) => unchecked(left.value * right.value);
+
+    [MethodImpl(Inline)]
+    public static u128 operator -(u128 left, u128 right) => unchecked(left.value - right.value);
+    
+    [MethodImpl(Inline)]
+    public static u128 operator -(u128 value) => unchecked(~value.value + 1);
+
+    public static u128 MultiplicativeIdentity {
+        [MethodImpl(Inline)]
+        get;
+    } = (UInt128) 1;
+    
+    public static usize ByteCount {
+        [MethodImpl(Inline)]
+        get;
+    } = 8;
+
+    [MethodImpl(Inline)]
+    public static unsafe u128 FromPtr(byte* ptr) => ReadUnaligned<UInt128>(ptr);
+
+    [MethodImpl(Inline)]
+    public static unsafe u128 FromFatPtr(byte* ptr, usize size) 
+        => FromPtr(ptr);
+
+    [MethodImpl(Inline)]
+    public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
+
+    [MethodImpl(Inline)]
+    public static unsafe u128 FromBytecode(byte* start, int* pc) {
+        *pc += sizeof(UInt128);
+        return IsLittleEndian 
+            ? ReverseEndianness(ReadUnaligned<UInt128>(start)) 
+            : ReadUnaligned<UInt128>(start);
+    }
+    
+    [MethodImpl(Inline)]
+    public unsafe FatPtr ToBytecode(delegate*<nuint, byte*> generator) {
+        byte* ptr = generator((nuint) sizeof(UInt128));
+        WriteUnaligned(ptr, IsLittleEndian ? ReverseEndianness(value) : value);
+        return new(ptr, (nuint) sizeof(UInt128));
+    }
+
+
+    public static u128 MaxValue {
+        [MethodImpl(Inline)]
+        get;
+    } = UInt128.MaxValue;
+
+    public static u128 MinValue {
+        [MethodImpl(Inline)]
+        get;
+    } = UInt128.MinValue;
+}*/

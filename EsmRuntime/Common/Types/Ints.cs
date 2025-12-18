@@ -316,7 +316,6 @@ public readonly record struct i16(short value):
 public readonly record struct i32(int value): 
     ISpanFormattable,
     INumberFormattable,
-    IUtf16Formattable<i32>,
     ISizedValue<i32>,
     IBitwiseOperators<i32, i32, i32>,
     IAdditionOperators<i32, i32, i32>,
@@ -474,7 +473,6 @@ public readonly record struct i32(int value):
 public readonly record struct i64(long value): 
     ISpanFormattable,
     INumberFormattable,
-    IUtf16Formattable<i64>,
     ISizedValue<i64>,
     IBitwiseOperators<i64, i64, i64>,
     IAdditionOperators<i64, i64, i64>,

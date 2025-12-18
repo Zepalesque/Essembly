@@ -22,6 +22,7 @@ public enum OpCode : byte {
     StoreLoc16, // ...
     StoreLoc32,
     StoreLoc64,
+    StoreLocPtrSize,
     Exit, // Pop 8 bits from the stack and end the program with said exit code
     Jump,
     JumpIfFalse,

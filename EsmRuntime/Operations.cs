@@ -60,7 +60,7 @@ public static partial class EsmVM {
             pc = res;
             
         } else {
-            var top = stack.Pop<boolean>();
+            var top = stack.Pop<@bool>();
             if (top == cond.Value) {
                 int jump = unchecked((sbyte) program[++pc]) - 2;
                 int res = pc + jump;
@@ -216,8 +216,8 @@ public static partial class EsmVM {
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static boolean BinaryEqual<T>(T a, T b) where T: struct, ISizedValue<T>, IEqualityOperators<T, T, bool>  {
-        boolean res = a == b;
+    static @bool BinaryEqual<T>(T a, T b) where T: struct, ISizedValue<T>, IEqualityOperators<T, T, bool>  {
+        @bool res = a == b;
         #if DEBUG
         Debug($"{a} == {b}: -> {b}, {a} => -> {res}");
         #endif
@@ -225,8 +225,8 @@ public static partial class EsmVM {
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static boolean BinaryNEqual<T>(T a, T b) where T: struct, ISizedValue<T>, IEqualityOperators<T, T, bool>  {
-        boolean res = a != b;
+    static @bool BinaryNEqual<T>(T a, T b) where T: struct, ISizedValue<T>, IEqualityOperators<T, T, bool>  {
+        @bool res = a != b;
         #if DEBUG
         Debug($"{a} == {b}: -> {b}, {a} => -> {res}");
         #endif
