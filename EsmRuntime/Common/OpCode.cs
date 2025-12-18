@@ -11,7 +11,7 @@ public enum OpCode : byte {
     PushPtrSize,
     PushGlobalAddr, // Push the address of a value in memory
     PushLocAddr, // Push the address of an index in the current local frame
-    PushGlobalPtr, // pshglbl offs index: pushes the address of
+    PushGlobalPtr, // push_global_var offs index: pushes the address of
     Deref, // Try to dereference the address on the stack and then push it
     StoreGlobal8, // Pop 8 bits from the operand stack and store it to a given address
     StoreGlobal16, // ...

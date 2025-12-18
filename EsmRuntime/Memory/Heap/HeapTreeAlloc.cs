@@ -55,8 +55,8 @@ public unsafe ref partial struct HeapTree {
                     var traversal = leftmostParent;
                     while (traversal != null && traversal != self) {
                         traversal->_maxInterval = traversal->RecalculateMaxInterval();
-                        traversal->_leftmostFree = traversal->RecalculateLeftmost();
-                        traversal->_rightmostFree = traversal->RecalculateRightmost();
+                        traversal->_leftmostEnd = traversal->RecalculateLeftmost();
+                        traversal->_rightmostEnd = traversal->RecalculateRightmost();
                         traversal = traversal->_parent;
                     }
                 }
@@ -115,13 +115,13 @@ public unsafe ref partial struct HeapTree {
 
     usize RecalculateLeftmost() {
         var left = _left;
-        return left != null ? _left->_leftmostFree : _leftmostFree;
+        return left != null ? _left->_leftmostEnd : _leftmostEnd;
     }
 
 
     usize RecalculateRightmost() {
         var right = _right;
-        return right != null ? _right->_rightmostFree : _rightmostFree;
+        return right != null ? _right->_rightmostEnd : _rightmostEnd;
     }
     
 

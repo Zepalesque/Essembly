@@ -15,14 +15,14 @@ public unsafe ref partial struct HeapTree(usize low, usize high, bool isRed) {
     HeapTree* _right = null;
     usize _maxInterval = high - low;
     
-    usize _leftmostFree = low, _rightmostFree = high;
+    usize _leftmostEnd = low, _rightmostEnd = high;
     HeapTree* _parent = null;
 
     static void Recalc(ref HeapTree* self) {
         if (self == null) return;
         self->_maxInterval = self->RecalculateMaxInterval();
-        self->_leftmostFree = self->RecalculateLeftmost();
-        self->_rightmostFree = self->RecalculateRightmost();
+        self->_leftmostEnd = self->RecalculateLeftmost();
+        self->_rightmostEnd = self->RecalculateRightmost();
 
         if (self->_left != null) self->_left->_parent = self;
         if (self->_right != null) self->_right->_parent = self;
