@@ -13,7 +13,6 @@ public interface IByteSerializable<out T> where T: struct, IByteSerializable<T>,
 public interface IBytecodeSerializable<out T> where T : struct, IByteSerializable<T>, allows ref struct {
     public static abstract unsafe T FromBytecode(byte* start, int* pc);
     public unsafe FatPtr ToBytecode(delegate*<nuint, byte*> generator);
-    
 }
 
 public interface ISizedValue<out T> : IByteSerializable<T>, IBytecodeSerializable<T> where T : struct, ISizedValue<T>, allows ref struct {
@@ -62,7 +61,6 @@ public readonly unsafe ref struct Reference<T>(usize address): ISizedValue<Refer
     public static Reference<T> FromBytecode(byte* start, int* pc) => throw new InvalidOperationException();
 }
 
-// TODO: Move to compiler
 public unsafe ref struct Embed<T>(T value): IBytecodeSerializable<Embed<T>>, IByteSerializable<Embed<T>>
     where T : struct, IByteSerializable<T>, allows ref struct {
     T _value = value;
