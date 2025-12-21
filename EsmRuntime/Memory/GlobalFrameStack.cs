@@ -12,7 +12,7 @@ public unsafe ref struct GlobalStack(byte* start, int length) {
     
     public Frame Pop() {
         switch (_offs) {
-            case -1: throw new StackUnderflowError("Cannot pop call stack as it is empty!");
+            case -1: throw new StackUnderflowError("Cannot pop global stack as it is empty!");
             case 0: {
                 Frame prev = Curr;
                 prev.Clear();
