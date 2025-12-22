@@ -27,9 +27,16 @@ public unsafe ref partial struct HeapTree(usize low, usize high, bool isRed) {
         if (self->_left != null) self->_left->_parent = self;
         if (self->_right != null) self->_right->_parent = self;
     }
-
     
-
+    static void RecalcUp(HeapTree* start, HeapTree* stop) {
+        HeapTree* curr = start;
+        while (curr != null && curr != stop) {
+            Recalc(ref curr);
+            curr = curr->_parent;
+        }
+    }
+    
+    static HeapTree* ParentOrNull(HeapTree* self) => self == null ? null : self->_parent;
 
     public static HeapTree* Create(usize from, usize to, bool isRed = true) {
 

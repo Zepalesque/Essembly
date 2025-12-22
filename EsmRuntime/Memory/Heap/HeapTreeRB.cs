@@ -1,7 +1,12 @@
 ﻿namespace EsmRuntime.Memory.Heap;
 
 public unsafe ref partial struct HeapTree {
-
+    
+    static bool IsRed(HeapTree* tree) => tree != null && tree->_isRed;
+    static bool IsBlack(HeapTree* tree) => tree == null || !tree->_isRed;
+    
+    static void RotLeft(HeapTree* self, ref HeapTree* root) => RotLeft(ref RefTo(self, ref root));
+    
     static void RotLeft(ref HeapTree* self) {
         //  X (self)
         //    / \
@@ -28,7 +33,9 @@ public unsafe ref partial struct HeapTree {
         //  / \
         // ?   B
     }
-
+    
+    static void RotRight(HeapTree* self, ref HeapTree* root) => RotRight(ref RefTo(self, ref root));
+    
     static void RotRight(ref HeapTree* self) {
         //  Y (self)
         //    / \
@@ -55,4 +62,11 @@ public unsafe ref partial struct HeapTree {
         //      / \
         //     B   ?
     }
+    
+    // so much ref...
+    static ref HeapTree* RefTo(HeapTree* self, ref HeapTree* root) => ref self->_parent == null
+        ? ref root
+        : ref self == self->_parent->_left 
+            ? ref self->_parent->_left 
+            : ref self->_parent->_right;
 }

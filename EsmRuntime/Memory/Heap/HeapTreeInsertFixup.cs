@@ -15,7 +15,7 @@ public unsafe ref partial struct HeapTree {
                 HeapTree* aunt = grand->_right;
                 
                 // check if aunt is Red (null nodes are black, remember, ugh this is complex)
-                if (aunt != null && aunt->_isRed) {
+                if (IsRed(aunt)) {
                     parent->_isRed = false;
                     aunt->_isRed = false;
                     grand->_isRed = true;
@@ -39,7 +39,7 @@ public unsafe ref partial struct HeapTree {
             } else {
                 HeapTree* aunt = grand->_left;
                 
-                if (aunt != null && aunt->_isRed) {
+                if (IsRed(aunt)) {
                     parent->_isRed = false;
                     aunt->_isRed = false;
                     grand->_isRed = true;

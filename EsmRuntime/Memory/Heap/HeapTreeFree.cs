@@ -12,20 +12,22 @@ public unsafe ref partial struct HeapTree {
     static bool FreeImpl(ref HeapTree* self, ref HeapTree* root, usize from, usize to/*, out HeapTree* inserted*/) {
         if (self == null) {
             self = Create(from, to);
-            // inserted = self;
+            InsertFixup(ref root, self);
             return true;
         }
         
         if (to == self->_low) {
             self->_low = from;
-            TryMergeLeft(ref self);
+            TryMergeLeft(ref self, ref root);
+            TryMergeRight(ref self, ref root);
             Recalc(ref self);
             return true;
         }
         
         if (from == self->_high) {
             self->_high = to;
-            TryMergeRight(ref self);
+            TryMergeRight(ref self, ref root);
+            TryMergeLeft(ref self, ref root);
             Recalc(ref self);
             return true;
         }
@@ -34,7 +36,8 @@ public unsafe ref partial struct HeapTree {
             bool result = FreeImpl(ref self->_left, ref root, from, to);
 
             if (!result) return result;
-            TryMergeLeft(ref self);
+            TryMergeLeft(ref self, ref root);
+            TryMergeRight(ref self, ref root);
             Recalc(ref self);
             return result;
         }
@@ -43,7 +46,8 @@ public unsafe ref partial struct HeapTree {
             bool result = FreeImpl(ref self->_right, ref root, from, to);
 
             if (!result) return result;
-            TryMergeRight(ref self);
+            TryMergeRight(ref self, ref root);
+            TryMergeLeft(ref self, ref root);
             Recalc(ref self);
             return result;
         }
@@ -51,39 +55,45 @@ public unsafe ref partial struct HeapTree {
         return false;
     }
     
-    static void TryMergeLeft(ref HeapTree* self) {
+    static void TryMergeLeft(ref HeapTree* self, ref HeapTree* root) {
         if (self->_left == null) return;
-        ref var pre = ref RightMostChild(ref self->_left);
-        if (pre->_high == self->_low) {
-            self->_low = pre->_low;
+        ref var node = ref RightMostChild(ref self->_left); // predecessor
+        
+        if (node->_high == self->_low) {
+            self->_low = node->_low;
             
-            var preLeft = pre->_left; 
-            var preParent = pre->_parent;
+            bool wasBlack = !node->_isRed;
+            var left = node->_left; 
+            var parent = node->_parent;
 
-            AlignedFree(pre);
+            AlignedFree(node);
         
-            pre = preLeft;
-        
-            if (pre != null) pre->_parent = preParent;
+            node = left;
+            if (node != null) node->_parent = parent;
+            
+            if (wasBlack) DeleteFixup(ref root, node, parent);
         }
     }
    
-    static void TryMergeRight(ref HeapTree* self) {
+    static void TryMergeRight(ref HeapTree* self, ref HeapTree* root) {
         if (self->_right == null) return;
 
-        ref var succ = ref LeftMostChild(ref self->_right);
+        ref var node = ref LeftMostChild(ref self->_right); // successor
 
-        if (self->_high == succ->_low) {
-            self->_high = succ->_high;
+        if (self->_high == node->_low) {
+            self->_high = node->_high;
+            
+            bool wasBlack = !node->_isRed;
+            var right = node->_right;
+            var parent = node->_parent;
 
-            var succRight = succ->_right;
-            var succParent = succ->_parent;
-
-            AlignedFree(succ);
+            AlignedFree(node);
         
-            succ = succRight;
+            node = right;
         
-            if (succ != null) succ->_parent = succParent;
+            if (node != null) node->_parent = parent;
+            
+            if (wasBlack) DeleteFixup(ref root, node, parent);
         }
     }
 }

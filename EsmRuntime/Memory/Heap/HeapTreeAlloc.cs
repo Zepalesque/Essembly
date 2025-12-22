@@ -22,84 +22,74 @@ public unsafe ref partial struct HeapTree {
             return false;
         }
 
+        
+        // perfect match case
         if (max == size) {
             if (self->_high - self->_low == size) {
                 start = (byte*) self -> _low;
-                if (self->_left == null && self->_right == null) {
+                
+                bool wasBlack = !self->_isRed;
+                HeapTree* parent = self->_parent;
+                
+                // 0 or 1 child(ren)
+                if (self->_left == null || self->_right == null) {
+                    HeapTree* n = self->_left != null ? self->_left : self->_right;
                     AlignedFree(self);
-                    self = null;
-                }
-                else if (self->_left != null && self->_right == null) {
-                    var l = self->_left; 
-                    AlignedFree(self); 
-                    self = l; 
-                }
-                else if (self->_right != null && self->_left == null) {
-                    var r = self->_right; 
-                    AlignedFree(self); 
-                    self = r;
-                } else {
-                    ref var leftmost = ref LeftMostChild(ref self->_right);
-                    var leftmostVal = leftmost;
+                    self = n;
+                    if (self != null) self->_parent = parent;
+                    if (wasBlack) DeleteFixup(ref root, self, parent);
+                } else { // 2 children
+                    ref HeapTree* succRef = ref LeftMostChild(ref self->_right);
+                    HeapTree* succ = succRef;
                     
-                    var leftmostParent = leftmostVal->_parent; 
+                    self->_low = succ->_low;
+                    self->_high = succ->_high;
                     
-                    self->_low = leftmostVal->_low;
-                    self->_high = leftmostVal->_high;
+                    bool succWasBlack = !succ->_isRed;
+                    var succParent = succ->_parent;
+                    var succRepl = succ->_right;
                     
-                    leftmost = leftmostVal->_right;
-                    if (leftmost != null) leftmost->_parent = leftmostParent;
+                    AlignedFree(succ);
                     
-                    AlignedFree(leftmostVal);
+                    succRef = succRepl;
+                    if (succRef != null) succRef->_parent = succParent;
+                    if (succWasBlack) DeleteFixup(ref root, succRef, succParent);
                     
-                    var traversal = leftmostParent;
-                    while (traversal != null && traversal != self) {
-                        traversal->_maxInterval = traversal->RecalculateMaxInterval();
-                        traversal->_leftmostEnd = traversal->RecalculateLeftmost();
-                        traversal->_rightmostEnd = traversal->RecalculateRightmost();
-                        traversal = traversal->_parent;
-                    }
+                    RecalcUp(succParent, self);
                 }
                 
-                            
                 Recalc(ref self);
 
                 return true;
             }
         }
 
+        // le big blocc
         if (self -> _high - self -> _low > size) {
-            
-            
             start = (byte*) self -> _low;
             self -> _low += size;
 
             Recalc(ref self);
-
             return true;
         }
 
-        var left = self -> _left;
-        var right = self -> _right;
+        ref var left = ref self -> _left;
         if (left != null && left->_maxInterval >= size) {
-
-            bool b = AllocImpl(ref self->_left, ref root, size, out start);
-
+            bool ret = AllocImpl(ref left, ref root, size, out start);
             Recalc(ref self);
 
-            return b;
+            return ret;
         }
 
+        ref var right = ref self -> _right;
         if (right != null && right->_maxInterval >= size) {
-            bool b = AllocImpl(ref self->_right, ref root, size, out start);
+            bool ret = AllocImpl(ref right, ref root, size, out start);
             Recalc(ref self);
 
-
-            return b;
+            return ret;
         }
 
         start = null;
-
         return false;
     }
     
