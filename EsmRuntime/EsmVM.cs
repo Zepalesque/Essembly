@@ -88,20 +88,21 @@ public static partial class EsmVM {
         for (var pc = 0; pc < program.Size; pc++) {
             var opcode = (OpCode) program[pc];
             switch (opcode) {
-                case OpCode.Push8: 
+                case OpCode.PushX8: 
                     stack.Push(LoadConst<u8>(program, &pc));
                     break;
-                case OpCode.Push16: 
+                case OpCode.PushX16: 
                     stack.Push(LoadConst<u16>(program, &pc));
                     break;
-                case OpCode.Push32: 
+                case OpCode.PushX32: 
                     stack.Push(LoadConst<u32>(program, &pc));
                     break;
-                case OpCode.Push64: 
+                case OpCode.PushX64:
                     stack.Push(LoadConst<u64>(program, &pc));
                     break;
-                
-                
+                case OpCode.PushXsize:
+                    stack.Push(LoadConst<usize>(program, &pc));
+                    break;
                 
                 case OpCode.AllocStr: {
                     stack.Push(AllocRef<StringSlice>(program, &pc, heap));
@@ -121,11 +122,11 @@ public static partial class EsmVM {
                     // stack.Push(PushHeapRef(program, &pc, heap));
                     break;
                 }
-                case OpCode.StoreGlobal8: {
+                case OpCode.StoreGlobalX8: {
                     // StoreMem(ref stack, ref heap, stack.Pop<u8>());
                     break;
                 }
-                case OpCode.StoreGlobal16: {
+                case OpCode.StoreGlobalX16: {
                     // StoreMem(program, ref pc, ref heap, stack.Pop<u16>());
                     break;
                 }
@@ -140,103 +141,123 @@ public static partial class EsmVM {
                 }
                     
                 // Unary
-                case OpCode.Not8: {
+                case OpCode.NotX8: {
                     stack.Push(UnaryNot(stack.Pop<u8>()));
                     break;
                 }
                 
-                case OpCode.Not16: {
+                case OpCode.NotX16: {
                     stack.Push(UnaryNot(stack.Pop<u16>()));
                     break;
                 }
                 
-                case OpCode.Not32: {
+                case OpCode.NotX32: {
                     stack.Push(UnaryNot(stack.Pop<u32>()));
                     break;
                 }
                 
-                case OpCode.Not64: {
+                case OpCode.NotX64: {
                     stack.Push(UnaryNot(stack.Pop<u64>()));
                     break;
                 }
                     
                 // Binary
-                case OpCode.And8: {
+                case OpCode.AndX8: {
                     stack.Push(BinaryAnd(stack.Pop<u8>(), stack.Pop<u8>()));
                     break;
                 }
                 
-                case OpCode.And16: {
+                case OpCode.AndX16: {
                     stack.Push(BinaryAnd(stack.Pop<u16>(), stack.Pop<u16>()));
                     break;
                 }
                 
-                case OpCode.And32: {
+                case OpCode.AndX32: {
                     stack.Push(BinaryAnd(stack.Pop<u32>(), stack.Pop<u32>()));
                     break;
                 }
-                case OpCode.And64: {
+                case OpCode.AndX64: {
                     stack.Push(BinaryAnd(stack.Pop<u64>(), stack.Pop<u64>()));
                     break;
                 }
                 
-                case OpCode.Or8: {
+                case OpCode.AndXsize: {
+                    stack.Push(BinaryAnd(stack.Pop<usize>(), stack.Pop<usize>()));
+                    break;
+                }
+                
+                case OpCode.OrX8: {
                     stack.Push(BinaryOr(stack.Pop<u8>(), stack.Pop<u8>()));
                     break;
                 }
                 
-                case OpCode.Or16: {
+                case OpCode.OrX16: {
                     stack.Push(BinaryOr(stack.Pop<u16>(), stack.Pop<u16>()));
                     break;
                 }
 
-                case OpCode.Or32: {
+                case OpCode.OrX32: {
                     stack.Push(BinaryOr(stack.Pop<u32>(), stack.Pop<u32>()));
                     break;
                 }
 
-                case OpCode.Or64: {
+                case OpCode.OrX64: {
                     stack.Push(BinaryOr(stack.Pop<u64>(), stack.Pop<u64>()));
                     break;
                 }
+                
+                case OpCode.OrXsize: {
+                    stack.Push(BinaryOr(stack.Pop<usize>(), stack.Pop<usize>()));
+                    break;
+                }
 
-                case OpCode.Xor8: {
+                case OpCode.XorX8: {
                     stack.Push(BinaryXor(stack.Pop<u8>(), stack.Pop<u8>()));
                     break;
                 }
                 
-                case OpCode.Xor16: {
+                case OpCode.XorX16: {
                     stack.Push(BinaryXor(stack.Pop<u16>(), stack.Pop<u16>()));
                     break;
                 }
                 
-                case OpCode.Xor32: {
+                case OpCode.XorX32: {
                     stack.Push(BinaryXor(stack.Pop<u32>(), stack.Pop<u32>()));
                     break;
                 }            
                 
-                case OpCode.Xor64: {
+                case OpCode.XorX64: {
                     stack.Push(BinaryXor(stack.Pop<u64>(), stack.Pop<u64>()));
                     break;
                 }
                 
-                case OpCode.Left8: {
+                case OpCode.XorXsize: {
+                    stack.Push(BinaryXor(stack.Pop<usize>(), stack.Pop<usize>()));
+                    break;
+                }
+                
+                case OpCode.LeftX8: {
                     stack.Push(BinaryLeft(stack.Pop<u8>(), stack.Pop<u8>()));
                     break;
                 }
                 
-                case OpCode.Left16: {
+                case OpCode.LeftX16: {
                     stack.Push(BinaryLeft(stack.Pop<u16>(), stack.Pop<u16>()));
                     break;
                 }
                                 
-                case OpCode.Left32: {
+                case OpCode.LeftX32: {
                     stack.Push(BinaryLeft(stack.Pop<u32>(), stack.Pop<u32>()));
                     break;
                 }
                                                 
-                case OpCode.Left64: {
+                case OpCode.LeftX64: {
                     stack.Push(BinaryLeft(stack.Pop<u64>(), stack.Pop<u64>()));
+                    break;
+                }
+                
+                case OpCode.LeftXsize: {
+                    stack.Push(BinaryLeft(stack.Pop<usize>(), stack.Pop<usize>()));
                     break;
                 }
 
@@ -281,43 +302,153 @@ public static partial class EsmVM {
                 }
                 
                 
-                case OpCode.Plus8: {
+                case OpCode.PlusX8: {
                     stack.Push(BinaryPlus(stack.Pop<u8>(), stack.Pop<u8>()));
                     break;
                 }
                 
-                case OpCode.Plus16: {
+                case OpCode.PlusX16: {
                     stack.Push(BinaryPlus(stack.Pop<u16>(), stack.Pop<u16>()));
                     break;
                 }
                                 
-                case OpCode.Plus32: {
+                case OpCode.PlusX32: {
                     stack.Push(BinaryPlus(stack.Pop<u32>(), stack.Pop<u32>()));
                     break;
                 }
                                                 
-                case OpCode.Plus64: {
+                case OpCode.PlusX64: {
                     stack.Push(BinaryPlus(stack.Pop<u64>(), stack.Pop<u64>()));
                     break;
                 }
                 
-                case OpCode.Minus8: {
+                case OpCode.PlusPtr: {
+                    stack.Push(BinaryPlus(stack.Pop<usize>(), stack.Pop<usize>()));
+                    break;
+                }
+                
+                case OpCode.MinusX8: {
                     stack.Push(BinaryMinus(stack.Pop<u8>(), stack.Pop<u8>()));
                     break;
                 }
                 
-                case OpCode.Minus16: {
+                case OpCode.MinusX16: {
                     stack.Push(BinaryMinus(stack.Pop<u16>(), stack.Pop<u16>()));
                     break;
                 }
-                                
-                case OpCode.Minus32: {
+                
+                case OpCode.MinusX32: {
                     stack.Push(BinaryMinus(stack.Pop<u32>(), stack.Pop<u32>()));
                     break;
                 }
-                                                
-                case OpCode.Minus64: {
+                
+                case OpCode.MinusX64: {
                     stack.Push(BinaryMinus(stack.Pop<u64>(), stack.Pop<u64>()));
+                    break;
+                }
+                
+                case OpCode.MinusXsize: {
+                    stack.Push(BinaryMinus(stack.Pop<usize>(), stack.Pop<usize>()));
+                    break;
+                }
+                
+                case OpCode.DivI8: {
+                    stack.Push(BinaryDiv(stack.Pop<i8>(), stack.Pop<i8>()));
+                    break;
+                }
+                
+                case OpCode.DivI16: {
+                    stack.Push(BinaryDiv(stack.Pop<i16>(), stack.Pop<i16>()));
+                    break;
+                }
+                
+                case OpCode.DivI32: {
+                    stack.Push(BinaryDiv(stack.Pop<i32>(), stack.Pop<i32>()));
+                    break;
+                }
+                
+                case OpCode.DivI64: {
+                    stack.Push(BinaryDiv(stack.Pop<i64>(), stack.Pop<i64>()));
+                    break;
+                }
+                
+                case OpCode.DivIsize: {
+                    stack.Push(BinaryDiv(stack.Pop<isize>(), stack.Pop<isize>()));
+                    break;
+                }
+                
+                case OpCode.DivU8: {
+                    stack.Push(BinaryDiv(stack.Pop<u8>(), stack.Pop<u8>()));
+                    break;
+                }
+                
+                case OpCode.DivU16: {
+                    stack.Push(BinaryDiv(stack.Pop<u16>(), stack.Pop<u16>()));
+                    break;
+                }
+                
+                case OpCode.DivU32: {
+                    stack.Push(BinaryDiv(stack.Pop<u32>(), stack.Pop<u32>()));
+                    break;
+                }
+                
+                case OpCode.DivU64: {
+                    stack.Push(BinaryDiv(stack.Pop<u64>(), stack.Pop<u64>()));
+                    break;
+                }
+                
+                case OpCode.DivUsize: {
+                    stack.Push(BinaryDiv(stack.Pop<usize>(), stack.Pop<usize>()));
+                    break;
+                }
+                
+                case OpCode.ModI8: {
+                    stack.Push(BinaryMod(stack.Pop<i8>(), stack.Pop<i8>()));
+                    break;
+                }
+                
+                case OpCode.ModI16: {
+                    stack.Push(BinaryMod(stack.Pop<i16>(), stack.Pop<i16>()));
+                    break;
+                }
+                
+                case OpCode.ModI32: {
+                    stack.Push(BinaryMod(stack.Pop<i32>(), stack.Pop<i32>()));
+                    break;
+                }
+                
+                case OpCode.ModI64: {
+                    stack.Push(BinaryMod(stack.Pop<i64>(), stack.Pop<i64>()));
+                    break;
+                }
+                
+                case OpCode.ModIsize: {
+                    stack.Push(BinaryMod(stack.Pop<isize>(), stack.Pop<isize>()));
+                    break;
+                }
+                
+                case OpCode.ModU8: {
+                    stack.Push(BinaryMod(stack.Pop<u8>(), stack.Pop<u8>()));
+                    break;
+                }
+                
+                case OpCode.ModU16: {
+                    stack.Push(BinaryMod(stack.Pop<u16>(), stack.Pop<u16>()));
+                    break;
+                }
+                
+                case OpCode.ModU32: {
+                    stack.Push(BinaryMod(stack.Pop<u32>(), stack.Pop<u32>()));
+                    break;
+                }
+                
+                case OpCode.ModU64: {
+                    stack.Push(BinaryMod(stack.Pop<u64>(), stack.Pop<u64>()));
+                    break;
+                }
+                
+                case OpCode.ModUsize: {
+                    stack.Push(BinaryMod(stack.Pop<usize>(), stack.Pop<usize>()));
                     break;
                 }
                 

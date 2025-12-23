@@ -83,7 +83,7 @@ public readonly unsafe ref struct VariableTable(Slice<usize> offsets): IByteSeri
     }
 
     
-    public nuint InstanceSize => (_offsets.Length + 1) * usize.ByteCount;
+    public nuint InstSize => (_offsets.Length + 1) * usize.ByteCount;
     
     public void ToPtr(byte* ptr) {
         _offsets.Length.ToPtr(ptr);
@@ -92,8 +92,8 @@ public readonly unsafe ref struct VariableTable(Slice<usize> offsets): IByteSeri
     }
 
     public static VariableTable FromFatPtr(byte* ptr, usize size) {
-        var embed = Embed<Slice<usize>>.FromFatPtr(ptr, size);
-        return new(embed.Value);
+        var slice = Slice<usize>.FromFatPtr(ptr, size);
+        return new(slice);
     }
 
     public static VariableTable FromPtr(byte* ptr) {

@@ -1,26 +1,28 @@
 ﻿
 
-using System.Runtime.CompilerServices;
-
 namespace EsmRuntime.Common.Types;
 
 public interface IByteSerializable<out T> where T: struct, IByteSerializable<T>, allows ref struct {
     unsafe void ToPtr(byte* ptr);
     public static abstract unsafe T FromFatPtr(byte* ptr, usize size);
-    public nuint InstanceSize { get; }
+    public nuint InstSize { get; }
 }
 
-public interface IBytecodeSerializable<out T> where T : struct, IByteSerializable<T>, allows ref struct {
+
+public interface IBytecodeSerializable<out T>: IByteSerializable<T> where T : struct, IBytecodeSerializable<T>, allows ref struct {
     public static abstract unsafe T FromBytecode(byte* start, int* pc);
-    public unsafe FatPtr ToBytecode(delegate*<nuint, byte*> generator);
+    public byte[] ToBytecode();
 }
 
-public interface ISizedValue<out T> : IByteSerializable<T>, IBytecodeSerializable<T> where T : struct, ISizedValue<T>, allows ref struct {
+public interface ISizedValue<out T> : IBytecodeSerializable<T> where T : struct, ISizedValue<T>, allows ref struct {
     public static abstract usize ByteCount { get; }
-    nuint IByteSerializable<T>.InstanceSize => T.ByteCount;
+    nuint IByteSerializable<T>.InstSize => T.ByteCount;
 
     static abstract unsafe T FromPtr(byte* ptr);
+}
 
+public interface ITypedValue<out T> : IByteSerializable<T> where T : struct, ITypedValue<T>, allows ref struct {
+    public static abstract ReadOnlySpan<byte> Signature { get; }
 }
 
 
@@ -41,7 +43,7 @@ public readonly unsafe ref struct Reference<T>(usize address): ISizedValue<Refer
     }
 
     public static Reference<T> CreateAt(byte* ptr, T value) {
-        usize size = value.InstanceSize;
+        usize size = value.InstSize;
         size.ToPtr(ptr);
         value.ToPtr(ptr + usize.ByteCount);
         var addr = (usize) ptr;
@@ -55,44 +57,8 @@ public readonly unsafe ref struct Reference<T>(usize address): ISizedValue<Refer
         => new(usize.FromPtr(ptr));
     
     public static usize ByteCount => usize.ByteCount;
-    public nuint InstanceSize => ByteCount;
-    public FatPtr ToBytecode(delegate*<nuint, byte*> generator) => throw new InvalidOperationException();
+    public nuint InstSize => ByteCount;
+    public byte[] ToBytecode() => throw new InvalidOperationException();
 
     public static Reference<T> FromBytecode(byte* start, int* pc) => throw new InvalidOperationException();
-}
-
-public unsafe ref struct Embed<T>(T value): IBytecodeSerializable<Embed<T>>, IByteSerializable<Embed<T>>
-    where T : struct, IByteSerializable<T>, allows ref struct {
-    T _value = value;
-    
-    public T Value => _value;
-
-    usize ValSize => _value.InstanceSize;
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ToPtr(byte* ptr) {
-        ValSize.ToPtr(ptr);
-        _value.ToPtr(ptr + usize.ByteCount);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Embed<T> FromFatPtr(byte* ptr, usize size) 
-        => new(T.FromFatPtr(ptr + usize.ByteCount, size));
-    public nuint InstanceSize => usize.ByteCount + ValSize;
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static Embed<T> IBytecodeSerializable<Embed<T>>.FromBytecode(byte* start, int* pc) {
-        usize size = usize.FromPtr(start);
-        Embed<T> self = new(T.FromFatPtr(start + usize.ByteCount, size));
-        *pc += (int) self.InstanceSize;
-        return self;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public FatPtr ToBytecode(delegate*<nuint, byte*> generator) {
-        nuint size = InstanceSize;
-        byte* ptr = generator(size);
-        ToPtr(ptr);
-        return new(ptr, size);
-    }
 }

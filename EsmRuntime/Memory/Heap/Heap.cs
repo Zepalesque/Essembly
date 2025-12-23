@@ -47,7 +47,7 @@ public readonly unsafe ref struct ReferenceHeap(byte* start, nint size) {
     nint Size { get; } = size;
     
     public Reference<T> Allocate<T>(T value) where T: struct, IByteSerializable<T>, allows ref struct {
-        usize u = value.InstanceSize;
+        usize u = value.InstSize;
         if (typeof(T) == typeof(Unit))
             return new(EsmVM.UnitAddr);
         

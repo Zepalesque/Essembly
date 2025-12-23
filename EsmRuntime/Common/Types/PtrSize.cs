@@ -3,18 +3,12 @@ using System.Runtime.CompilerServices;
 using static System.BitConverter;
 using static System.Buffers.Binary.BinaryPrimitives;
 using static System.Runtime.CompilerServices.Unsafe;
+using static System.Runtime.InteropServices.MemoryMarshal;
 using static EsmRuntime.Constants;
 
 // ReSharper disable InconsistentNaming
 
 namespace EsmRuntime.Common.Types;
-
-// #if TARGET_64BIT
-// using uaddr__impl = u64;
-// #else
-// using uaddr__impl = u32;
-// #endif
-using isize__impl = i16;
 
 #pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
 public readonly record struct usize(nuint value):
@@ -77,10 +71,10 @@ public readonly record struct usize(nuint value):
     }
 
     [MethodImpl(Inline)]
-    public unsafe FatPtr ToBytecode(delegate*<nuint, byte*> generator) {
-        byte* ptr = generator(sizeof(ulong));
-        WriteUnaligned(ptr, IsLittleEndian ? ReverseEndianness(value) : value);
-        return new(ptr, sizeof(ulong));
+    public byte[] ToBytecode() {
+        var arr = new byte[sizeof(ulong)];
+        Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
+        return arr;
     }
 
     [MethodImpl(Inline)]
@@ -94,7 +88,16 @@ public readonly record struct usize(nuint value):
     [MethodImpl(Inline)]
     public static unsafe usize FromPtr(byte* ptr) => ReadUnaligned<nuint>(ptr);
     
-    public static usize ByteCount => nuint.Size;
+    public static unsafe usize ByteCount {
+        [MethodImpl(Inline)]
+        get => sizeof(nuint);
+    }
+    
+    public nuint InstSize {
+        [MethodImpl(Inline)]
+        get => ByteCount;
+    }
+    
     [MethodImpl(Inline)]
     public string ToString(string? format, IFormatProvider? formatProvider)
         => value.ToString(format, formatProvider);
@@ -238,10 +241,10 @@ public readonly record struct isize(nint value):
     }
 
     [MethodImpl(Inline)]
-    public unsafe FatPtr ToBytecode(delegate*<nuint, byte*> generator) {
-        byte* ptr = generator(sizeof(long));
-        WriteUnaligned(ptr, IsLittleEndian ? ReverseEndianness(value) : value);
-        return new(ptr, sizeof(long));
+    public byte[] ToBytecode() {
+        var arr = new byte[sizeof(long)];
+        Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
+        return arr;
     }
 
     [MethodImpl(Inline)]
@@ -255,7 +258,16 @@ public readonly record struct isize(nint value):
     [MethodImpl(Inline)]
     public static unsafe isize FromPtr(byte* ptr) => ReadUnaligned<nint>(ptr);
     
-    public static usize ByteCount => nint.Size;
+    public static unsafe usize ByteCount {
+        [MethodImpl(Inline)]
+        get => sizeof(nint);
+    }
+    
+    public nuint InstSize {
+        [MethodImpl(Inline)]
+        get => ByteCount;
+    }
+    
     [MethodImpl(Inline)]
     public string ToString(string? format, IFormatProvider? formatProvider)
         => value.ToString(format, formatProvider);

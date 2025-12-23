@@ -17,10 +17,10 @@ public abstract unsafe record ConstantIntNode<T>(T Val, FilePos Pos, OpCode Code
 
 }
 
-public abstract record Int8BitNode<T>(T Val, FilePos Pos) : ConstantIntNode<T>(Val, Pos, EsmRuntime.Common.OpCode.Push8) where T : unmanaged, ISizedValue<T>;
-public abstract record Int16BitNode<T>(T Val, FilePos Pos) : ConstantIntNode<T>(Val, Pos, EsmRuntime.Common.OpCode.Push16) where T: unmanaged, ISizedValue<T>;
-public abstract record Int32BitNode<T>(T Val, FilePos Pos) : ConstantIntNode<T>(Val, Pos, EsmRuntime.Common.OpCode.Push32) where T: unmanaged, ISizedValue<T>;
-public abstract record Int64BitNode<T>(T Val, FilePos Pos) : ConstantIntNode<T>(Val, Pos, EsmRuntime.Common.OpCode.Push64) where T: unmanaged, ISizedValue<T>;
+public abstract record Int8BitNode<T>(T Val, FilePos Pos) : ConstantIntNode<T>(Val, Pos, EsmRuntime.Common.OpCode.PushX8) where T : unmanaged, ISizedValue<T>;
+public abstract record Int16BitNode<T>(T Val, FilePos Pos) : ConstantIntNode<T>(Val, Pos, EsmRuntime.Common.OpCode.PushX16) where T: unmanaged, ISizedValue<T>;
+public abstract record Int32BitNode<T>(T Val, FilePos Pos) : ConstantIntNode<T>(Val, Pos, EsmRuntime.Common.OpCode.PushX32) where T: unmanaged, ISizedValue<T>;
+public abstract record Int64BitNode<T>(T Val, FilePos Pos) : ConstantIntNode<T>(Val, Pos, EsmRuntime.Common.OpCode.PushX64) where T: unmanaged, ISizedValue<T>;
 
 public record U8Constant(u8 Val, FilePos Pos) : Int8BitNode<u8>(Val, Pos);
 public record U16Constant(u16 Val, FilePos Pos) : Int16BitNode<u16>(Val, Pos);

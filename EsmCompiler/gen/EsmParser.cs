@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:/Users/emers/RiderProjects/EssemblyV2/EsmCompiler/EsmParser.g4 by ANTLR 4.13.2
+// Generated from C:/Users/emers/Essembly/EsmCompiler/EsmParser.g4 by ANTLR 4.13.2
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -41,11 +41,11 @@ public partial class EsmParser : Parser {
 		BwAnd=18, BwOr=19, BwNot=20, BwXor=21, BwLShift=22, BwRShift=23, BwSRShift=24, 
 		Plus=25, Minus=26, Times=27, Slash=28, Mod=29, LCurly=30, RCurly=31, Exit=32, 
 		True=33, False=34, Push=35, Input=36, Store=37, Alloc=38, Cast=39, I8=40, 
-		I16=41, I32=42, I64=43, U8=44, U16=45, U32=46, U64=47, Goto=48, Free=49, 
-		If=50, Bang=51, Zero=52, DecIntLiteral=53, HexIntLiteral=54, BinIntLiteral=55, 
-		OctIntLiteral=56, LabelId=57, Identifier=58, CharLiteral=59, StrLiteral=60, 
-		LineComment=61, BlockCommentStart=62, Whitespace=63, BlockCommentRecStart=64, 
-		BlockCommentEnd=65, CommentContents=66;
+		I16=41, I32=42, I64=43, ISize=44, U8=45, U16=46, U32=47, U64=48, USize=49, 
+		Goto=50, Free=51, If=52, Bang=53, Zero=54, DecIntLiteral=55, HexIntLiteral=56, 
+		BinIntLiteral=57, OctIntLiteral=58, LabelId=59, Identifier=60, CharLiteral=61, 
+		StrLiteral=62, LineComment=63, BlockCommentStart=64, Whitespace=65, BlockCommentRecStart=66, 
+		BlockCommentEnd=67, CommentContents=68;
 	public const int
 		RULE_base = 0, RULE_block = 1, RULE_blockInner = 2, RULE_statement = 3, 
 		RULE_baseStmt = 4, RULE_ioMode = 5, RULE_opMode = 6, RULE_stackOp = 7, 
@@ -63,9 +63,9 @@ public partial class EsmParser : Parser {
 		"'='", "'=='", "'!='", "'&'", "'|'", "'~'", "'^'", "'<<'", "'>>'", "'+>>'", 
 		"'+'", "'-'", "'*'", "'/'", "'%'", "'{'", "'}'", "'exit'", "'true'", "'false'", 
 		"'push'", "'input'", "'store'", "'alloc'", "'cast'", "'i8'", "'i16'", 
-		"'i32'", "'i64'", "'u8'", "'u16'", "'u32'", "'u64'", "'goto'", "'free'", 
-		"'if'", "'!'", "'zero'", null, null, null, null, null, null, null, null, 
-		null, null, null, null, "'*/'"
+		"'i32'", "'i64'", "'isize'", "'u8'", "'u16'", "'u32'", "'u64'", "'usize'", 
+		"'goto'", "'free'", "'if'", "'!'", "'zero'", null, null, null, null, null, 
+		null, null, null, null, null, null, null, "'*/'"
 	};
 	private static readonly string[] _SymbolicNames = {
 		null, "Print", "Ascii", "Utf16", "Hex", "Dec", "Oct", "Binary", "Unary", 
@@ -73,10 +73,11 @@ public partial class EsmParser : Parser {
 		"BwAnd", "BwOr", "BwNot", "BwXor", "BwLShift", "BwRShift", "BwSRShift", 
 		"Plus", "Minus", "Times", "Slash", "Mod", "LCurly", "RCurly", "Exit", 
 		"True", "False", "Push", "Input", "Store", "Alloc", "Cast", "I8", "I16", 
-		"I32", "I64", "U8", "U16", "U32", "U64", "Goto", "Free", "If", "Bang", 
-		"Zero", "DecIntLiteral", "HexIntLiteral", "BinIntLiteral", "OctIntLiteral", 
-		"LabelId", "Identifier", "CharLiteral", "StrLiteral", "LineComment", "BlockCommentStart", 
-		"Whitespace", "BlockCommentRecStart", "BlockCommentEnd", "CommentContents"
+		"I32", "I64", "ISize", "U8", "U16", "U32", "U64", "USize", "Goto", "Free", 
+		"If", "Bang", "Zero", "DecIntLiteral", "HexIntLiteral", "BinIntLiteral", 
+		"OctIntLiteral", "LabelId", "Identifier", "CharLiteral", "StrLiteral", 
+		"LineComment", "BlockCommentStart", "Whitespace", "BlockCommentRecStart", 
+		"BlockCommentEnd", "CommentContents"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -149,7 +150,7 @@ public partial class EsmParser : Parser {
 			State = 31;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 144960614807118850L) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 579839453825082370L) != 0)) {
 				{
 				State = 30;
 				blockInner();
@@ -213,7 +214,7 @@ public partial class EsmParser : Parser {
 			State = 37;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 144960614807118850L) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 579839453825082370L) != 0)) {
 				{
 				State = 36;
 				blockInner();
@@ -286,7 +287,7 @@ public partial class EsmParser : Parser {
 				State = 44;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & 144960614807118850L) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & 579839453825082370L) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -862,6 +863,8 @@ public partial class EsmParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I16() { return GetToken(EsmParser.I16, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I32() { return GetToken(EsmParser.I32, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode I64() { return GetToken(EsmParser.I64, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode USize() { return GetToken(EsmParser.USize, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ISize() { return GetToken(EsmParser.ISize, 0); }
 		public IoModeContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -890,7 +893,7 @@ public partial class EsmParser : Parser {
 		IoModeContext _localctx = new IoModeContext(Context, State);
 		EnterRule(_localctx, 10, RULE_ioMode);
 		try {
-			State = 117;
+			State = 119;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case Ascii:
@@ -974,6 +977,20 @@ public partial class EsmParser : Parser {
 				_localctx.io = Match(I64);
 				}
 				break;
+			case USize:
+				EnterOuterAlt(_localctx, 12);
+				{
+				State = 117;
+				_localctx.io = Match(USize);
+				}
+				break;
+			case ISize:
+				EnterOuterAlt(_localctx, 13);
+				{
+				State = 118;
+				_localctx.io = Match(ISize);
+				}
+				break;
 			default:
 				throw new NoViableAltException(this);
 			}
@@ -1023,7 +1040,7 @@ public partial class EsmParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 119;
+			State = 121;
 			_la = TokenStream.LA(1);
 			if ( !(_la==Binary || _la==Unary) ) {
 			ErrorHandler.RecoverInline(this);
@@ -1094,55 +1111,55 @@ public partial class EsmParser : Parser {
 		StackOpContext _localctx = new StackOpContext(Context, State);
 		EnterRule(_localctx, 14, RULE_stackOp);
 		try {
-			State = 137;
+			State = 139;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case BwAnd:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 121;
+				State = 123;
 				_localctx.op = Match(BwAnd);
 				}
 				break;
 			case BwOr:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 122;
+				State = 124;
 				_localctx.op = Match(BwOr);
 				}
 				break;
 			case BwNot:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 123;
+				State = 125;
 				_localctx.op = Match(BwNot);
 				}
 				break;
 			case BwXor:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 124;
+				State = 126;
 				_localctx.op = Match(BwXor);
 				}
 				break;
 			case BwLShift:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 125;
+				State = 127;
 				_localctx.op = Match(BwLShift);
 				}
 				break;
 			case BwRShift:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 126;
+				State = 128;
 				_localctx.op = Match(BwRShift);
 				}
 				break;
 			case BwSRShift:
 				EnterOuterAlt(_localctx, 7);
 				{
-				State = 127;
+				State = 129;
 				_localctx.op = Match(BwSRShift);
 				}
 				break;
@@ -1150,51 +1167,51 @@ public partial class EsmParser : Parser {
 			case Unary:
 				EnterOuterAlt(_localctx, 8);
 				{
-				State = 128;
+				State = 130;
 				opMode();
-				State = 129;
+				State = 131;
 				ambigOp();
 				}
 				break;
 			case Times:
 				EnterOuterAlt(_localctx, 9);
 				{
-				State = 131;
+				State = 133;
 				_localctx.op = Match(Times);
 				}
 				break;
 			case Slash:
 				EnterOuterAlt(_localctx, 10);
 				{
-				State = 132;
+				State = 134;
 				_localctx.op = Match(Slash);
 				}
 				break;
 			case Mod:
 				EnterOuterAlt(_localctx, 11);
 				{
-				State = 133;
+				State = 135;
 				_localctx.op = Match(Mod);
 				}
 				break;
 			case Equal2:
 				EnterOuterAlt(_localctx, 12);
 				{
-				State = 134;
+				State = 136;
 				_localctx.op = Match(Equal2);
 				}
 				break;
 			case BangEq:
 				EnterOuterAlt(_localctx, 13);
 				{
-				State = 135;
+				State = 137;
 				_localctx.op = Match(BangEq);
 				}
 				break;
 			case Bang:
 				EnterOuterAlt(_localctx, 14);
 				{
-				State = 136;
+				State = 138;
 				_localctx.op = Match(Bang);
 				}
 				break;
@@ -1245,20 +1262,20 @@ public partial class EsmParser : Parser {
 		AmbigOpContext _localctx = new AmbigOpContext(Context, State);
 		EnterRule(_localctx, 16, RULE_ambigOp);
 		try {
-			State = 141;
+			State = 143;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case Plus:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 139;
+				State = 141;
 				_localctx.op = Match(Plus);
 				}
 				break;
 			case Minus:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 140;
+				State = 142;
 				_localctx.op = Match(Minus);
 				}
 				break;
@@ -1343,7 +1360,7 @@ public partial class EsmParser : Parser {
 		PushClauseContext _localctx = new PushClauseContext(Context, State);
 		EnterRule(_localctx, 18, RULE_pushClause);
 		try {
-			State = 147;
+			State = 149;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case I8:
@@ -1357,9 +1374,9 @@ public partial class EsmParser : Parser {
 				_localctx = new PushConstContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 143;
+				State = 145;
 				((PushConstContext)_localctx).type = specificInt();
-				State = 144;
+				State = 146;
 				((PushConstContext)_localctx).lit = sizedLiteral();
 				}
 				break;
@@ -1367,7 +1384,7 @@ public partial class EsmParser : Parser {
 				_localctx = new PushMemContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 146;
+				State = 148;
 				((PushMemContext)_localctx).loc = Match(Identifier);
 				}
 				break;
@@ -1421,7 +1438,7 @@ public partial class EsmParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 149;
+			State = 151;
 			_localctx.value = TokenStream.LT(1);
 			_la = TokenStream.LA(1);
 			if ( !(_la==True || _la==False) ) {
@@ -1482,62 +1499,62 @@ public partial class EsmParser : Parser {
 		SpecificIntContext _localctx = new SpecificIntContext(Context, State);
 		EnterRule(_localctx, 22, RULE_specificInt);
 		try {
-			State = 159;
+			State = 161;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case U8:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 151;
+				State = 153;
 				_localctx.type = Match(U8);
 				}
 				break;
 			case U16:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 152;
+				State = 154;
 				_localctx.type = Match(U16);
 				}
 				break;
 			case U32:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 153;
+				State = 155;
 				_localctx.type = Match(U32);
 				}
 				break;
 			case U64:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 154;
+				State = 156;
 				_localctx.type = Match(U64);
 				}
 				break;
 			case I8:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 155;
+				State = 157;
 				_localctx.type = Match(I8);
 				}
 				break;
 			case I16:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 156;
+				State = 158;
 				_localctx.type = Match(I16);
 				}
 				break;
 			case I32:
 				EnterOuterAlt(_localctx, 7);
 				{
-				State = 157;
+				State = 159;
 				_localctx.type = Match(I32);
 				}
 				break;
 			case I64:
 				EnterOuterAlt(_localctx, 8);
 				{
-				State = 158;
+				State = 160;
 				_localctx.type = Match(I64);
 				}
 				break;
@@ -1596,62 +1613,62 @@ public partial class EsmParser : Parser {
 		InstanceTypeContext _localctx = new InstanceTypeContext(Context, State);
 		EnterRule(_localctx, 24, RULE_instanceType);
 		try {
-			State = 171;
+			State = 173;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case U8:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 161;
+				State = 163;
 				_localctx.type = Match(U8);
 				}
 				break;
 			case U16:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 162;
+				State = 164;
 				_localctx.type = Match(U16);
 				}
 				break;
 			case U32:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 163;
+				State = 165;
 				_localctx.type = Match(U32);
 				}
 				break;
 			case U64:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 164;
+				State = 166;
 				_localctx.type = Match(U64);
 				}
 				break;
 			case I8:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 165;
+				State = 167;
 				_localctx.type = Match(I8);
 				}
 				break;
 			case I16:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 166;
+				State = 168;
 				_localctx.type = Match(I16);
 				}
 				break;
 			case I32:
 				EnterOuterAlt(_localctx, 7);
 				{
-				State = 167;
+				State = 169;
 				_localctx.type = Match(I32);
 				}
 				break;
 			case I64:
 				EnterOuterAlt(_localctx, 8);
 				{
-				State = 168;
+				State = 170;
 				_localctx.type = Match(I64);
 				}
 				break;
@@ -1659,9 +1676,9 @@ public partial class EsmParser : Parser {
 				EnterOuterAlt(_localctx, 9);
 				{
 				{
-				State = 169;
+				State = 171;
 				Match(BwAnd);
-				State = 170;
+				State = 172;
 				_localctx.type = Match(Str);
 				}
 				}
@@ -1717,41 +1734,41 @@ public partial class EsmParser : Parser {
 		SizedLiteralContext _localctx = new SizedLiteralContext(Context, State);
 		EnterRule(_localctx, 26, RULE_sizedLiteral);
 		try {
-			State = 178;
+			State = 180;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case DecIntLiteral:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 173;
+				State = 175;
 				_localctx.@int = Match(DecIntLiteral);
 				}
 				break;
 			case HexIntLiteral:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 174;
+				State = 176;
 				_localctx.@int = Match(HexIntLiteral);
 				}
 				break;
 			case BinIntLiteral:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 175;
+				State = 177;
 				_localctx.@int = Match(BinIntLiteral);
 				}
 				break;
 			case OctIntLiteral:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 176;
+				State = 178;
 				_localctx.@int = Match(OctIntLiteral);
 				}
 				break;
 			case CharLiteral:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 177;
+				State = 179;
 				_localctx.@char = Match(CharLiteral);
 				}
 				break;
@@ -1808,48 +1825,48 @@ public partial class EsmParser : Parser {
 		AnyLiteralContext _localctx = new AnyLiteralContext(Context, State);
 		EnterRule(_localctx, 28, RULE_anyLiteral);
 		try {
-			State = 186;
+			State = 188;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case DecIntLiteral:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 180;
+				State = 182;
 				_localctx.@int = Match(DecIntLiteral);
 				}
 				break;
 			case HexIntLiteral:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 181;
+				State = 183;
 				_localctx.@int = Match(HexIntLiteral);
 				}
 				break;
 			case BinIntLiteral:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 182;
+				State = 184;
 				_localctx.@int = Match(BinIntLiteral);
 				}
 				break;
 			case OctIntLiteral:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 183;
+				State = 185;
 				_localctx.@int = Match(OctIntLiteral);
 				}
 				break;
 			case CharLiteral:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 184;
+				State = 186;
 				_localctx.@char = Match(CharLiteral);
 				}
 				break;
 			case StrLiteral:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 185;
+				State = 187;
 				_localctx.str = Match(StrLiteral);
 				}
 				break;
@@ -1869,74 +1886,74 @@ public partial class EsmParser : Parser {
 	}
 
 	private static int[] _serializedATN = {
-		4,1,66,189,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,
+		4,1,68,191,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,
 		7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,14,
 		1,0,3,0,32,8,0,1,0,1,0,1,1,1,1,3,1,38,8,1,1,1,1,1,1,2,4,2,43,8,2,11,2,
 		12,2,44,1,3,1,3,1,3,1,3,1,3,3,3,52,8,3,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,
 		1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,3,4,71,8,4,1,4,1,4,1,4,1,4,1,4,1,4,
 		1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,4,1,
 		4,1,4,1,4,3,4,99,8,4,1,4,1,4,1,4,3,4,104,8,4,1,5,1,5,1,5,1,5,1,5,1,5,1,
-		5,1,5,1,5,1,5,1,5,1,5,3,5,118,8,5,1,6,1,6,1,7,1,7,1,7,1,7,1,7,1,7,1,7,
-		1,7,1,7,1,7,1,7,1,7,1,7,1,7,1,7,1,7,3,7,138,8,7,1,8,1,8,3,8,142,8,8,1,
-		9,1,9,1,9,1,9,3,9,148,8,9,1,10,1,10,1,11,1,11,1,11,1,11,1,11,1,11,1,11,
-		1,11,3,11,160,8,11,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,3,
-		12,172,8,12,1,13,1,13,1,13,1,13,1,13,3,13,179,8,13,1,14,1,14,1,14,1,14,
-		1,14,1,14,3,14,187,8,14,1,14,0,0,15,0,2,4,6,8,10,12,14,16,18,20,22,24,
-		26,28,0,2,1,0,7,8,1,0,33,34,238,0,31,1,0,0,0,2,35,1,0,0,0,4,42,1,0,0,0,
-		6,51,1,0,0,0,8,103,1,0,0,0,10,117,1,0,0,0,12,119,1,0,0,0,14,137,1,0,0,
-		0,16,141,1,0,0,0,18,147,1,0,0,0,20,149,1,0,0,0,22,159,1,0,0,0,24,171,1,
-		0,0,0,26,178,1,0,0,0,28,186,1,0,0,0,30,32,3,4,2,0,31,30,1,0,0,0,31,32,
+		5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,3,5,120,8,5,1,6,1,6,1,7,1,7,1,7,1,7,1,7,
+		1,7,1,7,1,7,1,7,1,7,1,7,1,7,1,7,1,7,1,7,1,7,3,7,140,8,7,1,8,1,8,3,8,144,
+		8,8,1,9,1,9,1,9,1,9,3,9,150,8,9,1,10,1,10,1,11,1,11,1,11,1,11,1,11,1,11,
+		1,11,1,11,3,11,162,8,11,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,
+		12,3,12,174,8,12,1,13,1,13,1,13,1,13,1,13,3,13,181,8,13,1,14,1,14,1,14,
+		1,14,1,14,1,14,3,14,189,8,14,1,14,0,0,15,0,2,4,6,8,10,12,14,16,18,20,22,
+		24,26,28,0,2,1,0,7,8,1,0,33,34,242,0,31,1,0,0,0,2,35,1,0,0,0,4,42,1,0,
+		0,0,6,51,1,0,0,0,8,103,1,0,0,0,10,119,1,0,0,0,12,121,1,0,0,0,14,139,1,
+		0,0,0,16,143,1,0,0,0,18,149,1,0,0,0,20,151,1,0,0,0,22,161,1,0,0,0,24,173,
+		1,0,0,0,26,180,1,0,0,0,28,188,1,0,0,0,30,32,3,4,2,0,31,30,1,0,0,0,31,32,
 		1,0,0,0,32,33,1,0,0,0,33,34,5,0,0,1,34,1,1,0,0,0,35,37,5,30,0,0,36,38,
 		3,4,2,0,37,36,1,0,0,0,37,38,1,0,0,0,38,39,1,0,0,0,39,40,5,31,0,0,40,3,
 		1,0,0,0,41,43,3,6,3,0,42,41,1,0,0,0,43,44,1,0,0,0,44,42,1,0,0,0,44,45,
-		1,0,0,0,45,5,1,0,0,0,46,52,3,8,4,0,47,48,5,57,0,0,48,49,5,12,0,0,49,52,
+		1,0,0,0,45,5,1,0,0,0,46,52,3,8,4,0,47,48,5,59,0,0,48,49,5,12,0,0,49,52,
 		3,8,4,0,50,52,3,2,1,0,51,46,1,0,0,0,51,47,1,0,0,0,51,50,1,0,0,0,52,7,1,
 		0,0,0,53,54,5,13,0,0,54,55,3,22,11,0,55,56,3,14,7,0,56,57,5,11,0,0,57,
 		104,1,0,0,0,58,59,5,39,0,0,59,60,3,22,11,0,60,61,5,14,0,0,61,62,3,22,11,
-		0,62,63,5,11,0,0,63,104,1,0,0,0,64,65,5,38,0,0,65,66,5,58,0,0,66,67,5,
+		0,62,63,5,11,0,0,63,104,1,0,0,0,64,65,5,38,0,0,65,66,5,60,0,0,66,67,5,
 		12,0,0,67,70,3,24,12,0,68,69,5,15,0,0,69,71,3,28,14,0,70,68,1,0,0,0,70,
 		71,1,0,0,0,71,72,1,0,0,0,72,73,5,11,0,0,73,104,1,0,0,0,74,75,5,10,0,0,
-		75,76,5,58,0,0,76,77,5,12,0,0,77,78,3,24,12,0,78,79,5,11,0,0,79,104,1,
-		0,0,0,80,81,5,49,0,0,81,82,5,58,0,0,82,104,5,11,0,0,83,84,5,35,0,0,84,
-		85,3,18,9,0,85,86,5,11,0,0,86,104,1,0,0,0,87,88,5,37,0,0,88,89,5,58,0,
+		75,76,5,60,0,0,76,77,5,12,0,0,77,78,3,24,12,0,78,79,5,11,0,0,79,104,1,
+		0,0,0,80,81,5,51,0,0,81,82,5,60,0,0,82,104,5,11,0,0,83,84,5,35,0,0,84,
+		85,3,18,9,0,85,86,5,11,0,0,86,104,1,0,0,0,87,88,5,37,0,0,88,89,5,60,0,
 		0,89,104,5,11,0,0,90,91,5,1,0,0,91,92,3,10,5,0,92,93,5,11,0,0,93,104,1,
-		0,0,0,94,95,5,48,0,0,95,98,5,57,0,0,96,97,5,50,0,0,97,99,3,20,10,0,98,
+		0,0,0,94,95,5,50,0,0,95,98,5,59,0,0,96,97,5,52,0,0,97,99,3,20,10,0,98,
 		96,1,0,0,0,98,99,1,0,0,0,99,100,1,0,0,0,100,104,5,11,0,0,101,102,5,32,
 		0,0,102,104,5,11,0,0,103,53,1,0,0,0,103,58,1,0,0,0,103,64,1,0,0,0,103,
 		74,1,0,0,0,103,80,1,0,0,0,103,83,1,0,0,0,103,87,1,0,0,0,103,90,1,0,0,0,
-		103,94,1,0,0,0,103,101,1,0,0,0,104,9,1,0,0,0,105,118,5,2,0,0,106,118,5,
-		3,0,0,107,108,5,18,0,0,108,118,5,9,0,0,109,118,5,44,0,0,110,118,5,45,0,
-		0,111,118,5,46,0,0,112,118,5,47,0,0,113,118,5,40,0,0,114,118,5,41,0,0,
-		115,118,5,42,0,0,116,118,5,43,0,0,117,105,1,0,0,0,117,106,1,0,0,0,117,
-		107,1,0,0,0,117,109,1,0,0,0,117,110,1,0,0,0,117,111,1,0,0,0,117,112,1,
-		0,0,0,117,113,1,0,0,0,117,114,1,0,0,0,117,115,1,0,0,0,117,116,1,0,0,0,
-		118,11,1,0,0,0,119,120,7,0,0,0,120,13,1,0,0,0,121,138,5,18,0,0,122,138,
-		5,19,0,0,123,138,5,20,0,0,124,138,5,21,0,0,125,138,5,22,0,0,126,138,5,
-		23,0,0,127,138,5,24,0,0,128,129,3,12,6,0,129,130,3,16,8,0,130,138,1,0,
-		0,0,131,138,5,27,0,0,132,138,5,28,0,0,133,138,5,29,0,0,134,138,5,16,0,
-		0,135,138,5,17,0,0,136,138,5,51,0,0,137,121,1,0,0,0,137,122,1,0,0,0,137,
-		123,1,0,0,0,137,124,1,0,0,0,137,125,1,0,0,0,137,126,1,0,0,0,137,127,1,
-		0,0,0,137,128,1,0,0,0,137,131,1,0,0,0,137,132,1,0,0,0,137,133,1,0,0,0,
-		137,134,1,0,0,0,137,135,1,0,0,0,137,136,1,0,0,0,138,15,1,0,0,0,139,142,
-		5,25,0,0,140,142,5,26,0,0,141,139,1,0,0,0,141,140,1,0,0,0,142,17,1,0,0,
-		0,143,144,3,22,11,0,144,145,3,26,13,0,145,148,1,0,0,0,146,148,5,58,0,0,
-		147,143,1,0,0,0,147,146,1,0,0,0,148,19,1,0,0,0,149,150,7,1,0,0,150,21,
-		1,0,0,0,151,160,5,44,0,0,152,160,5,45,0,0,153,160,5,46,0,0,154,160,5,47,
-		0,0,155,160,5,40,0,0,156,160,5,41,0,0,157,160,5,42,0,0,158,160,5,43,0,
-		0,159,151,1,0,0,0,159,152,1,0,0,0,159,153,1,0,0,0,159,154,1,0,0,0,159,
-		155,1,0,0,0,159,156,1,0,0,0,159,157,1,0,0,0,159,158,1,0,0,0,160,23,1,0,
-		0,0,161,172,5,44,0,0,162,172,5,45,0,0,163,172,5,46,0,0,164,172,5,47,0,
-		0,165,172,5,40,0,0,166,172,5,41,0,0,167,172,5,42,0,0,168,172,5,43,0,0,
-		169,170,5,18,0,0,170,172,5,9,0,0,171,161,1,0,0,0,171,162,1,0,0,0,171,163,
-		1,0,0,0,171,164,1,0,0,0,171,165,1,0,0,0,171,166,1,0,0,0,171,167,1,0,0,
-		0,171,168,1,0,0,0,171,169,1,0,0,0,172,25,1,0,0,0,173,179,5,53,0,0,174,
-		179,5,54,0,0,175,179,5,55,0,0,176,179,5,56,0,0,177,179,5,59,0,0,178,173,
-		1,0,0,0,178,174,1,0,0,0,178,175,1,0,0,0,178,176,1,0,0,0,178,177,1,0,0,
-		0,179,27,1,0,0,0,180,187,5,53,0,0,181,187,5,54,0,0,182,187,5,55,0,0,183,
-		187,5,56,0,0,184,187,5,59,0,0,185,187,5,60,0,0,186,180,1,0,0,0,186,181,
-		1,0,0,0,186,182,1,0,0,0,186,183,1,0,0,0,186,184,1,0,0,0,186,185,1,0,0,
-		0,187,29,1,0,0,0,15,31,37,44,51,70,98,103,117,137,141,147,159,171,178,
-		186
+		103,94,1,0,0,0,103,101,1,0,0,0,104,9,1,0,0,0,105,120,5,2,0,0,106,120,5,
+		3,0,0,107,108,5,18,0,0,108,120,5,9,0,0,109,120,5,45,0,0,110,120,5,46,0,
+		0,111,120,5,47,0,0,112,120,5,48,0,0,113,120,5,40,0,0,114,120,5,41,0,0,
+		115,120,5,42,0,0,116,120,5,43,0,0,117,120,5,49,0,0,118,120,5,44,0,0,119,
+		105,1,0,0,0,119,106,1,0,0,0,119,107,1,0,0,0,119,109,1,0,0,0,119,110,1,
+		0,0,0,119,111,1,0,0,0,119,112,1,0,0,0,119,113,1,0,0,0,119,114,1,0,0,0,
+		119,115,1,0,0,0,119,116,1,0,0,0,119,117,1,0,0,0,119,118,1,0,0,0,120,11,
+		1,0,0,0,121,122,7,0,0,0,122,13,1,0,0,0,123,140,5,18,0,0,124,140,5,19,0,
+		0,125,140,5,20,0,0,126,140,5,21,0,0,127,140,5,22,0,0,128,140,5,23,0,0,
+		129,140,5,24,0,0,130,131,3,12,6,0,131,132,3,16,8,0,132,140,1,0,0,0,133,
+		140,5,27,0,0,134,140,5,28,0,0,135,140,5,29,0,0,136,140,5,16,0,0,137,140,
+		5,17,0,0,138,140,5,53,0,0,139,123,1,0,0,0,139,124,1,0,0,0,139,125,1,0,
+		0,0,139,126,1,0,0,0,139,127,1,0,0,0,139,128,1,0,0,0,139,129,1,0,0,0,139,
+		130,1,0,0,0,139,133,1,0,0,0,139,134,1,0,0,0,139,135,1,0,0,0,139,136,1,
+		0,0,0,139,137,1,0,0,0,139,138,1,0,0,0,140,15,1,0,0,0,141,144,5,25,0,0,
+		142,144,5,26,0,0,143,141,1,0,0,0,143,142,1,0,0,0,144,17,1,0,0,0,145,146,
+		3,22,11,0,146,147,3,26,13,0,147,150,1,0,0,0,148,150,5,60,0,0,149,145,1,
+		0,0,0,149,148,1,0,0,0,150,19,1,0,0,0,151,152,7,1,0,0,152,21,1,0,0,0,153,
+		162,5,45,0,0,154,162,5,46,0,0,155,162,5,47,0,0,156,162,5,48,0,0,157,162,
+		5,40,0,0,158,162,5,41,0,0,159,162,5,42,0,0,160,162,5,43,0,0,161,153,1,
+		0,0,0,161,154,1,0,0,0,161,155,1,0,0,0,161,156,1,0,0,0,161,157,1,0,0,0,
+		161,158,1,0,0,0,161,159,1,0,0,0,161,160,1,0,0,0,162,23,1,0,0,0,163,174,
+		5,45,0,0,164,174,5,46,0,0,165,174,5,47,0,0,166,174,5,48,0,0,167,174,5,
+		40,0,0,168,174,5,41,0,0,169,174,5,42,0,0,170,174,5,43,0,0,171,172,5,18,
+		0,0,172,174,5,9,0,0,173,163,1,0,0,0,173,164,1,0,0,0,173,165,1,0,0,0,173,
+		166,1,0,0,0,173,167,1,0,0,0,173,168,1,0,0,0,173,169,1,0,0,0,173,170,1,
+		0,0,0,173,171,1,0,0,0,174,25,1,0,0,0,175,181,5,55,0,0,176,181,5,56,0,0,
+		177,181,5,57,0,0,178,181,5,58,0,0,179,181,5,61,0,0,180,175,1,0,0,0,180,
+		176,1,0,0,0,180,177,1,0,0,0,180,178,1,0,0,0,180,179,1,0,0,0,181,27,1,0,
+		0,0,182,189,5,55,0,0,183,189,5,56,0,0,184,189,5,57,0,0,185,189,5,58,0,
+		0,186,189,5,61,0,0,187,189,5,62,0,0,188,182,1,0,0,0,188,183,1,0,0,0,188,
+		184,1,0,0,0,188,185,1,0,0,0,188,186,1,0,0,0,188,187,1,0,0,0,189,29,1,0,
+		0,0,15,31,37,44,51,70,98,103,119,139,143,149,161,173,180,188
 	};
 
 	public static readonly ATN _ATN =

@@ -1,7 +1,7 @@
 lexer grammar EsmLexer;
 options { language=CSharp; }
 Print: 'print';
-Ascii: 'ascii';
+Utf8: 'utf8';
 Utf16: 'utf16';
 Hex: 'hex';
 Dec: 'decimal';
@@ -62,12 +62,12 @@ I8:  'i8';
 I16: 'i16';
 I32: 'i32';
 I64: 'i64';
-Isize: 'isize';
+ISize: 'isize';
 U8:  'u8';
 U16: 'u16';
 U32: 'u32';
 U64: 'u64';
-Usize: 'usize';
+USize: 'usize';
 
 // Jump operations
 Goto: 'goto';

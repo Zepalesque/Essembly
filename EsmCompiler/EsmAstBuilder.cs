@@ -28,7 +28,7 @@ public class EsmAstBuilder(CompilationLogger logger, FileData file) : EsmParserB
     public override FinalizedStmt VisitPushConst(EsmParser.PushConstContext context) {
         EsmParser.SizedLiteralContext lit = context.lit;
         FilePos pos = lit.InFile(File);
-        FixedSizeType type = FixedSizeType.ByIndex(context.type.type.Type);
+        FixedSizeType type = FixedSizeType.ByToken(context.type.type.Type);
         
         /*if (lit.str != null) {
             var inspecs = LiteralUtil.RegularEscape(pos, lit.str.Text, out var result);
@@ -69,7 +69,7 @@ public class EsmAstBuilder(CompilationLogger logger, FileData file) : EsmParserB
         => new(context.loc.Text, context.InFile(File));
 
     public override AllocMem VisitAllocMem(EsmParser.AllocMemContext context)
-        => new(context.id.Text, FixedSizeType.ByIndex(context.type.type.Type), context.InFile(File));
+        => new(context.id.Text, FixedSizeType.ByToken(context.type.type.Type), context.InFile(File));
 
     public override SizedStmt VisitToStack(EsmParser.ToStackContext context)
         => (SizedStmt) context.push.Accept(this);
@@ -82,7 +82,8 @@ public class EsmAstBuilder(CompilationLogger logger, FileData file) : EsmParserB
             EsmLexer.BwXor => new BitXor(pos),
             EsmLexer.BwNot => new BitNot(pos),
             EsmLexer.BwLShift => new BitLShift(pos),
-            EsmLexer.BwRShift => new BitRShift(pos),
+            EsmLexer.BwRShift => new BitUrShift(pos),
+            EsmLexer.BwSRShift => new BitRShift(pos),
             _ => throw new InvalidOperationException()
         };
     }

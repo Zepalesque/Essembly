@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using static System.BitConverter;
 using static System.Buffers.Binary.BinaryPrimitives;
 using static System.Runtime.CompilerServices.Unsafe;
+using static System.Runtime.InteropServices.MemoryMarshal;
 using static EsmRuntime.Constants;
 
 // ReSharper disable UseSymbolAlias
@@ -131,8 +132,13 @@ public readonly record struct i8(sbyte value):
 
     public static usize ByteCount {
         [MethodImpl(Inline)]
-        get;
-    } = 1;
+        get => 1;
+    }
+    
+    public nuint InstSize {
+        [MethodImpl(Inline)]
+        get => ByteCount;
+    }
 
     [MethodImpl(Inline)]
     public static unsafe i8 FromPtr(byte* ptr) => ReadUnaligned<sbyte>(ptr);
@@ -151,10 +157,10 @@ public readonly record struct i8(sbyte value):
     }
 
     [MethodImpl(Inline)]
-    public unsafe FatPtr ToBytecode(delegate*<nuint, byte*> generator) {
-        byte* ptr = generator(sizeof(sbyte));
-        WriteUnaligned(ptr, IsLittleEndian ? ReverseEndianness(value) : value);
-        return new(ptr, sizeof(sbyte));
+    public byte[] ToBytecode() {
+        var arr = new byte[sizeof(sbyte)];
+        Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
+        return arr;
     }
 }
 
@@ -275,8 +281,13 @@ public readonly record struct i16(short value):
     
     public static usize ByteCount {
         [MethodImpl(Inline)]
-        get;
-    } = 2;
+        get => 2;
+    }
+    
+    public nuint InstSize {
+        [MethodImpl(Inline)]
+        get => ByteCount;
+    }
 
     [MethodImpl(Inline)]
     public static unsafe i16 FromPtr(byte* ptr) => ReadUnaligned<short>(ptr);
@@ -295,10 +306,10 @@ public readonly record struct i16(short value):
     }
     
     [MethodImpl(Inline)]
-    public unsafe FatPtr ToBytecode(delegate*<nuint, byte*> generator) {
-        byte* ptr = generator(sizeof(short));
-        WriteUnaligned(ptr, IsLittleEndian ? ReverseEndianness(value) : value);
-        return new(ptr, sizeof(short));
+    public byte[] ToBytecode() {
+        var arr = new byte[sizeof(short)];
+        Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
+        return arr;
     }
 
     public static i16 MaxValue {
@@ -430,8 +441,13 @@ public readonly record struct i32(int value):
     
     public static usize ByteCount {
         [MethodImpl(Inline)]
-        get;
-    } = 4;
+        get => 4;
+    }
+    
+    public nuint InstSize {
+        [MethodImpl(Inline)]
+        get => ByteCount;
+    }
 
     [MethodImpl(Inline)]
     public static unsafe i32 FromPtr(byte* ptr) => ReadUnaligned<int>(ptr);
@@ -452,10 +468,10 @@ public readonly record struct i32(int value):
     }
     
     [MethodImpl(Inline)]
-    public unsafe FatPtr ToBytecode(delegate*<nuint, byte*> generator) {
-        byte* ptr = generator(sizeof(int));
-        WriteUnaligned(ptr, IsLittleEndian ? ReverseEndianness(value) : value);
-        return new(ptr, sizeof(int));
+    public byte[] ToBytecode() {
+        var arr = new byte[sizeof(int)];
+        Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
+        return arr;
     }
     
     public static i32 MaxValue {
@@ -608,10 +624,10 @@ public readonly record struct i64(long value):
     }
     
     [MethodImpl(Inline)]
-    public unsafe FatPtr ToBytecode(delegate*<nuint, byte*> generator) {
-        byte* ptr = generator(sizeof(long));
-        WriteUnaligned(ptr, IsLittleEndian ? ReverseEndianness(value) : value);
-        return new(ptr, sizeof(long));
+    public byte[] ToBytecode() {
+        var arr = new byte[sizeof(long)];
+        Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
+        return arr;
     }
 
 

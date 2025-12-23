@@ -19,7 +19,7 @@ public unsafe ref struct OpStack(byte* startPtr, nint length) {
     }
 
     public void Push<T>(T value) where T : struct, IByteSerializable<T>, allows ref struct {
-        nuint size = value.InstanceSize;
+        nuint size = value.InstSize;
         if (_offs + (long) size > length) throw new StackOverflowError("Operand stack is full!");
         byte* ptr = startPtr + _offs + 1;
         _offs += (nint) size;

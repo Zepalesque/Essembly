@@ -22,7 +22,7 @@ public struct Unit: ISpanFormattable, ISizedValue<Unit> {
 
     public static unsafe Unit FromBytecode(byte* start, int* pc) => Self;
     
-    public unsafe FatPtr ToBytecode(delegate*<nuint, byte*> generator) => new(null, 0);
+    public byte[] ToBytecode() => [];
 
     public static usize ByteCount => 0;
 }

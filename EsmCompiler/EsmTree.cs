@@ -3,6 +3,8 @@ using Antlr4.Runtime.Tree;
 
 using EsmCompiler.Util;
 using EsmRuntime.Common;
+using EsmRuntime.Common.Types;
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 
 namespace EsmCompiler;
 
@@ -64,6 +66,14 @@ public record AllocStr(byte[] Ascii, FilePos Pos) : FinalizedStmt(Pos) {
 }
 
 public record AllocMem(string VarName, FixedSizeType Type,  FilePos Pos) : UnfinalizedStmt(0, Pos) {
+    public string VarName { get; set; } = VarName;
+}
+
+public record AllocSlice<T>(string VarName, T Value, FilePos Pos) : FinalizedStmt(Pos) where T: struct, IBytecodeSerializable<T> {
+    public T Value { get; set; } = Value;
+    public byte[] Bytes { get; set; } = new[]{ (byte) EsmRuntime.Common.OpCode.AllocSlice }.Concat(Value.ToBytecode()).ToArray();
+    
+    public override ReadOnlySpan<byte> OpCode => Bytes;
     public string VarName { get; set; } = VarName;
 }
 
@@ -150,11 +160,11 @@ public record Label(string Id, FilePos Pos) : BaseNode(Pos) {
     public string Id { get; set; } = Id;
 }
 
-public record BitAnd(FilePos Pos) : NoOpStmt(EsmRuntime.Common.OpCode.And8, Pos);
-public record BitOr(FilePos Pos) : NoOpStmt(EsmRuntime.Common.OpCode.Or8, Pos);
-public record BitXor(FilePos Pos) : NoOpStmt(EsmRuntime.Common.OpCode.Xor8, Pos);
-public record BitNot(FilePos Pos) : NoOpStmt(EsmRuntime.Common.OpCode.Not8, Pos);
-public record BitLShift(FilePos Pos) : NoOpStmt(EsmRuntime.Common.OpCode.Left8, Pos);
+public record BitAnd(FilePos Pos) : NoOpStmt(EsmRuntime.Common.OpCode.AndX8, Pos);
+public record BitOr(FilePos Pos) : NoOpStmt(EsmRuntime.Common.OpCode.OrX8, Pos);
+public record BitXor(FilePos Pos) : NoOpStmt(EsmRuntime.Common.OpCode.XorX8, Pos);
+public record BitNot(FilePos Pos) : NoOpStmt(EsmRuntime.Common.OpCode.NotX8, Pos);
+public record BitLShift(FilePos Pos) : NoOpStmt(EsmRuntime.Common.OpCode.LeftX8, Pos);
 public record BitRShift(FilePos Pos) : NoOpStmt(EsmRuntime.Common.OpCode.RightI8, Pos);
 public record BitUrShift(FilePos Pos) : NoOpStmt(EsmRuntime.Common.OpCode.RightU8, Pos);
 
