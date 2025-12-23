@@ -177,7 +177,7 @@ public record Input(IoMode Mode, FilePos Pos) : NoOpStmt(Mode.InputCode, Pos) {
 }
 
 public enum IoMode {
-    Ascii,
+    Utf8,
     Utf16,
     U8, U16, U32, U64,
     I8, I16, I32, I64,
@@ -187,7 +187,7 @@ public enum IoMode {
 public static class PrintModeExt {
     extension(IoMode self) {
         public static IoMode FromToken(int token) => token switch {
-            EsmLexer.Ascii => IoMode.Ascii,
+            EsmLexer.Utf8 => IoMode.Utf8,
             EsmLexer.Utf16 => IoMode.Utf16,
             EsmLexer.U8 => IoMode.U8,
             EsmLexer.U16 => IoMode.U16,
@@ -203,7 +203,7 @@ public static class PrintModeExt {
 
         public OpCode PrintCode
             => self switch {
-                IoMode.Ascii => OpCode.PrintAscii,
+                IoMode.Utf8 => OpCode.PrintUtf8,
                 IoMode.Utf16 => OpCode.PrintUtf16,
                 IoMode.U8 => OpCode.PrintU8,
                 IoMode.U16 => OpCode.PrintU16,
@@ -219,7 +219,7 @@ public static class PrintModeExt {
         
         public OpCode InputCode
             => self switch {
-                IoMode.Ascii => OpCode.InputAscii,
+                IoMode.Utf8 => OpCode.InputUtf8,
                 IoMode.Utf16 => OpCode.InputUtf16,
                 IoMode.U8 => OpCode.InputU8,
                 IoMode.U16 => OpCode.InputU16,

@@ -6,13 +6,13 @@ using static EsmRuntime.Constants;
 
 namespace EsmRuntime.Common.Types;
 
-public readonly unsafe ref struct StringSlice(Slice<u8> utf8) : ITypedValue<StringSlice>, IBytecodeSerializable<StringSlice> {
+public readonly unsafe ref struct StringSlice(Slice<u8> utf8) : IPrimValue<StringSlice>, IBytecodeSerializable<StringSlice> {
     readonly Slice<u8> _utf8 = utf8;
 
     public Slice<u8> Utf8 => _utf8;
 
-    public static StringSlice FromBytecode(byte* start, int* pc) {
-        return new(Slice<u8>.FromBytecode(start, pc));
+    public static StringSlice FromBytecode(byte* start, scoped ref int pc) {
+        return new(Slice<u8>.FromBytecode(start, ref pc));
     }
 
     public byte[] ToBytecode() {

@@ -42,48 +42,34 @@ namespace EsmRuntime.Memory.Heap;
     }
 }*/
 
-public readonly unsafe ref struct ReferenceHeap(byte* start, nint size) {
+public readonly unsafe ref struct ReferenceHeap(byte* start, nint size, ref HeapTree* tree) {
+    // NOT ref readonly
+    readonly ref HeapTree* _tree = ref tree;
     byte* Start { get; } = start;
     nint Size { get; } = size;
     
-    public Reference<T> Allocate<T>(T value) where T: struct, IByteSerializable<T>, allows ref struct {
+    public Reference<T> Allocate<T>(scoped ref T value) where T: struct, ITypedValue<T>, allows ref struct {
         usize u = value.InstSize;
         if (typeof(T) == typeof(Unit))
             return new(EsmVM.UnitAddr);
         
-        if (!HeapTree.TryAllocate(ref EsmVM.HeapMemoryTree, u, out byte* ptr))
-            throw new MemoryAccessError("No memory left in reference heap :(");
-        
-        return Reference<T>.CreateAt(ptr, value);
+        return HeapTree.TryAllocate(ref _tree, u, out byte* ptr) 
+            ? Reference<T>.CreateAt(ptr, ref value) 
+            : throw new MemoryAccessError("No memory left in reference heap :(");
     }
 
-    public void Free<T>(Reference<T> reference) where T: struct, IByteSerializable<T>, allows ref struct {
+    public void Free<T>(Reference<T> reference) where T: struct, ITypedValue<T>, allows ref struct {
         usize addr = reference.Address;
         if (addr == EsmVM.NullAddr)
             throw new NullAccessError("Attempted to free the null pointer!");
         if (addr == EsmVM.UnitAddr) return;
-        if (addr < (usize)Start || addr >= (usize)Start +  Size) {
+        if (addr < (usize)Start || addr >= (usize)Start + Size) {
             throw new MemoryAccessError($"Free address {addr} is outside reference heap bounds!");
         }
         
         usize size = reference.DerefSize;
         
-        if (!HeapTree.TryFree(ref EsmVM.HeapMemoryTree, reference.Address, reference.Address + size))
+        if (!HeapTree.TryFree(ref _tree, reference.Address, reference.Address + size))
             throw new MemoryAccessError("Tried to free already freed memory!");
     }
-    
-    public void Free(usize addr) {
-        if (addr == EsmVM.NullAddr)
-            throw new NullAccessError("Attempted to free the null pointer!");
-        if (addr == EsmVM.UnitAddr) return;
-        if (addr < (usize)Start || addr >= (usize)Start +  Size) {
-            throw new MemoryAccessError($"Free address {addr} is outside reference heap bounds!");
-        }
-
-        usize size = usize.FromPtr((byte*) addr);
-        
-        if (!HeapTree.TryFree(ref EsmVM.HeapMemoryTree, addr, addr + size))
-            throw new MemoryAccessError("Tried to free already freed memory!");
-    }
-    
 }

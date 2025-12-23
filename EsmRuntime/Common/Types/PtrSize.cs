@@ -13,7 +13,7 @@ namespace EsmRuntime.Common.Types;
 #pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
 public readonly record struct usize(nuint value):
     ISpanFormattable,
-    ISizedValue<usize>,
+    ISizedPrimValue<usize>,
     INumberFormattable,
     IBitwiseOperators<usize, usize, usize>,
     IAdditionOperators<usize, usize, usize>,
@@ -63,8 +63,8 @@ public readonly record struct usize(nuint value):
     public static unsafe explicit operator usize(byte* self) => (nuint) self;
 
     [MethodImpl(Inline)]
-    public static unsafe usize FromBytecode(byte* start, int* pc) {
-        *pc += sizeof(ulong);
+    public static unsafe usize FromBytecode(byte* start, scoped ref int pc) {
+        pc += sizeof(ulong);
         return IsLittleEndian
             ? ReverseEndianness(ReadUnaligned<ulong>(start))
             : ReadUnaligned<ulong>(start);
@@ -184,18 +184,22 @@ public readonly record struct usize(nuint value):
     
     [MethodImpl(Inline)]
     public static usize operator -(usize value) => new(~value.value + 1);
-
-    public static usize AdditiveIdentity { get; } = 0;
-    public static usize MultiplicativeIdentity { get; } = 1;
+    
+    public static usize AdditiveIdentity { [MethodImpl(Inline)] get => 0; }
+    public static usize MultiplicativeIdentity { [MethodImpl(Inline)] get => 1; }
     [MethodImpl(Inline)]
     public int CompareTo(usize other) => value.CompareTo(other.value);
-    public static usize MaxValue => nuint.MaxValue;
-    public static usize MinValue => nuint.MinValue;
+    
+    public static usize MaxValue { [MethodImpl(Inline)] get => nuint.MaxValue; }
+    
+    public static usize MinValue { [MethodImpl(Inline)] get => nuint.MinValue; }
+    
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^usize"u8; }
 }
 
 public readonly record struct isize(nint value):
     ISpanFormattable,
-    ISizedValue<isize>,
+    ISizedPrimValue<isize>,
     INumberFormattable,
     IBitwiseOperators<isize, isize, isize>,
     IAdditionOperators<isize, isize, isize>,
@@ -233,8 +237,8 @@ public readonly record struct isize(nint value):
     public static unsafe explicit operator isize(byte* self) => (nint) self;
 
     [MethodImpl(Inline)]
-    public static unsafe isize FromBytecode(byte* start, int* pc) {
-        *pc += sizeof(long);
+    public static unsafe isize FromBytecode(byte* start, scoped ref int pc) {
+        pc += sizeof(long);
         return IsLittleEndian
             ? ReverseEndianness(ReadUnaligned<long>(start))
             : ReadUnaligned<long>(start);
@@ -355,10 +359,14 @@ public readonly record struct isize(nint value):
     [MethodImpl(Inline)]
     public static isize operator -(isize value) => new(~value.value + 1);
 
-    public static isize AdditiveIdentity { get; } = 0;
-    public static isize MultiplicativeIdentity { get; } = 1;
+    public static isize AdditiveIdentity { [MethodImpl(Inline)] get => 0; }
+    public static isize MultiplicativeIdentity { [MethodImpl(Inline)] get => 1; }
     [MethodImpl(Inline)]
     public int CompareTo(isize other) => value.CompareTo(other.value);
-    public static isize MaxValue => nint.MaxValue;
-    public static isize MinValue => nint.MinValue;
+    
+    public static isize MaxValue { [MethodImpl(Inline)] get => nint.MaxValue; }
+    
+    public static isize MinValue { [MethodImpl(Inline)] get => nint.MinValue; }
+    
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^isize"u8; }
 }

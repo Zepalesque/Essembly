@@ -4,9 +4,10 @@ using System.Runtime.InteropServices;
 
 namespace EsmRuntime.Common.Types;
 
-public readonly unsafe ref struct Slice<T>(byte* start, usize byteLength): IBytecodeSerializable<Slice<T>> where T: struct, ISizedValue<T>, allows ref struct {
+public readonly unsafe ref struct Slice<T>(byte* start, usize byteLength): ITypedValue<Slice<T>>, IBytecodeSerializable<Slice<T>> where T: struct, ISizedTypeValue<T>, allows ref struct {
     byte* Start { get; } = start;
     public usize Length { get; } = byteLength / T.ByteCount;
+    
     
     public static Slice<T> Create(ReadOnlySpan<byte> span) {
         ref byte reference = ref MemoryMarshal.GetReference(span);
@@ -52,10 +53,10 @@ public readonly unsafe ref struct Slice<T>(byte* start, usize byteLength): IByte
         public T Current => T.FromPtr(start + _offset * T.ByteCount);
     }
     
-    public static Slice<T> FromBytecode(byte* start, int* pc) {
-        usize length = usize.FromBytecode(start, pc);
+    public static Slice<T> FromBytecode(byte* start, scoped ref int pc) {
+        usize length = usize.FromBytecode(start, ref pc);
         usize byteLength = length * T.ByteCount;
-        *pc += (int) byteLength;
+        pc += (int) byteLength;
         return FromFatPtr(start + usize.ByteCount, byteLength);
     }
     

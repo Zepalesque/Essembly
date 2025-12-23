@@ -17,7 +17,7 @@ public readonly record struct u8(byte value):
     ISpanFormattable,
     INumberFormattable,
     IAsciiFormattable<u8>,
-    ISizedValue<u8>,
+    ISizedPrimValue<u8>,
     IBitwiseOperators<u8, u8, u8>,
     IAdditionOperators<u8, u8, u8>,
     ISubtractionOperators<u8, u8, u8>,
@@ -30,7 +30,9 @@ public readonly record struct u8(byte value):
     IUnaryNegationOperators<u8, u8>,
     IAdditiveIdentity<u8, u8>,
     IMultiplicativeIdentity<u8, u8>,
-    IComparable<u8> {
+    IComparable<u8>,
+    IMinMaxValue<u8>
+{
 
     [MethodImpl(Inline)]
     public static implicit operator u8(byte val) => new(val);
@@ -71,7 +73,6 @@ public readonly record struct u8(byte value):
         [MethodImpl(Inline)]
         get => $"{value:D}";
     }
-
 
     [MethodImpl(Inline)]
     public int CompareTo(u8 other) => value.CompareTo(other.value);
@@ -120,7 +121,7 @@ public readonly record struct u8(byte value):
 
     [MethodImpl(Inline)]
     public static u8 operator ++(u8 value) => value + 1;
-    public static u8 MultiplicativeIdentity { get; } = 1;
+    public static u8 MultiplicativeIdentity { [MethodImpl(Inline)] get => 1; }
     [MethodImpl(Inline)]
     public static u8 operator *(u8 left, u8 right) => unchecked((byte) (left.value * right.value));
 
@@ -151,8 +152,8 @@ public readonly record struct u8(byte value):
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
 
     [MethodImpl(Inline)]
-    public static unsafe u8 FromBytecode(byte* start, int* pc) {
-        *pc += sizeof(byte);
+    public static unsafe u8 FromBytecode(byte* start, scoped ref int pc) {
+        pc += sizeof(byte);
         return IsLittleEndian ? ReverseEndianness(ReadUnaligned<byte>(start)) : ReadUnaligned<byte>(start);
     }
 
@@ -162,6 +163,12 @@ public readonly record struct u8(byte value):
         Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
         return arr;
     }
+    
+    public static u8 MaxValue { [MethodImpl(Inline)] get => byte.MaxValue; }
+    
+    public static u8 MinValue { [MethodImpl(Inline)] get => byte.MinValue; }
+    
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^u64"u8; }
 }
 
 
@@ -169,7 +176,7 @@ public readonly record struct u16(ushort value):
     ISpanFormattable,
     INumberFormattable,
     IUtf16Formattable<u16>,
-    ISizedValue<u16>,
+    ISizedPrimValue<u16>,
     IBitwiseOperators<u16, u16, u16>,
     IAdditionOperators<u16, u16, u16>,
     ISubtractionOperators<u16, u16, u16>,
@@ -243,7 +250,7 @@ public readonly record struct u16(ushort value):
     [MethodImpl(Inline)]
     public static u16 operator +(u16 left, u16 right) => unchecked((ushort) (left.value + right.value));
     
-    public static u16 AdditiveIdentity { [MethodImpl(Inline)] get; } = 0;
+    public static u16 AdditiveIdentity { [MethodImpl(Inline)] get => 0; }
    
     [MethodImpl(Inline)]
     public static bool operator >(u16 left, u16 right) => left.value > right.value;
@@ -276,8 +283,7 @@ public readonly record struct u16(ushort value):
     public static u16 operator -(u16 value) => unchecked((ushort)-value.value);
 
     public static u16 MultiplicativeIdentity {
-        [MethodImpl(Inline)] get;
-    } = 1;
+        [MethodImpl(Inline)] get => 1; }
     
     public static usize ByteCount {
         [MethodImpl(Inline)]
@@ -300,8 +306,8 @@ public readonly record struct u16(ushort value):
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
 
     [MethodImpl(Inline)]
-    public static unsafe u16 FromBytecode(byte* start, int* pc) {
-        *pc += sizeof(ushort);
+    public static unsafe u16 FromBytecode(byte* start, scoped ref int pc) {
+        pc += sizeof(ushort);
         return IsLittleEndian ? ReverseEndianness(ReadUnaligned<ushort>(start)) : ReadUnaligned<ushort>(start);
     }
     
@@ -311,23 +317,19 @@ public readonly record struct u16(ushort value):
         Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
         return arr;
     }
-
-    public static u16 MaxValue {
-        [MethodImpl(Inline)]
-        get;
-    } = ushort.MaxValue;
-
-    public static u16 MinValue {
-        [MethodImpl(Inline)]
-        get;
-    } = ushort.MinValue;
+    
+    public static u16 MaxValue { [MethodImpl(Inline)] get => ushort.MaxValue; }
+    
+    public static u16 MinValue { [MethodImpl(Inline)] get => ushort.MinValue; }
+    
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^u16"u8; }
 }
 
 
 public readonly record struct u32(uint value): 
     ISpanFormattable,
     INumberFormattable,
-    ISizedValue<u32>,
+    ISizedPrimValue<u32>,
     IBitwiseOperators<u32, u32, u32>,
     IAdditionOperators<u32, u32, u32>,
     ISubtractionOperators<u32, u32, u32>,
@@ -403,8 +405,7 @@ public readonly record struct u32(uint value):
 
     public static u32 AdditiveIdentity {
         [MethodImpl(Inline)]
-        get;
-    } = 0;
+        get => 0; }
     [MethodImpl(Inline)]
     public static bool operator >(u32 left, u32 right) => left.value > right.value;
 
@@ -436,8 +437,7 @@ public readonly record struct u32(uint value):
 
     public static u32 MultiplicativeIdentity {
         [MethodImpl(Inline)]
-        get;
-    } = 1;
+        get => 1; }
     
     public static usize ByteCount {
         [MethodImpl(Inline)]
@@ -460,8 +460,8 @@ public readonly record struct u32(uint value):
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
 
     [MethodImpl(Inline)]
-    public static unsafe u32 FromBytecode(byte* start, int* pc) {
-        *pc += sizeof(uint);
+    public static unsafe u32 FromBytecode(byte* start, scoped ref int pc) {
+        pc += sizeof(uint);
         return IsLittleEndian 
             ? ReverseEndianness(ReadUnaligned<uint>(start)) 
             : ReadUnaligned<uint>(start);
@@ -474,22 +474,18 @@ public readonly record struct u32(uint value):
         return arr;
     }
     
-    public static u32 MaxValue {
-        [MethodImpl(Inline)]
-        get;
-    } = uint.MaxValue;
-
-    public static u32 MinValue {
-        [MethodImpl(Inline)]
-        get;
-    } = uint.MinValue;
+    public static u32 MaxValue { [MethodImpl(Inline)] get => uint.MaxValue; }
+    
+    public static u32 MinValue { [MethodImpl(Inline)] get => uint.MinValue; }
+    
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^u32"u8; }
 }
 
 
 public readonly record struct u64(ulong value): 
     ISpanFormattable,
     INumberFormattable,
-    ISizedValue<u64>,
+    ISizedPrimValue<u64>,
     IBitwiseOperators<u64, u64, u64>,
     IAdditionOperators<u64, u64, u64>,
     ISubtractionOperators<u64, u64, u64>,
@@ -564,7 +560,7 @@ public readonly record struct u64(ulong value):
     [MethodImpl(Inline)]
     public static u64 operator +(u64 left, u64 right) => unchecked(left.value + right.value);
     
-    public static u64 AdditiveIdentity { [MethodImpl(Inline)] get; } = 0;
+    public static u64 AdditiveIdentity { [MethodImpl(Inline)] get => 0; }
     [MethodImpl(Inline)]
     public static bool operator >(u64 left, u64 right) => left.value > right.value;
 
@@ -595,20 +591,11 @@ public readonly record struct u64(ulong value):
     [MethodImpl(Inline)]
     public static u64 operator -(u64 value) => unchecked(~value.value + 1);
 
-    public static u64 MultiplicativeIdentity {
-        [MethodImpl(Inline)]
-        get;
-    } = 1;
+    public static u64 MultiplicativeIdentity { [MethodImpl(Inline)] get => 1; }
     
-    public static usize ByteCount {
-        [MethodImpl(Inline)]
-        get => 8;
-    }
+    public static usize ByteCount { [MethodImpl(Inline)] get => 8; }
     
-    public nuint InstSize {
-        [MethodImpl(Inline)]
-        get => ByteCount;
-    }
+    public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
 
     [MethodImpl(Inline)]
     public static unsafe u64 FromPtr(byte* ptr) => ReadUnaligned<ulong>(ptr);
@@ -621,8 +608,8 @@ public readonly record struct u64(ulong value):
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
 
     [MethodImpl(Inline)]
-    public static unsafe u64 FromBytecode(byte* start, int* pc) {
-        *pc += sizeof(ulong);
+    public static unsafe u64 FromBytecode(byte* start, scoped ref int pc) {
+        pc += sizeof(ulong);
         return IsLittleEndian 
             ? ReverseEndianness(ReadUnaligned<ulong>(start)) 
             : ReadUnaligned<ulong>(start);
@@ -634,25 +621,20 @@ public readonly record struct u64(ulong value):
         Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
         return arr;
     }
-
-
-    public static u64 MaxValue {
-        [MethodImpl(Inline)]
-        get;
-    } = ulong.MaxValue;
-
-    public static u64 MinValue {
-        [MethodImpl(Inline)]
-        get;
-    } = ulong.MinValue;
+    
+    
+    public static u64 MaxValue { [MethodImpl(Inline)] get => ulong.MaxValue; }
+    
+    public static u64 MinValue { [MethodImpl(Inline)] get => ulong.MinValue; }
+    
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^u64"u8; }
 }
 
 
 public readonly record struct u128(UInt128 value):
     ISpanFormattable,
     INumberFormattable,
-    ISizedValue<u128>,
-    ITypedValue<u128>,
+    ISizedPrimValue<u128>,
     IBitwiseOperators<u128, u128, u128>,
     IAdditionOperators<u128, u128, u128>,
     ISubtractionOperators<u128, u128, u128>,
@@ -724,7 +706,7 @@ public readonly record struct u128(UInt128 value):
     [MethodImpl(Inline)]
     public static u128 operator +(u128 left, u128 right) => unchecked(left.value + right.value);
     
-    public static u128 AdditiveIdentity { [MethodImpl(Inline)] get; } = (UInt128)0;
+    public static u128 AdditiveIdentity { [MethodImpl(Inline)] get => (UInt128)0; }
     [MethodImpl(Inline)]
     public static bool operator >(u128 left, u128 right) => left.value > right.value;
 
@@ -781,16 +763,16 @@ public readonly record struct u128(UInt128 value):
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
     
     [MethodImpl(Inline)]
-    public static unsafe u128 FromBytecode(byte* start, int* pc) {
-        *pc += sizeof(UInt128);
+    public static unsafe u128 FromBytecode(byte* start, scoped ref int pc) {
+        pc += sizeof(UInt128);
         return IsLittleEndian
             ? ReverseEndianness(ReadUnaligned<UInt128>(start))
             : ReadUnaligned<UInt128>(start);
     }
     
     [MethodImpl(Inline)]
-    public byte[] ToBytecode() {
-        var arr = new byte[128];
+    public unsafe byte[] ToBytecode() {
+        var arr = new byte[sizeof(UInt128)];
         Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
         return arr;
     }

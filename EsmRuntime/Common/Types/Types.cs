@@ -1,15 +1,12 @@
 ﻿using System.IO.Hashing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using EsmRuntime.Common.Types.Signature;
 using static EsmRuntime.Constants;
 
 namespace EsmRuntime.Common.Types;
 
 public static class TypeUtils {
-    [MethodImpl(Inline)]
-    public static u128 Hash(this StringSlice str) {
-        return XxHash128.HashToUInt128(str.Utf8.Bytes);
-    }
     
     extension(ReadOnlySpan<byte> span) {
         [MethodImpl(Inline)]
@@ -23,71 +20,109 @@ public static class TypeUtils {
         }
     }
     
-    // primitive signatures
-    public static ReadOnlySpan<byte> U8Sig { [MethodImpl(Inline)] get => "^u8"u8; }
-    public static ReadOnlySpan<byte> U16Sig { [MethodImpl(Inline)] get => "^u16"u8; }
-    public static ReadOnlySpan<byte> U32Sig { [MethodImpl(Inline)] get => "^u32"u8; }
-    public static ReadOnlySpan<byte> U64Sig { [MethodImpl(Inline)] get => "^u64"u8; }
-    public static ReadOnlySpan<byte> U128Sig { [MethodImpl(Inline)] get => "^u128"u8; }
-    public static ReadOnlySpan<byte> UsizeSig { [MethodImpl(Inline)] get => "^usize"u8; }
-    public static ReadOnlySpan<byte> I8Sig { [MethodImpl(Inline)] get => "^i8"u8; }
-    public static ReadOnlySpan<byte> I16Sig { [MethodImpl(Inline)] get => "^i16"u8; }
-    public static ReadOnlySpan<byte> I32Sig { [MethodImpl(Inline)] get => "^i32"u8; }
-    public static ReadOnlySpan<byte> I64Sig { [MethodImpl(Inline)] get => "^i64"u8; }
-    public static ReadOnlySpan<byte> I128Sig { [MethodImpl(Inline)] get => "^i128"u8; }
-    public static ReadOnlySpan<byte> IsizeSig { [MethodImpl(Inline)] get => "^isize"u8; }
-    public static ReadOnlySpan<byte> StrSig { [MethodImpl(Inline)] get => "^str"u8; }
+    extension(Span<byte> span) {
+        [MethodImpl(Inline)]
+        public u128 Hash() {
+            return XxHash128.HashToUInt128(span);
+        }
+        
+        [MethodImpl(Inline)]
+        public unsafe byte* StartPtr() {
+            return (byte*)Unsafe.AsPointer(in MemoryMarshal.GetReference(span));
+        }
+    }
     
-    // Primitive hashes
-    public static readonly u128
-          U8Hash = XxHash128.HashToUInt128(U8Sig)
-        , U16Hash = XxHash128.HashToUInt128(U16Sig)
-        , U32Hash = XxHash128.HashToUInt128(U32Sig)
-        , U64Hash = XxHash128.HashToUInt128(U64Sig)
-        , U128Hash = XxHash128.HashToUInt128(U128Sig)
-        , UsizeHash = XxHash128.HashToUInt128(UsizeSig)
-        , I8Hash = XxHash128.HashToUInt128(I8Sig)
-        , I16Hash = XxHash128.HashToUInt128(I16Sig)
-        , I32Hash = XxHash128.HashToUInt128(I32Sig)
-        , I64Hash = XxHash128.HashToUInt128(I64Sig)
-        , I128Hash = XxHash128.HashToUInt128(I128Sig)
-        , IsizeHash = XxHash128.HashToUInt128(IsizeSig)
-        , StrHash = XxHash128.HashToUInt128(StrSig)
-          
-    ;
+    extension<TSelf, TValue>(TSelf self)
+        where TValue : struct, ISizedTypeValue<TValue>, allows ref struct
+        where TSelf : struct, IType<TSelf, TValue>, allows ref struct {
+        
+        public SliceType<TSelf, TValue> Slice() {
+            return new(self);
+        }
+    }
     
+    extension<TSelf, TValue>(TSelf self)
+        where TValue : struct, ITypedValue<TValue>, allows ref struct
+        where TSelf : struct, IType<TSelf, TValue>, allows ref struct {
+        public ReferenceType<TSelf, TValue> Reference() {
+            return new(self);
+        }
+    }
+    
+    // primitive types
+    
+    public static PrimitiveSizedType<u8> U8Type { [MethodImpl(Inline)] get => new(u8.Signature); }
+    public static PrimitiveSizedType<u16> U16Type { [MethodImpl(Inline)] get => new(u16.Signature); }
+    public static PrimitiveSizedType<u32> U32Type { [MethodImpl(Inline)] get => new(u32.Signature); }
+    public static PrimitiveSizedType<u64> U64Type { [MethodImpl(Inline)] get => new(u64.Signature); }
+    public static PrimitiveSizedType<u128> U128Type { [MethodImpl(Inline)] get => new(u128.Signature); }
+    public static PrimitiveSizedType<usize> UsizeType { [MethodImpl(Inline)] get => new(usize.Signature); }
+    public static PrimitiveSizedType<i8> I8Type { [MethodImpl(Inline)] get => new(i8.Signature); }
+    public static PrimitiveSizedType<i16> I16Type { [MethodImpl(Inline)] get => new(i16.Signature); }
+    public static PrimitiveSizedType<i32> I32Type { [MethodImpl(Inline)] get => new(i32.Signature); }
+    public static PrimitiveSizedType<i64> I64Type { [MethodImpl(Inline)] get => new(i64.Signature); }
+    public static PrimitiveSizedType<i128> I128Type { [MethodImpl(Inline)] get => new(i128.Signature); }
+    public static PrimitiveSizedType<isize> IsizeType { [MethodImpl(Inline)] get => new(isize.Signature); }
+    public static PrimitiveDynamicType<StringSlice> StrType { [MethodImpl(Inline)] get => new(StringSlice.Signature); }
 }
 
-public interface IType<out T> : IByteSerializable<T> where T : struct, IType<T>, allows ref struct {
+public interface IType<out TSelf, TValue> : IByteSerializable<TSelf> 
+    where TSelf : struct, IType<TSelf, TValue>, allows ref struct 
+    where TValue : struct, ITypedValue<TValue>, allows ref struct {
     TypeFlags Flags { get; }
     u128 SigHash { get; }
     
-
+    Box<TypeSig> Signature { get; }
+    
 }
 
-
-public ref struct PrimitiveType<TValue> : IType<PrimitiveType<TValue>>, ISizedValue<PrimitiveType<TValue>> where TValue: struct, ITypedValue<TValue>, allows ref struct {
-    public PrimitiveType() { }
-    
+public readonly ref struct PrimitiveDynamicType<T>(ReadOnlySpan<byte> signature) : IType<PrimitiveDynamicType<T>, T>, ISizedValue<PrimitiveDynamicType<T>>
+    where T : struct, IPrimValue<T>, allows ref struct {
     [MethodImpl(Inline)]
     public unsafe void ToPtr(byte* ptr) => throw new NotImplementedException();
     [MethodImpl(Inline)]
-    public static unsafe PrimitiveType<TValue> FromFatPtr(byte* ptr, usize size) => throw new NotImplementedException();
-
-    [MethodImpl(Inline)]
-    public static unsafe PrimitiveType<TValue> FromPtr(byte* ptr) => throw new NotImplementedException();
-    // ReSharper disable once StaticMemberInGenericType
-    public static usize ByteCount { [MethodImpl(Inline)] get => usize.ByteCount + sizeof(byte) + u128.ByteCount; }
-    public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
-    public TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.ConstSize; }
-    public u128 SigHash { [MethodImpl(Inline)] get => TValue.Signature.Hash(); }
-    [MethodImpl(Inline)] 
-    public static unsafe PrimitiveType<TValue> FromBytecode(byte* start, int* pc) => throw new NotImplementedException();
+    public static unsafe PrimitiveDynamicType<T> FromFatPtr(byte* ptr, usize size) => throw new NotImplementedException();
     
-    [MethodImpl(Inline)] 
+    [MethodImpl(Inline)]
+    public static unsafe PrimitiveDynamicType<T> FromPtr(byte* ptr) => throw new NotImplementedException();
+    // ReSharper disable once StaticMemberInGenericType
+    public static usize ByteCount { [MethodImpl(Inline)] get; } = usize.ByteCount + sizeof(TypeFlags) + u128.ByteCount;
+    public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
+    public TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.DynamSize; }
+    public u128 SigHash { [MethodImpl(Inline)] get; } = signature.Hash();
+    public Box<TypeSig> Signature { [MethodImpl(Inline)] get; } = TypeSig.SigPiece(signature);
+    
+    [MethodImpl(Inline)]
+    public static unsafe PrimitiveDynamicType<T> FromBytecode(byte* start, scoped ref int pc) => throw new NotImplementedException();
+    
+    [MethodImpl(Inline)]
     public byte[] ToBytecode() => throw new NotImplementedException();
 }
 
+public readonly ref struct PrimitiveSizedType<T>(ReadOnlySpan<byte> signature) : IType<PrimitiveSizedType<T>, T>, ISizedValue<PrimitiveSizedType<T>>
+    where T : struct, IPrimValue<T>, allows ref struct {
+    [MethodImpl(Inline)]
+    public unsafe void ToPtr(byte* ptr) => throw new NotImplementedException();
+    [MethodImpl(Inline)]
+    public static unsafe PrimitiveSizedType<T> FromFatPtr(byte* ptr, usize size) => throw new NotImplementedException();
+    
+    [MethodImpl(Inline)]
+    public static unsafe PrimitiveSizedType<T> FromPtr(byte* ptr) => throw new NotImplementedException();
+    // ReSharper disable once StaticMemberInGenericType
+    public static usize ByteCount { [MethodImpl(Inline)] get; } = usize.ByteCount + sizeof(TypeFlags) + u128.ByteCount;
+    public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
+    public TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.ConstSize; }
+    public u128 SigHash { [MethodImpl(Inline)] get; } = signature.Hash();
+    public Box<TypeSig> Signature { [MethodImpl(Inline)] get; } = TypeSig.SigPiece(signature);
+    
+    [MethodImpl(Inline)]
+    public static unsafe PrimitiveSizedType<T> FromBytecode(byte* start, scoped ref int pc) => throw new NotImplementedException();
+    
+    [MethodImpl(Inline)]
+    public byte[] ToBytecode() => throw new NotImplementedException();
+}
+
+[Flags]
 public enum TypeFlags : byte {
     // Kind
     ConstSize = 0b0001, // value type
@@ -99,66 +134,64 @@ public enum TypeFlags : byte {
     Slice    = 0b1000,
 }
 
-
-public readonly ref struct PointerType<TType>(TType valType) : IType<PointerType<TType>>
-    where TType : struct, IType<TType> {
+// Not to be confused with objects
+public readonly ref struct ReferenceType<TType, TValue>(TType valType) : IType<ReferenceType<TType, TValue>, Reference<TValue>>
+    where TValue : struct, ITypedValue<TValue>, allows ref struct
+    where TType : struct, IType<TType, TValue>, allows ref struct {
     public unsafe void ToPtr(byte* ptr) => throw new NotImplementedException();
-    public static unsafe PointerType<TType> FromFatPtr(byte* ptr, usize size) => throw new NotImplementedException();
+    public static unsafe ReferenceType<TType, TValue> FromFatPtr(byte* ptr, usize size) => throw new NotImplementedException();
     
     TType ValType { get; } = valType;
     
     public static usize ByteCount { [MethodImpl(Inline)] get => usize.ByteCount + sizeof(byte) + u128.ByteCount; }
     public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
-    public TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.ConstSize; }
+    public TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.ConstSize | TypeFlags.Pointer; }
+    
+    public Box<TypeSig> Signature => TypeSig.SigUnion(TypeSig.SigPiece("&"u8), ValType.Signature);
+    
+    
     public unsafe u128 SigHash {
-        [MethodImpl(Inline)]
+        [MethodImpl(Inline)] // useless thanks to stackalloc :/
         get {
-            Bytes17 arr = new();
+            using Box<TypeSig> sig = Signature;
             
-            Span<byte> span = arr;
-            arr[0] = (byte) '&';
-            
-            u128 inner = ValType.SigHash;
-            inner.ToPtr(span.StartPtr() + 1);
+            int length = sig.Value.Length;
+            Span<byte> span = stackalloc byte[length];
+            sig.Value.CopyTo(span);
             
             return span.Hash();
         }
     }
 }
 
-public readonly ref struct SliceType<TType>(TType valType) : IType<SliceType<TType>>
-    where TType : struct, IType<TType> {
+public readonly ref struct SliceType<TType, TValue>(TType valType) : IType<SliceType<TType, TValue>, Slice<TValue>>
+    where TValue : struct, ISizedTypeValue<TValue>, allows ref struct
+    where TType : struct, IType<TType, TValue>, allows ref struct {
     public unsafe void ToPtr(byte* ptr) => throw new NotImplementedException();
-    public static unsafe SliceType<TType> FromFatPtr(byte* ptr, usize size) => throw new NotImplementedException();
+    public static unsafe SliceType<TType, TValue> FromFatPtr(byte* ptr, usize size) => throw new NotImplementedException();
     
     TType ValType { get; } = valType;
     
     public static usize ByteCount { [MethodImpl(Inline)] get => usize.ByteCount + sizeof(byte) + u128.ByteCount; }
     public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
-    public TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.ConstSize; }
-    public unsafe u128 SigHash {
+    
+    public TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.DynamSize | TypeFlags.Slice; }
+    
+    public Box<TypeSig> Signature {
         [MethodImpl(Inline)]
+        get => TypeSig.SigUnion(ValType.Signature, TypeSig.SigPiece("[]"u8));
+    }
+    
+    public unsafe u128 SigHash {
+        [MethodImpl(Inline)] // useless thanks to stackalloc :/
         get {
-            Bytes18 arr = new();
+            using Box<TypeSig> sig = Signature;
             
-            Span<byte> span = arr;
-  
-            
-            u128 inner = ValType.SigHash;
-            inner.ToPtr(span.StartPtr());
-            arr[^2] = (byte) '[';
-            arr[^1] = (byte) ']';
+            int length = sig.Value.Length;
+            Span<byte> span = stackalloc byte[length];
+            sig.Value.CopyTo(span);
             
             return span.Hash();
         }
     }
-}
-
-[InlineArray(17)]
-struct Bytes17 {
-    byte _value;
-}
-[InlineArray(18)]
-struct Bytes18 {
-    byte _value;
 }

@@ -10,7 +10,7 @@ public interface IByteSerializable<out T> where T: struct, IByteSerializable<T>,
 
 
 public interface IBytecodeSerializable<out T>: IByteSerializable<T> where T : struct, IBytecodeSerializable<T>, allows ref struct {
-    public static abstract unsafe T FromBytecode(byte* start, int* pc);
+    public static abstract unsafe T FromBytecode(byte* start, scoped ref int pc);
     public byte[] ToBytecode();
 }
 
@@ -21,12 +21,19 @@ public interface ISizedValue<out T> : IBytecodeSerializable<T> where T : struct,
     static abstract unsafe T FromPtr(byte* ptr);
 }
 
-public interface ITypedValue<out T> : IByteSerializable<T> where T : struct, ITypedValue<T>, allows ref struct {
+
+public interface ISizedPrimValue<out T> : ISizedTypeValue<T>, IPrimValue<T> where T : struct, ISizedPrimValue<T>, allows ref struct;
+
+public interface ITypedValue<out T> : IByteSerializable<T> where T : struct, ITypedValue<T>, allows ref struct { }
+public interface ISizedTypeValue<out T> : ISizedValue<T>, ITypedValue<T> where T : struct, ISizedTypeValue<T>, allows ref struct;
+
+
+public interface IPrimValue<out T> : ITypedValue<T> where T : struct, IPrimValue<T>, allows ref struct {
     public static abstract ReadOnlySpan<byte> Signature { get; }
 }
 
 
-public readonly unsafe ref struct Reference<T>(usize address): ISizedValue<Reference<T>> where T : struct, IByteSerializable<T>, allows ref struct {
+public readonly unsafe ref struct Reference<T>(usize address): ISizedTypeValue<Reference<T>> where T : struct, ITypedValue<T>, allows ref struct {
     public usize Address { get; } = address;
     public usize DerefSize => usize.FromPtr((byte*) Address);
     
@@ -42,7 +49,7 @@ public readonly unsafe ref struct Reference<T>(usize address): ISizedValue<Refer
         return T.FromFatPtr(ptr, DerefSize);
     }
 
-    public static Reference<T> CreateAt(byte* ptr, T value) {
+    public static Reference<T> CreateAt(byte* ptr, scoped ref T value) {
         usize size = value.InstSize;
         size.ToPtr(ptr);
         value.ToPtr(ptr + usize.ByteCount);
@@ -60,5 +67,6 @@ public readonly unsafe ref struct Reference<T>(usize address): ISizedValue<Refer
     public nuint InstSize => ByteCount;
     public byte[] ToBytecode() => throw new InvalidOperationException();
 
-    public static Reference<T> FromBytecode(byte* start, int* pc) => throw new InvalidOperationException();
+    public static Reference<T> FromBytecode(byte* start, scoped ref int pc) => throw new InvalidOperationException();
+    
 }

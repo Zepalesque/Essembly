@@ -16,9 +16,9 @@ namespace EsmRuntime;
 
 public static partial class EsmVM {
     [MethodImpl(Inline)]
-    static unsafe T LoadConst<T>(FatPtr program, int* pc) where T: struct, ISizedValue<T> {
-        var val = T.FromBytecode(program, pc);
-        *pc += (int) T.ByteCount;
+    static unsafe T LoadConst<T>(FatPtr program, scoped ref int pc) where T: struct, ISizedValue<T> {
+        var val = T.FromBytecode(program, ref pc);
+        pc += (int) T.ByteCount;
         #if DEBUG
         Debug($"Pushing {val} to stack");
         #endif
@@ -26,11 +26,11 @@ public static partial class EsmVM {
     }
 
     [MethodImpl(Inline)]
-    static unsafe Reference<T> AllocRef<T>(FatPtr program, int* pc, ReferenceHeap heap) where T: struct, IByteSerializable<T>, IBytecodeSerializable<T>, allows ref struct {
+    static unsafe Reference<T> AllocRef<T>(FatPtr program, scoped ref int pc, scoped in ReferenceHeap heap) where T: struct, ITypedValue<T>, IBytecodeSerializable<T>, allows ref struct {
 
-        usize addr = usize.FromBytecode(program.Ptr, pc);
-        var data = T.FromBytecode(program.Ptr + *pc, pc);
-        Reference<T> reference = heap.Allocate(data);
+        usize addr = usize.FromBytecode(program.Ptr, ref pc);
+        var data = T.FromBytecode(program.Ptr + pc, ref pc);
+        Reference<T> reference = heap.Allocate(ref data);
         #if DEBUG
         Debug($"Allocating a {reference.Dereference().InstSize}-byte memory block and storing to &{addr.Hex}"); 
         #endif
@@ -305,5 +305,18 @@ public static partial class EsmVM {
         foreach (byte b in slice.Utf8) {
             Console.Write(b);
         }
+    }
+    
+    static unsafe void InputString(TextReader reader, ref OpStack stack, in ReferenceHeap heap) {
+        #if DEBUG
+        Debug("Awaiting string input...");
+        #endif
+        string input = reader.ReadLine() ?? "";
+        int len = Encoding.UTF8.GetByteCount(input);
+        Span<byte> span = stackalloc byte[len];
+        ref Span<byte> spanRef = ref span;
+        Encoding.UTF8.GetBytes(input, span);
+        StringSlice slice = new(new(spanRef.StartPtr(), span.Length));
+        stack.Push(heap.Allocate(ref slice));
     }
 }

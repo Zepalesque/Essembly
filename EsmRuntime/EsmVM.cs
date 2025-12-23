@@ -21,9 +21,6 @@ public static partial class EsmVM {
     public static unsafe nuint MemAddrUSize => (nuint) MemStart;
     public static unsafe nint MemAddrISize => (nint) MemStart;
 
-    internal static unsafe HeapTree* HeapMemoryTree;
-    
-
     public static unsafe int Main(string[] args) {
         var inputOption = new Option<FileInfo>("--input");
         var rootCommand = new RootCommand("The Esm runtime.") { inputOption };
@@ -63,12 +60,11 @@ public static partial class EsmVM {
         var alloc = (byte*) NativeMemory.AlignedAlloc(size, 16);
         try {
             NativeMemory.Clear(alloc, size);
-            var node = HeapTree.Create(2, sizes.Heap + 2, false);
+            HeapTree* node = HeapTree.Create(2, sizes.Heap + 2, false);
 
-            HeapMemoryTree = node;
             MemStart = alloc;
         
-            var mem = new ReferenceHeap(alloc, (nint) sizes.Heap + 2);
+            var mem = new ReferenceHeap(alloc, (nint) sizes.Heap + 2, node);
             var stack = new OpStack(alloc + sizes.Heap + 2, (nint) sizes.OpStack);
             try {
                 var exit = Run(program, in mem, ref stack);
@@ -84,28 +80,28 @@ public static partial class EsmVM {
         }
     }
 
-    static unsafe u8? Run(FatPtr program, in ReferenceHeap heap, ref OpStack stack) {
+    static u8? Run(FatPtr program, in ReferenceHeap heap, ref OpStack stack) {
         for (var pc = 0; pc < program.Size; pc++) {
             var opcode = (OpCode) program[pc];
             switch (opcode) {
                 case OpCode.PushX8: 
-                    stack.Push(LoadConst<u8>(program, &pc));
+                    stack.Push(LoadConst<u8>(program, ref pc));
                     break;
                 case OpCode.PushX16: 
-                    stack.Push(LoadConst<u16>(program, &pc));
+                    stack.Push(LoadConst<u16>(program, ref pc));
                     break;
                 case OpCode.PushX32: 
-                    stack.Push(LoadConst<u32>(program, &pc));
+                    stack.Push(LoadConst<u32>(program, ref pc));
                     break;
                 case OpCode.PushX64:
-                    stack.Push(LoadConst<u64>(program, &pc));
+                    stack.Push(LoadConst<u64>(program, ref pc));
                     break;
                 case OpCode.PushXsize:
-                    stack.Push(LoadConst<usize>(program, &pc));
+                    stack.Push(LoadConst<usize>(program, ref pc));
                     break;
                 
                 case OpCode.AllocStr: {
-                    stack.Push(AllocRef<StringSlice>(program, &pc, heap));
+                    stack.Push(AllocRef<StringSlice>(program, ref pc, in heap));
                     break;
                 }
 
@@ -119,7 +115,7 @@ public static partial class EsmVM {
                     break;
                 }
                 case OpCode.PushGlobalAddr: {
-                    // stack.Push(PushHeapRef(program, &pc, heap));
+                    // stack.Push(PushHeapRef(program, ref pc, heap));
                     break;
                 }
                 case OpCode.StoreGlobalX8: {
@@ -453,7 +449,7 @@ public static partial class EsmVM {
                 }
                 
                 // print
-                case OpCode.PrintAscii: {
+                case OpCode.PrintUtf8: {
                     PrintAscii(stack.Pop<u8>());
                     break;
                 }
@@ -475,7 +471,7 @@ public static partial class EsmVM {
                     break;
                 }
                     
-                case OpCode.InputAscii: {
+                case OpCode.InputUtf8: {
                     #if DEBUG
                     Debug("Awaiting character input...");
                     #endif
@@ -512,15 +508,7 @@ public static partial class EsmVM {
                 }
              
                 case OpCode.AllocInputStr: {
-                    #if DEBUG
-                    Debug("Awaiting string input...");
-                    #endif
-                    string input = Console.ReadLine() ?? "";
-                    var bytes = Encoding.UTF8.GetBytes(input);
-                    fixed (byte* ptr = &bytes[0]) {
-                        StringSlice slice = new(new(ptr, bytes.Length));
-                        stack.Push(heap.Allocate(slice));
-                    }
+                    InputString(Console.In, ref stack, in heap);
                     break;
                 }
                 
