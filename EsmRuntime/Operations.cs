@@ -29,18 +29,18 @@ public static partial class EsmVM {
     }
 
     [MethodImpl(Inline)]
-    static unsafe Reference<T> AllocRef<T>(RuntimeContext* context) where T: struct, ITypedValue<T>, IBytecodeSerializable<T>, allows ref struct {
+    static unsafe Ptr<T> AllocRef<T>(RuntimeContext* context) where T: struct, ITypedValue<T>, IBytecodeSerializable<T>, allows ref struct {
         FatPtr program = context->Program;
         ref nuint pc = ref context->Pc;
-        ref readonly ReferenceHeap heap = ref context->Heap;
+        ref readonly Heap heap = ref context->Heap;
         
         usize addr = usize.FromBytecode(program.Ptr + pc, ref pc);
         var data = T.FromBytecode(program.Ptr + pc, ref pc);
-        Reference<T> reference = heap.Allocate(ref data);
+        Ptr<T> ptr = heap.Allocate(ref data);
         #if ESM_DEBUG
-        Debug($"Allocating a {reference.Dereference().InstSize}-byte memory block and storing to &{addr.Hex}"); 
+        Debug($"Allocating a {ptr.Dereference().InstSize}-byte memory block and storing to &{addr.Hex}"); 
         #endif
-        return reference;
+        return ptr;
     }
     
     // TODO: Jump table for local frames, rework
@@ -302,7 +302,7 @@ public static partial class EsmVM {
     
     [MethodImpl(Inline)]
     static void PrintString(ref OpStack stack) {
-        var s = stack.Pop<Reference<StringSlice>>();
+        var s = stack.Pop<Ptr<StringSlice>>();
         StringSlice slice = s.Dereference();
         #if ESM_DEBUG
         Debug($"Printing string to console: \"{slice.ToString()}\"");
@@ -314,7 +314,7 @@ public static partial class EsmVM {
     }
     
     static unsafe void InputString(TextReader reader, RuntimeContext* context) {
-        ref readonly ReferenceHeap heap = ref context->Heap;
+        ref readonly Heap heap = ref context->Heap;
         ref OpStack stack = ref context->Stack;
         #if ESM_DEBUG
         Debug("Awaiting string input...");

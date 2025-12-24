@@ -3,7 +3,7 @@ using EsmRuntime.Memory.Util;
 using static System.Runtime.InteropServices.NativeMemory;
 using static EsmRuntime.Constants;
 
-namespace EsmRuntime.Memory.TypeTables.Signature;
+namespace EsmRuntime.Memory.TypeTables.Signatures;
 
 public readonly ref struct Signature : IDisposable {
     
@@ -51,7 +51,7 @@ public readonly ref struct Signature : IDisposable {
     public static unsafe Box<Signature> SigPiece(ReadOnlySpan<byte> span) {
         var self = (Signature*)AlignedAlloc((nuint) sizeof(Signature), 16);
         
-        SigPiece* data = TypeTable.Signature.SigPiece.AllocCopy(span);
+        SigPiece* data = Signatures.SigPiece.AllocCopy(span);
         const bool disc = false;
         
         Signature value = new(disc, data);
@@ -64,7 +64,7 @@ public readonly ref struct Signature : IDisposable {
     public static unsafe Box<Signature> SigUnion(Box<Signature> first, Box<Signature> second) {
         var self = (Signature*)AlignedAlloc((nuint) sizeof(Signature), 16);
         
-        SigUnion* data = TypeTable.Signature.SigUnion.Unite(first, second);
+        SigUnion* data = Signatures.SigUnion.Unite(first, second);
         const bool disc = true;
         
         Signature value = new(disc, data);

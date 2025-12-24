@@ -69,7 +69,7 @@ public static partial class EsmVM {
 
             MemStart = alloc;
         
-            var heap = new ReferenceHeap(alloc, (nint) sizes.Heap + 2, &node);
+            var heap = new Heap(alloc, (nint) sizes.Heap + 2, &node);
             var stack = new OpStack(alloc + sizes.Heap + 2, (nint) sizes.OpStack);
             try {
                 u8? exit = Run(program, &heap, &stack);
@@ -85,7 +85,7 @@ public static partial class EsmVM {
         }
     }
 
-    static unsafe u8? Run(FatPtr program, ReferenceHeap* heap, OpStack* stack) {
+    static unsafe u8? Run(FatPtr program, Heap* heap, OpStack* stack) {
         nuint pc = 0;
         RuntimeContext context = new(program, heap, stack, &pc);
         
@@ -98,7 +98,7 @@ public static partial class EsmVM {
                 }
                 
                 case OpCode.FreeHeap: {
-                    heap->Free(stack->Pop<Reference<Unit>>());
+                    heap->Free(stack->Pop<Ptr<Unit>>());
                     break;
                 }
                 
@@ -120,14 +120,14 @@ public static partial class EsmVM {
                 
                 // TODO: Properly implement global frames
                 case OpCode.PushGlobalAddr: {
-                    stack->Push(stack->Pop<Reference<Unit>>().DerefSize);
+                    stack->Push(stack->Pop<Ptr<Unit>>().DerefSize);
                     break;
                 }
 
 
                 
                 case OpCode.Deref: {
-                    stack->Push(stack->Pop<Reference<Slice<u8>>>().Dereference());
+                    stack->Push(stack->Pop<Ptr<Slice<u8>>>().Dereference());
                     break;
                 }
 

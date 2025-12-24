@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using EsmRuntime.Common.Types;
+using EsmRuntime.Memory.TypeTables.Signatures;
 using EsmRuntime.Memory.Util;
 using static EsmRuntime.Constants;
 
@@ -12,7 +13,7 @@ public interface IType<out TSelf> : IByteReadable<TSelf>, IDisposable
     public static abstract TypeFlags Flags { get; }
     u128 SigHash { get; }
     
-    Box<Signature.Signature> Signature { get; }
+    Box<Signature> Signature { get; }
 }
 
 public readonly ref struct PrimitiveDynamicType<T>(ReadOnlySpan<byte> signature) : IType<PrimitiveDynamicType<T>>, ISizedValue<PrimitiveDynamicType<T>>
@@ -29,7 +30,7 @@ public readonly ref struct PrimitiveDynamicType<T>(ReadOnlySpan<byte> signature)
     public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
     public static TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.DynamSize; }
     public u128 SigHash { [MethodImpl(Inline)] get; } = signature.Hash();
-    public Box<Signature.Signature> Signature { [MethodImpl(Inline)] get; } = TypeTables.Signature.Signature.SigPiece(signature);
+    public Box<Signature> Signature { [MethodImpl(Inline)] get; } = Signatures.Signature.SigPiece(signature);
     
     [MethodImpl(Inline)]
     public static unsafe PrimitiveDynamicType<T> FromBytecode(byte* start, scoped ref nuint pc) => throw new NotImplementedException();
@@ -56,7 +57,7 @@ public readonly ref struct PrimitiveSizedType<T>(ReadOnlySpan<byte> signature) :
     public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
     public static TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.ConstSize; }
     public u128 SigHash { [MethodImpl(Inline)] get; } = signature.Hash();
-    public Box<Signature.Signature> Signature { [MethodImpl(Inline)] get; } = TypeTables.Signature.Signature.SigPiece(signature);
+    public Box<Signature> Signature { [MethodImpl(Inline)] get; } = Signatures.Signature.SigPiece(signature);
     
     [MethodImpl(Inline)]
     public static unsafe PrimitiveSizedType<T> FromBytecode(byte* start, scoped ref nuint pc) => throw new NotImplementedException();
@@ -91,13 +92,13 @@ public readonly ref struct ReferenceType<T>(T valType) : IType<ReferenceType<T>>
     public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
     public static TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.ConstSize | TypeFlags.Pointer; }
     
-    public Box<Signature.Signature> Signature => TypeTables.Signature.Signature.SigUnion(TypeTables.Signature.Signature.SigPiece("&"u8), ValType.Signature);
+    public Box<Signature> Signature => Signatures.Signature.SigUnion(Signatures.Signature.SigPiece("&"u8), ValType.Signature);
     
     
     public unsafe u128 SigHash {
         [MethodImpl(Inline)] // useless thanks to stackalloc :/
         get {
-            using Box<Signature.Signature> sig = Signature;
+            using Box<Signature> sig = Signature;
             
             int length = sig.Value.Length;
             Span<byte> span = stackalloc byte[length];
@@ -122,15 +123,15 @@ public readonly ref struct SliceType<T>(T valType) : IType<SliceType<T>>
     
     public static TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.DynamSize | TypeFlags.Slice; }
     
-    public Box<Signature.Signature> Signature {
+    public Box<Signature> Signature {
         [MethodImpl(Inline)]
-        get => TypeTables.Signature.Signature.SigUnion(ValType.Signature, TypeTables.Signature.Signature.SigPiece("[]"u8));
+        get => Signatures.Signature.SigUnion(ValType.Signature, Signatures.Signature.SigPiece("[]"u8));
     }
     
     public unsafe u128 SigHash {
         [MethodImpl(Inline)] // useless thanks to stackalloc :/
         get {
-            using Box<Signature.Signature> sig = Signature;
+            using Box<Signature> sig = Signature;
             
             int length = sig.Value.Length;
             Span<byte> span = stackalloc byte[length];

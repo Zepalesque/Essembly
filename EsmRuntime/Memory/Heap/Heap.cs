@@ -1,64 +1,23 @@
 ﻿using EsmRuntime.Common.Types;
 
 namespace EsmRuntime.Memory.Heap;
-
-/*public unsafe ref struct Heap(byte* start, int size) {
-    
-    public readonly int Size = size;
-
-    int _endCursor = 0;
-    // int _startCursor = 0;
-
-    public usize this[usize addr] {
-        get {
-            CheckAddr(addr);
-            return  (usize) (start + addr);
-        }
-    }
-
-    public usize Transform(usize addr) => (usize) (start + addr);
-
-
-    public Reference<T> AllocateUnsized<T>(ReadOnlySpan<byte> data) where T: struct, IByteSerializable<T>, allows ref struct {
-        int u = data.Length;
-        _endCursor += u;
-        byte* ptr = start + Size - _endCursor;
-        Span<byte> dest = new(ptr, u);
-        data.CopyTo(dest);
-        T value = T.FromFatPtr(dest);
-        
-        return Reference<T>.CreateAt(ptr, value);
-    }
-    
-    // TODO
-    public void Free<T>(Reference<T> reference) where T: struct, IByteSerializable<T>, allows ref struct {
-        
-    }
-
-    public Span<byte> this[Range range] => new Span<byte>(start, Size)[range];
-
-    void CheckAddr(usize offset) {
-        if (offset >= Size) throw new MemoryAccessError($"Invalid index {offset} for heap with size {Size}");
-    }
-}*/
-
-public readonly unsafe struct ReferenceHeap(byte* start, nint size, HeapTree** tree) {
+public readonly unsafe struct Heap(byte* start, nint size, HeapTree** tree) {
     // NOT ref readonly
     byte* Start { get; } = start;
     nint Size { get; } = size;
     
-    public Reference<T> Allocate<T>(scoped ref T value) where T: struct, ITypedValue<T>, allows ref struct {
+    public Ptr<T> Allocate<T>(scoped ref T value) where T: struct, ITypedValue<T>, allows ref struct {
         usize u = value.InstSize;
         if (typeof(T) == typeof(Unit))
             return new(EsmVM.UnitAddr);
         
         return HeapTree.TryAllocate(ref *tree, u, out byte* ptr) 
-            ? Reference<T>.CreateAt(ptr, ref value) 
+            ? Ptr<T>.CreateAt(ptr, ref value) 
             : throw new MemoryAccessError("No memory left in reference heap :(");
     }
 
-    public void Free<T>(Reference<T> reference) where T: struct, ITypedValue<T>, allows ref struct {
-        usize addr = reference.Address;
+    public void Free<T>(Ptr<T> ptr) where T: struct, ITypedValue<T>, allows ref struct {
+        usize addr = ptr.Address;
         if (addr == EsmVM.NullAddr)
             throw new NullAccessError("Attempted to free the null pointer!");
         if (addr == EsmVM.UnitAddr) return;
@@ -66,9 +25,9 @@ public readonly unsafe struct ReferenceHeap(byte* start, nint size, HeapTree** t
             throw new MemoryAccessError($"Free address {addr} is outside reference heap bounds!");
         }
         
-        usize size = reference.DerefSize;
+        usize size = ptr.DerefSize;
         
-        if (!HeapTree.TryFree(ref *tree, reference.Address, reference.Address + size))
+        if (!HeapTree.TryFree(ref *tree, ptr.Address, ptr.Address + size))
             throw new MemoryAccessError("Tried to free already freed memory!");
     }
 }

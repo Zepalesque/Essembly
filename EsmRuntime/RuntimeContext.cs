@@ -7,10 +7,10 @@ using static EsmRuntime.Constants;
 namespace EsmRuntime;
 
 [method: MethodImpl(Inline)]
-public readonly unsafe ref struct RuntimeContext(FatPtr program, ReferenceHeap* heap, OpStack* stack, nuint* pc) {
+public readonly unsafe ref struct RuntimeContext(FatPtr program, Heap* heap, OpStack* stack, nuint* pc) {
     public FatPtr Program { [MethodImpl(Inline)] get; } = program;
     
-    public ref readonly ReferenceHeap Heap { [MethodImpl(Inline)] get => ref *heap; }
+    public ref readonly Heap Heap { [MethodImpl(Inline)] get => ref *heap; }
     
     public ref nuint Pc { [MethodImpl(Inline)] get => ref *pc; }
     
