@@ -64,10 +64,10 @@ public static partial class EsmVM {
 
             MemStart = alloc;
         
-            var mem = new ReferenceHeap(alloc, (nint) sizes.Heap + 2, node);
+            var heap = new ReferenceHeap(alloc, (nint) sizes.Heap + 2, ref node);
             var stack = new OpStack(alloc + sizes.Heap + 2, (nint) sizes.OpStack);
             try {
-                var exit = Run(program, in mem, ref stack);
+                var exit = Run(program, in heap, &stack);
                 Console.WriteLine();
                 return exit == null ? ExitCode.Unterminated : exit.Value == ExitCode.Success ? exit.Value : exit.Value | ExitCode.UserExit;
             } catch (RuntimeError e) {
@@ -80,394 +80,394 @@ public static partial class EsmVM {
         }
     }
 
-    static u8? Run(FatPtr program, in ReferenceHeap heap, ref OpStack stack) {
+    static unsafe u8? Run(FatPtr program, scoped in ReferenceHeap heap, OpStack* stack) {
         for (var pc = 0; pc < program.Size; pc++) {
             var opcode = (OpCode) program[pc];
             switch (opcode) {
                 case OpCode.PushX8: 
-                    stack.Push(LoadConst<u8>(program, ref pc));
+                    stack->Push(LoadConst<u8>(program, ref pc));
                     break;
                 case OpCode.PushX16: 
-                    stack.Push(LoadConst<u16>(program, ref pc));
+                    stack->Push(LoadConst<u16>(program, ref pc));
                     break;
                 case OpCode.PushX32: 
-                    stack.Push(LoadConst<u32>(program, ref pc));
+                    stack->Push(LoadConst<u32>(program, ref pc));
                     break;
                 case OpCode.PushX64:
-                    stack.Push(LoadConst<u64>(program, ref pc));
+                    stack->Push(LoadConst<u64>(program, ref pc));
                     break;
                 case OpCode.PushXsize:
-                    stack.Push(LoadConst<usize>(program, ref pc));
+                    stack->Push(LoadConst<usize>(program, ref pc));
                     break;
                 
                 case OpCode.AllocStr: {
-                    stack.Push(AllocRef<StringSlice>(program, ref pc, in heap));
+                    stack->Push(AllocRef<StringSlice>(program, ref pc, in heap));
                     break;
                 }
 
                 case OpCode.FreeHeap: {
-                    heap.Free(stack.Pop<Reference<Unit>>());
+                    heap.Free(stack->Pop<Reference<Unit>>());
                     break;
                 }
                 
                 case OpCode.Deref: {
-                    stack.Push(stack.Pop<Reference<Slice<u8>>>().Dereference());
+                    stack->Push(stack->Pop<Reference<Slice<u8>>>().Dereference());
                     break;
                 }
                 case OpCode.PushGlobalAddr: {
-                    // stack.Push(PushHeapRef(program, ref pc, heap));
+                    // stack->Push(PushHeapRef(program, ref pc, heap));
                     break;
                 }
                 case OpCode.StoreGlobalX8: {
-                    // StoreMem(ref stack, ref heap, stack.Pop<u8>());
+                    // StoreMem(ref stack, ref heap, stack->Pop<u8>());
                     break;
                 }
                 case OpCode.StoreGlobalX16: {
-                    // StoreMem(program, ref pc, ref heap, stack.Pop<u16>());
+                    // StoreMem(program, ref pc, ref heap, stack->Pop<u16>());
                     break;
                 }
                     
                 // Jump statements
                 case OpCode.Jump: case OpCode.JumpIfFalse: case OpCode.JumpIfTrue: {
-                    Jump(program, ref pc, ref stack, opcode.JumpCondition);
+                    Jump(program, ref pc, ref *stack, opcode.JumpCondition);
                     break;
                 }
                 case OpCode.Exit: {
-                    return Exit(stack.Pop<u8>());
+                    return Exit(stack->Pop<u8>());
                 }
                     
                 // Unary
                 case OpCode.NotX8: {
-                    stack.Push(UnaryNot(stack.Pop<u8>()));
+                    stack->Push(UnaryNot(stack->Pop<u8>()));
                     break;
                 }
                 
                 case OpCode.NotX16: {
-                    stack.Push(UnaryNot(stack.Pop<u16>()));
+                    stack->Push(UnaryNot(stack->Pop<u16>()));
                     break;
                 }
                 
                 case OpCode.NotX32: {
-                    stack.Push(UnaryNot(stack.Pop<u32>()));
+                    stack->Push(UnaryNot(stack->Pop<u32>()));
                     break;
                 }
                 
                 case OpCode.NotX64: {
-                    stack.Push(UnaryNot(stack.Pop<u64>()));
+                    stack->Push(UnaryNot(stack->Pop<u64>()));
                     break;
                 }
                     
                 // Binary
                 case OpCode.AndX8: {
-                    stack.Push(BinaryAnd(stack.Pop<u8>(), stack.Pop<u8>()));
+                    stack->Push(BinaryAnd(stack->Pop<u8>(), stack->Pop<u8>()));
                     break;
                 }
                 
                 case OpCode.AndX16: {
-                    stack.Push(BinaryAnd(stack.Pop<u16>(), stack.Pop<u16>()));
+                    stack->Push(BinaryAnd(stack->Pop<u16>(), stack->Pop<u16>()));
                     break;
                 }
                 
                 case OpCode.AndX32: {
-                    stack.Push(BinaryAnd(stack.Pop<u32>(), stack.Pop<u32>()));
+                    stack->Push(BinaryAnd(stack->Pop<u32>(), stack->Pop<u32>()));
                     break;
                 }
                 case OpCode.AndX64: {
-                    stack.Push(BinaryAnd(stack.Pop<u64>(), stack.Pop<u64>()));
+                    stack->Push(BinaryAnd(stack->Pop<u64>(), stack->Pop<u64>()));
                     break;
                 }
                 
                 case OpCode.AndXsize: {
-                    stack.Push(BinaryAnd(stack.Pop<usize>(), stack.Pop<usize>()));
+                    stack->Push(BinaryAnd(stack->Pop<usize>(), stack->Pop<usize>()));
                     break;
                 }
                 
                 case OpCode.OrX8: {
-                    stack.Push(BinaryOr(stack.Pop<u8>(), stack.Pop<u8>()));
+                    stack->Push(BinaryOr(stack->Pop<u8>(), stack->Pop<u8>()));
                     break;
                 }
                 
                 case OpCode.OrX16: {
-                    stack.Push(BinaryOr(stack.Pop<u16>(), stack.Pop<u16>()));
+                    stack->Push(BinaryOr(stack->Pop<u16>(), stack->Pop<u16>()));
                     break;
                 }
 
                 case OpCode.OrX32: {
-                    stack.Push(BinaryOr(stack.Pop<u32>(), stack.Pop<u32>()));
+                    stack->Push(BinaryOr(stack->Pop<u32>(), stack->Pop<u32>()));
                     break;
                 }
 
                 case OpCode.OrX64: {
-                    stack.Push(BinaryOr(stack.Pop<u64>(), stack.Pop<u64>()));
+                    stack->Push(BinaryOr(stack->Pop<u64>(), stack->Pop<u64>()));
                     break;
                 }
                 
                 case OpCode.OrXsize: {
-                    stack.Push(BinaryOr(stack.Pop<usize>(), stack.Pop<usize>()));
+                    stack->Push(BinaryOr(stack->Pop<usize>(), stack->Pop<usize>()));
                     break;
                 }
 
                 case OpCode.XorX8: {
-                    stack.Push(BinaryXor(stack.Pop<u8>(), stack.Pop<u8>()));
+                    stack->Push(BinaryXor(stack->Pop<u8>(), stack->Pop<u8>()));
                     break;
                 }
                 
                 case OpCode.XorX16: {
-                    stack.Push(BinaryXor(stack.Pop<u16>(), stack.Pop<u16>()));
+                    stack->Push(BinaryXor(stack->Pop<u16>(), stack->Pop<u16>()));
                     break;
                 }
                 
                 case OpCode.XorX32: {
-                    stack.Push(BinaryXor(stack.Pop<u32>(), stack.Pop<u32>()));
+                    stack->Push(BinaryXor(stack->Pop<u32>(), stack->Pop<u32>()));
                     break;
                 }            
                 
                 case OpCode.XorX64: {
-                    stack.Push(BinaryXor(stack.Pop<u64>(), stack.Pop<u64>()));
+                    stack->Push(BinaryXor(stack->Pop<u64>(), stack->Pop<u64>()));
                     break;
                 }
                 
                 case OpCode.XorXsize: {
-                    stack.Push(BinaryXor(stack.Pop<usize>(), stack.Pop<usize>()));
+                    stack->Push(BinaryXor(stack->Pop<usize>(), stack->Pop<usize>()));
                     break;
                 }
                 
                 case OpCode.LeftX8: {
-                    stack.Push(BinaryLeft(stack.Pop<u8>(), stack.Pop<u8>()));
+                    stack->Push(BinaryLeft(stack->Pop<u8>(), stack->Pop<u8>()));
                     break;
                 }
                 
                 case OpCode.LeftX16: {
-                    stack.Push(BinaryLeft(stack.Pop<u16>(), stack.Pop<u16>()));
+                    stack->Push(BinaryLeft(stack->Pop<u16>(), stack->Pop<u16>()));
                     break;
                 }
                                 
                 case OpCode.LeftX32: {
-                    stack.Push(BinaryLeft(stack.Pop<u32>(), stack.Pop<u32>()));
+                    stack->Push(BinaryLeft(stack->Pop<u32>(), stack->Pop<u32>()));
                     break;
                 }
                                                 
                 case OpCode.LeftX64: {
-                    stack.Push(BinaryLeft(stack.Pop<u64>(), stack.Pop<u64>()));
+                    stack->Push(BinaryLeft(stack->Pop<u64>(), stack->Pop<u64>()));
                     break;
                 }
                 
                 case OpCode.LeftXsize: {
-                    stack.Push(BinaryLeft(stack.Pop<usize>(), stack.Pop<usize>()));
+                    stack->Push(BinaryLeft(stack->Pop<usize>(), stack->Pop<usize>()));
                     break;
                 }
 
                 case OpCode.RightI8: {
-                    stack.Push(BinaryRight(stack.Pop<i8>(), stack.Pop<i8>()));
+                    stack->Push(BinaryRight(stack->Pop<i8>(), stack->Pop<i8>()));
                     break;
                 }
                 
                 case OpCode.RightI16: {
-                    stack.Push(BinaryRight(stack.Pop<i16>(), stack.Pop<i16>()));
+                    stack->Push(BinaryRight(stack->Pop<i16>(), stack->Pop<i16>()));
                     break;
                 }
                 
                 case OpCode.RightI32: {
-                    stack.Push(BinaryRight(stack.Pop<i32>(), stack.Pop<i32>()));
+                    stack->Push(BinaryRight(stack->Pop<i32>(), stack->Pop<i32>()));
                     break;
                 }
                 
                 case OpCode.RightI64: {
-                    stack.Push(BinaryRight(stack.Pop<i64>(), stack.Pop<i64>()));
+                    stack->Push(BinaryRight(stack->Pop<i64>(), stack->Pop<i64>()));
                     break;
                 }
                 
                 case OpCode.RightU8: {
-                    stack.Push(BinaryURight(stack.Pop<u8>(), stack.Pop<u8>()));
+                    stack->Push(BinaryURight(stack->Pop<u8>(), stack->Pop<u8>()));
                     break;
                 }
                 
                 case OpCode.RightU16: {
-                    stack.Push(BinaryURight(stack.Pop<u16>(), stack.Pop<u16>()));
+                    stack->Push(BinaryURight(stack->Pop<u16>(), stack->Pop<u16>()));
                     break;
                 }
                 
                 case OpCode.RightU32: {
-                    stack.Push(BinaryURight(stack.Pop<u32>(), stack.Pop<u32>()));
+                    stack->Push(BinaryURight(stack->Pop<u32>(), stack->Pop<u32>()));
                     break;
                 }
                 
                 case OpCode.RightU64: {
-                    stack.Push(BinaryURight(stack.Pop<u64>(), stack.Pop<u64>()));
+                    stack->Push(BinaryURight(stack->Pop<u64>(), stack->Pop<u64>()));
                     break;
                 }
                 
                 
                 case OpCode.PlusX8: {
-                    stack.Push(BinaryPlus(stack.Pop<u8>(), stack.Pop<u8>()));
+                    stack->Push(BinaryPlus(stack->Pop<u8>(), stack->Pop<u8>()));
                     break;
                 }
                 
                 case OpCode.PlusX16: {
-                    stack.Push(BinaryPlus(stack.Pop<u16>(), stack.Pop<u16>()));
+                    stack->Push(BinaryPlus(stack->Pop<u16>(), stack->Pop<u16>()));
                     break;
                 }
                                 
                 case OpCode.PlusX32: {
-                    stack.Push(BinaryPlus(stack.Pop<u32>(), stack.Pop<u32>()));
+                    stack->Push(BinaryPlus(stack->Pop<u32>(), stack->Pop<u32>()));
                     break;
                 }
                                                 
                 case OpCode.PlusX64: {
-                    stack.Push(BinaryPlus(stack.Pop<u64>(), stack.Pop<u64>()));
+                    stack->Push(BinaryPlus(stack->Pop<u64>(), stack->Pop<u64>()));
                     break;
                 }
                 
                 case OpCode.PlusPtr: {
-                    stack.Push(BinaryPlus(stack.Pop<usize>(), stack.Pop<usize>()));
+                    stack->Push(BinaryPlus(stack->Pop<usize>(), stack->Pop<usize>()));
                     break;
                 }
                 
                 case OpCode.MinusX8: {
-                    stack.Push(BinaryMinus(stack.Pop<u8>(), stack.Pop<u8>()));
+                    stack->Push(BinaryMinus(stack->Pop<u8>(), stack->Pop<u8>()));
                     break;
                 }
                 
                 case OpCode.MinusX16: {
-                    stack.Push(BinaryMinus(stack.Pop<u16>(), stack.Pop<u16>()));
+                    stack->Push(BinaryMinus(stack->Pop<u16>(), stack->Pop<u16>()));
                     break;
                 }
                 
                 case OpCode.MinusX32: {
-                    stack.Push(BinaryMinus(stack.Pop<u32>(), stack.Pop<u32>()));
+                    stack->Push(BinaryMinus(stack->Pop<u32>(), stack->Pop<u32>()));
                     break;
                 }
                 
                 case OpCode.MinusX64: {
-                    stack.Push(BinaryMinus(stack.Pop<u64>(), stack.Pop<u64>()));
+                    stack->Push(BinaryMinus(stack->Pop<u64>(), stack->Pop<u64>()));
                     break;
                 }
                 
                 case OpCode.MinusXsize: {
-                    stack.Push(BinaryMinus(stack.Pop<usize>(), stack.Pop<usize>()));
+                    stack->Push(BinaryMinus(stack->Pop<usize>(), stack->Pop<usize>()));
                     break;
                 }
                 
                 case OpCode.DivI8: {
-                    stack.Push(BinaryDiv(stack.Pop<i8>(), stack.Pop<i8>()));
+                    stack->Push(BinaryDiv(stack->Pop<i8>(), stack->Pop<i8>()));
                     break;
                 }
                 
                 case OpCode.DivI16: {
-                    stack.Push(BinaryDiv(stack.Pop<i16>(), stack.Pop<i16>()));
+                    stack->Push(BinaryDiv(stack->Pop<i16>(), stack->Pop<i16>()));
                     break;
                 }
                 
                 case OpCode.DivI32: {
-                    stack.Push(BinaryDiv(stack.Pop<i32>(), stack.Pop<i32>()));
+                    stack->Push(BinaryDiv(stack->Pop<i32>(), stack->Pop<i32>()));
                     break;
                 }
                 
                 case OpCode.DivI64: {
-                    stack.Push(BinaryDiv(stack.Pop<i64>(), stack.Pop<i64>()));
+                    stack->Push(BinaryDiv(stack->Pop<i64>(), stack->Pop<i64>()));
                     break;
                 }
                 
                 case OpCode.DivIsize: {
-                    stack.Push(BinaryDiv(stack.Pop<isize>(), stack.Pop<isize>()));
+                    stack->Push(BinaryDiv(stack->Pop<isize>(), stack->Pop<isize>()));
                     break;
                 }
                 
                 case OpCode.DivU8: {
-                    stack.Push(BinaryDiv(stack.Pop<u8>(), stack.Pop<u8>()));
+                    stack->Push(BinaryDiv(stack->Pop<u8>(), stack->Pop<u8>()));
                     break;
                 }
                 
                 case OpCode.DivU16: {
-                    stack.Push(BinaryDiv(stack.Pop<u16>(), stack.Pop<u16>()));
+                    stack->Push(BinaryDiv(stack->Pop<u16>(), stack->Pop<u16>()));
                     break;
                 }
                 
                 case OpCode.DivU32: {
-                    stack.Push(BinaryDiv(stack.Pop<u32>(), stack.Pop<u32>()));
+                    stack->Push(BinaryDiv(stack->Pop<u32>(), stack->Pop<u32>()));
                     break;
                 }
                 
                 case OpCode.DivU64: {
-                    stack.Push(BinaryDiv(stack.Pop<u64>(), stack.Pop<u64>()));
+                    stack->Push(BinaryDiv(stack->Pop<u64>(), stack->Pop<u64>()));
                     break;
                 }
                 
                 case OpCode.DivUsize: {
-                    stack.Push(BinaryDiv(stack.Pop<usize>(), stack.Pop<usize>()));
+                    stack->Push(BinaryDiv(stack->Pop<usize>(), stack->Pop<usize>()));
                     break;
                 }
                 
                 case OpCode.ModI8: {
-                    stack.Push(BinaryMod(stack.Pop<i8>(), stack.Pop<i8>()));
+                    stack->Push(BinaryMod(stack->Pop<i8>(), stack->Pop<i8>()));
                     break;
                 }
                 
                 case OpCode.ModI16: {
-                    stack.Push(BinaryMod(stack.Pop<i16>(), stack.Pop<i16>()));
+                    stack->Push(BinaryMod(stack->Pop<i16>(), stack->Pop<i16>()));
                     break;
                 }
                 
                 case OpCode.ModI32: {
-                    stack.Push(BinaryMod(stack.Pop<i32>(), stack.Pop<i32>()));
+                    stack->Push(BinaryMod(stack->Pop<i32>(), stack->Pop<i32>()));
                     break;
                 }
                 
                 case OpCode.ModI64: {
-                    stack.Push(BinaryMod(stack.Pop<i64>(), stack.Pop<i64>()));
+                    stack->Push(BinaryMod(stack->Pop<i64>(), stack->Pop<i64>()));
                     break;
                 }
                 
                 case OpCode.ModIsize: {
-                    stack.Push(BinaryMod(stack.Pop<isize>(), stack.Pop<isize>()));
+                    stack->Push(BinaryMod(stack->Pop<isize>(), stack->Pop<isize>()));
                     break;
                 }
                 
                 case OpCode.ModU8: {
-                    stack.Push(BinaryMod(stack.Pop<u8>(), stack.Pop<u8>()));
+                    stack->Push(BinaryMod(stack->Pop<u8>(), stack->Pop<u8>()));
                     break;
                 }
                 
                 case OpCode.ModU16: {
-                    stack.Push(BinaryMod(stack.Pop<u16>(), stack.Pop<u16>()));
+                    stack->Push(BinaryMod(stack->Pop<u16>(), stack->Pop<u16>()));
                     break;
                 }
                 
                 case OpCode.ModU32: {
-                    stack.Push(BinaryMod(stack.Pop<u32>(), stack.Pop<u32>()));
+                    stack->Push(BinaryMod(stack->Pop<u32>(), stack->Pop<u32>()));
                     break;
                 }
                 
                 case OpCode.ModU64: {
-                    stack.Push(BinaryMod(stack.Pop<u64>(), stack.Pop<u64>()));
+                    stack->Push(BinaryMod(stack->Pop<u64>(), stack->Pop<u64>()));
                     break;
                 }
                 
                 case OpCode.ModUsize: {
-                    stack.Push(BinaryMod(stack.Pop<usize>(), stack.Pop<usize>()));
+                    stack->Push(BinaryMod(stack->Pop<usize>(), stack->Pop<usize>()));
                     break;
                 }
                 
                 // print
                 case OpCode.PrintUtf8: {
-                    PrintAscii(stack.Pop<u8>());
+                    PrintAscii(stack->Pop<u8>());
                     break;
                 }
                 case OpCode.PrintUtf16: {
-                    PrintUtf16(stack.Pop<u16>());
+                    PrintUtf16(stack->Pop<u16>());
                     break;
                 }
                 case OpCode.PrintU8: {
-                    PrintInteger(stack.Pop<u8>());
+                    PrintInteger(stack->Pop<u8>());
                     break;
                 }
                 case OpCode.PrintU16: {
-                    PrintInteger(stack.Pop<u16>());
+                    PrintInteger(stack->Pop<u16>());
                     break;
                 }
                 
                 case OpCode.PrintStr: {
-                    PrintString(ref stack);
+                    PrintString(ref *stack);
                     break;
                 }
                     
@@ -475,7 +475,7 @@ public static partial class EsmVM {
                     #if DEBUG
                     Debug("Awaiting character input...");
                     #endif
-                    stack.Push((u8) Console.ReadKey().KeyChar);
+                    stack->Push((u8) Console.ReadKey().KeyChar);
                     Console.WriteLine();
                     break;
                 }
@@ -488,7 +488,7 @@ public static partial class EsmVM {
                     #endif
                     string input = Console.ReadLine() ?? "";
                     if (byte.TryParse(input, NumberStyles.Integer, null, out var result))
-                        stack.Push<u8>(result);
+                        stack->Push<u8>(result);
                     else throw new InvalidFormatError($"Invalid decimal u8: {input}");
 
                     break;
@@ -501,14 +501,14 @@ public static partial class EsmVM {
                     #endif
                     string input = Console.ReadLine() ?? "";
                     if (ushort.TryParse(input, NumberStyles.Integer, null, out var result))
-                        stack.Push<u16>(result);
+                        stack->Push<u16>(result);
                     else throw new InvalidFormatError($"Invalid decimal u16: {input}");
 
                     break;
                 }
              
                 case OpCode.AllocInputStr: {
-                    InputString(Console.In, ref stack, in heap);
+                    InputString(Console.In, ref *stack, in heap);
                     break;
                 }
                 

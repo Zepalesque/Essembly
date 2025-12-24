@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using EsmRuntime.Common.Types.Signature;
+using EsmRuntime.Memory.Util;
 using static EsmRuntime.Constants;
 
 namespace EsmRuntime.Common.Types;
@@ -72,7 +73,7 @@ public interface IType<out TSelf, TValue> : IByteSerializable<TSelf>
     TypeFlags Flags { get; }
     u128 SigHash { get; }
     
-    Box<TypeSig> Signature { get; }
+    RecursiveBox<TypeSig> Signature { get; }
     
 }
 
@@ -90,7 +91,7 @@ public readonly ref struct PrimitiveDynamicType<T>(ReadOnlySpan<byte> signature)
     public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
     public TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.DynamSize; }
     public u128 SigHash { [MethodImpl(Inline)] get; } = signature.Hash();
-    public Box<TypeSig> Signature { [MethodImpl(Inline)] get; } = TypeSig.SigPiece(signature);
+    public RecursiveBox<TypeSig> Signature { [MethodImpl(Inline)] get; } = TypeSig.SigPiece(signature);
     
     [MethodImpl(Inline)]
     public static unsafe PrimitiveDynamicType<T> FromBytecode(byte* start, scoped ref int pc) => throw new NotImplementedException();
@@ -113,7 +114,7 @@ public readonly ref struct PrimitiveSizedType<T>(ReadOnlySpan<byte> signature) :
     public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
     public TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.ConstSize; }
     public u128 SigHash { [MethodImpl(Inline)] get; } = signature.Hash();
-    public Box<TypeSig> Signature { [MethodImpl(Inline)] get; } = TypeSig.SigPiece(signature);
+    public RecursiveBox<TypeSig> Signature { [MethodImpl(Inline)] get; } = TypeSig.SigPiece(signature);
     
     [MethodImpl(Inline)]
     public static unsafe PrimitiveSizedType<T> FromBytecode(byte* start, scoped ref int pc) => throw new NotImplementedException();
@@ -147,13 +148,13 @@ public readonly ref struct ReferenceType<TType, TValue>(TType valType) : IType<R
     public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
     public TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.ConstSize | TypeFlags.Pointer; }
     
-    public Box<TypeSig> Signature => TypeSig.SigUnion(TypeSig.SigPiece("&"u8), ValType.Signature);
+    public RecursiveBox<TypeSig> Signature => TypeSig.SigUnion(TypeSig.SigPiece("&"u8), ValType.Signature);
     
     
     public unsafe u128 SigHash {
         [MethodImpl(Inline)] // useless thanks to stackalloc :/
         get {
-            using Box<TypeSig> sig = Signature;
+            using RecursiveBox<TypeSig> sig = Signature;
             
             int length = sig.Value.Length;
             Span<byte> span = stackalloc byte[length];
@@ -177,7 +178,7 @@ public readonly ref struct SliceType<TType, TValue>(TType valType) : IType<Slice
     
     public TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.DynamSize | TypeFlags.Slice; }
     
-    public Box<TypeSig> Signature {
+    public RecursiveBox<TypeSig> Signature {
         [MethodImpl(Inline)]
         get => TypeSig.SigUnion(ValType.Signature, TypeSig.SigPiece("[]"u8));
     }
@@ -185,7 +186,7 @@ public readonly ref struct SliceType<TType, TValue>(TType valType) : IType<Slice
     public unsafe u128 SigHash {
         [MethodImpl(Inline)] // useless thanks to stackalloc :/
         get {
-            using Box<TypeSig> sig = Signature;
+            using RecursiveBox<TypeSig> sig = Signature;
             
             int length = sig.Value.Length;
             Span<byte> span = stackalloc byte[length];

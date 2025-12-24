@@ -1,14 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
+using EsmRuntime.Memory.Util;
 using static System.Runtime.InteropServices.NativeMemory;
 using static EsmRuntime.Constants;
 
 namespace EsmRuntime.Common.Types.Signature;
 
-public interface IPartialDispose {
-    public void Dispose();
-} 
-
-public readonly ref struct TypeSig : IPartialDispose {
+public readonly ref struct TypeSig : IHeapDispose {
     
     [MethodImpl(Inline)]
     unsafe TypeSig(bool disc, void* data) {
@@ -51,7 +48,7 @@ public readonly ref struct TypeSig : IPartialDispose {
     }
     
     [MethodImpl(Inline)]
-    public static unsafe Box<TypeSig> SigPiece(ReadOnlySpan<byte> span) {
+    public static unsafe RecursiveBox<TypeSig> SigPiece(ReadOnlySpan<byte> span) {
         var self = (TypeSig*)AlignedAlloc((nuint) sizeof(TypeSig), 16);
         
         SigPiece* data = Signature.SigPiece.AllocCopy(span);
@@ -64,7 +61,7 @@ public readonly ref struct TypeSig : IPartialDispose {
     }
     
     [MethodImpl(Inline)]
-    public static unsafe Box<TypeSig> SigUnion(Box<TypeSig> first, Box<TypeSig> second) {
+    public static unsafe RecursiveBox<TypeSig> SigUnion(RecursiveBox<TypeSig> first, RecursiveBox<TypeSig> second) {
         var self = (TypeSig*)AlignedAlloc((nuint) sizeof(TypeSig), 16);
         
         SigUnion* data = Signature.SigUnion.Unite(first, second);
@@ -96,7 +93,7 @@ public readonly ref struct TypeSig : IPartialDispose {
     }
 }
 
-public readonly unsafe ref struct SigPiece : IPartialDispose {
+public readonly unsafe ref struct SigPiece : IHeapDispose {
     byte* Start { [MethodImpl(Inline)] get; }
     int Size { [MethodImpl(Inline)] get; }
     
@@ -139,16 +136,16 @@ public readonly unsafe ref struct SigPiece : IPartialDispose {
     }
 }
 
-public readonly unsafe ref struct SigUnion : IPartialDispose {
+public readonly unsafe ref struct SigUnion : IHeapDispose {
     [MethodImpl(Inline)]
-    SigUnion(Box<TypeSig> first, Box<TypeSig> second) {
+    SigUnion(RecursiveBox<TypeSig> first, RecursiveBox<TypeSig> second) {
         _first = first;
         _second = second;
         Length = First.Length + Second.Length;
     }
     
-    readonly Box<TypeSig> _first;
-    readonly Box<TypeSig> _second;
+    readonly RecursiveBox<TypeSig> _first;
+    readonly RecursiveBox<TypeSig> _second;
     
     public int Length { [MethodImpl(Inline)] get; }
    
@@ -164,7 +161,7 @@ public readonly unsafe ref struct SigUnion : IPartialDispose {
     ref TypeSig Second { [MethodImpl(Inline)] get => ref _second.Value; }
     
     [MethodImpl(Inline)]
-    internal static SigUnion* Unite(Box<TypeSig> first, Box<TypeSig> second) {
+    internal static SigUnion* Unite(RecursiveBox<TypeSig> first, RecursiveBox<TypeSig> second) {
         var self = (SigUnion*)AlignedAlloc((nuint) sizeof(SigUnion), 16);
         
         SigUnion value = new(first, second);
@@ -177,21 +174,5 @@ public readonly unsafe ref struct SigUnion : IPartialDispose {
     public void Dispose() {
         _first.Dispose();
         _second.Dispose();
-    }
-}
-
-[method: MethodImpl(Inline)]
-public readonly unsafe ref struct Box<T>(T* ptr) : IDisposable
-    where T : unmanaged, IPartialDispose, allows ref struct {
-    
-    public ref T Value { [MethodImpl(Inline)] get => ref *ptr; }
-    
-    [MethodImpl(Inline)]
-    public void Dispose() {
-        if (ptr == null) return;
-        
-        ptr->Dispose();
-        
-        AlignedFree(ptr);
     }
 }

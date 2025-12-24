@@ -307,7 +307,7 @@ public static partial class EsmVM {
         }
     }
     
-    static unsafe void InputString(TextReader reader, ref OpStack stack, in ReferenceHeap heap) {
+    static unsafe void InputString(TextReader reader, ref OpStack stack, scoped in ReferenceHeap heap) {
         #if DEBUG
         Debug("Awaiting string input...");
         #endif

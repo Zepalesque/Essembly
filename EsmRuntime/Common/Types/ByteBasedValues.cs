@@ -2,9 +2,12 @@
 
 namespace EsmRuntime.Common.Types;
 
-public interface IByteSerializable<out T> where T: struct, IByteSerializable<T>, allows ref struct {
-    unsafe void ToPtr(byte* ptr);
+public interface IFatReadable<out T> where T: struct, IFatReadable<T>, allows ref struct {
     public static abstract unsafe T FromFatPtr(byte* ptr, usize size);
+}
+
+public interface IByteSerializable<out T> : IFatReadable<T> where T: struct, IByteSerializable<T>, allows ref struct {
+    unsafe void ToPtr(byte* ptr);
     public nuint InstSize { get; }
 }
 
