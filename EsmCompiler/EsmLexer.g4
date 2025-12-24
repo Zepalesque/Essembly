@@ -69,6 +69,9 @@ U32: 'u32';
 U64: 'u64';
 USize: 'usize';
 
+Raw: 'raw';
+Mut: 'mut';
+
 // Jump operations
 Goto: 'goto';
 

@@ -8,7 +8,7 @@ public readonly unsafe ref struct Ptr<T>(isize address): ISizedTypeValue<Ptr<T>>
     public isize Address { [MethodImpl(Inline)] get; } = address;
     public usize DerefSize {
         [MethodImpl(Inline)]
-        get => usize.FromPtr((byte*)Address);
+        get => T.ConstSize ?? usize.FromPtr((byte*)Address);
     }
     
     [MethodImpl(Inline)]
@@ -101,6 +101,12 @@ public readonly unsafe ref struct Ptr(isize address): IPrimValue<Ptr> {
     public static Ptr CreateAt<T>(byte* ptr, scoped ref T value) where T : struct, ITypedValue<T>, allows ref struct {
         Ptr<T> typed = Ptr<T>.CreateAt(ptr, ref value);
         return typed.Raw();
+    }
+    
+    [MethodImpl(Inline)]
+    public static Ptr CreateAt(byte* ptr){
+        var addr = (isize) ptr;
+        return addr == EsmVM.NullAddr ? throw new NullAccessError("Attempted to set the null pointer!") : new(addr);
     }
     
     [MethodImpl(Inline)]

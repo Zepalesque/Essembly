@@ -13,9 +13,9 @@ statement
 ;
 
 baseStmt
-    : Op specificInt op = stackOp ';' #operationPerform
-    | Cast specificInt '->' specificInt ';' #castOperation
-    | Alloc id = Identifier ':' type = instanceType ('=' anyLiteral)? ';' #allocMem
+    : Op intType op = stackOp ';' #operationPerform
+    | Cast intType '->' intType ';' #castOperation
+    | Alloc id = Identifier ':' type = instanceType ('=' ptrAndMaybeRefPrefix? anyLiteral)? ';' #allocMem
     | Let id = Identifier ':' type = instanceType ';' #localVar
     | Free id = Identifier ';' #freeMem
     | Push push = pushClause ';' #toStack
@@ -58,19 +58,29 @@ ambigOp
     | op = '-'
 ;
 pushClause
-    : type = specificInt lit = sizedLiteral #pushConst
-    | loc = /*'@' */Identifier #pushMem
+    : type = intType lit = sizedLiteral #pushConst
+    | loc = Identifier #pushMem
 ;
 
 ifCond: value = (True|False);
 
 
-specificInt: type = U8|type = U16|type = U32|type = U64|type = I8|type = I16|type = I32|type = I64;
+intType: type = U8|type = U16|type = U32|type = U64|type = I8|type = I16|type = I32|type = I64;
 
-instanceType: type = U8|type = U16|type = U32|type = U64|type = I8|type = I16|type = I32|type = I64
-    | ('&' type = Str)
+instanceType
+    : ptrAndMaybeRefPrefix? baseType
+    | ptrAndMaybeRefPrefix Raw
 ;
 
+ptrAndMaybeRefPrefix: refPrefix* ptrPrefix+;
+
+refPrefix: '&' (Mut)?;
+ptrPrefix: '*' (Mut)?;
+
+baseType
+    : int = intType
+    | type = Str
+;
 
 
 sizedLiteral: int = DecIntLiteral | int = HexIntLiteral | int = BinIntLiteral | int = OctIntLiteral | char = CharLiteral;

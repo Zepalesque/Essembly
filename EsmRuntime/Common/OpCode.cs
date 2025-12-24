@@ -1,21 +1,33 @@
 ﻿namespace EsmRuntime.Common;
 
 public enum OpCode : byte {
-    AllocStr, // Allocate a string to memory
-    AllocSlice, // Allocate a slice of memory
-    FreeHeap,
-    PushX8, // Push 8 bits to the operand stack
-    PushX16, // ...
-    PushX32,
-    PushX64,
-    PushXsize,
-    PushGlobalAddr, // Push the address of a value in memory
+    AllocStr, // Allocate a string to memory // todo remove
+    AllocSlice, // Allocate a slice of memory // todo remove
+    AllocPtr,
+    AllocRaw,
+    AllocRef,
+    FreePtr,
+    FreeRaw,
+    FreeRef,
+    FreeHeap, // todo remove
+    PushConst,
+    PushX8, // Push 8 bits to the operand stack // todo remove
+    PushX16, // ... // todo remove
+    PushX32, // todo remove
+    PushX64, // todo remove
+    PushXsize, // todo remove
+    PushGlobalRef, // Push the address of a value in memory 
+    RefToPtrPtr,
+    DerefPtr,
+    DerefRef,
     Deref, // Try to dereference the address on the stack and then push it
+    StoreStatic,
     StoreGlobalX8, // Pop 8 bits from the operand stack and store it to a given address
     StoreGlobalX16, // ...
     StoreGlobalX32,
     StoreGlobalX64,
     StoreGlobalXsize,
+    StoreLocal,
     StoreLocX8, // Pop 8 bits from the operand stack and store it to a given local variable
     StoreLocX16, // ...
     StoreLocX32,

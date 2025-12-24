@@ -93,7 +93,17 @@ public static partial class EsmVM {
             OpCode opcode = *(OpCode*)(program.Ptr + pc);
             switch (opcode) {
                 case OpCode.AllocStr: {
-                    stack->Push(AllocRef<StringSlice>(&context));
+                    stack->Push(AllocPtr<StringSlice>(&context));
+                    break;
+                }
+                
+                case OpCode.AllocPtr: {
+                    stack->Push(AllocPtr(&context));
+                    break;
+                }
+                
+                case OpCode.AllocPtr: {
+                    stack->Push(AllocPtr(&context));
                     break;
                 }
                 
@@ -119,7 +129,7 @@ public static partial class EsmVM {
                     break;
                 
                 // TODO: Properly implement global frames
-                case OpCode.PushGlobalAddr: {
+                case OpCode.PushGlobalRef: {
                     stack->Push(stack->Pop<Ptr<Unit>>().DerefSize);
                     break;
                 }

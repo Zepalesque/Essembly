@@ -8,6 +8,12 @@ using static EsmRuntime.Constants;
 
 namespace EsmRuntime.Memory.TypeTables;
 
+public readonly ref struct TypeHandle {
+    
+    
+}
+
+
 public interface IType<out TSelf> : IByteReadable<TSelf>, IDisposable
     where TSelf : struct, IType<TSelf>, allows ref struct {
     public static abstract TypeFlags Flags { get; }

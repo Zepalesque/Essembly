@@ -28,18 +28,51 @@ public static partial class EsmVM {
         #endif
         return val;
     }
-
+    
     [MethodImpl(Inline)]
-    static unsafe Ptr<T> AllocRef<T>(RuntimeContext* context) where T: struct, ITypedValue<T>, IBytecodeSerializable<T>, allows ref struct {
+    static unsafe Ptr<T> AllocPtr<T>(RuntimeContext* context, T data) where T: struct, ITypedValue<T>, IBytecodeSerializable<T>, allows ref struct {
+        ref readonly Heap heap = ref context->Heap;
+        
+        Ptr<T> ptr = heap.AllocatePtr(ref data);
+        #if ESM_DEBUG
+        Debug($"Allocating a {ptr.DerefSize}-byte memory block and storing to &:0x{ptr.Address.Hex}");
+        #endif
+        return ptr;
+    }
+    
+    [MethodImpl(Inline)] static unsafe Ptr<T> AllocPtr<T>(RuntimeContext* context) where T: struct, ITypedValue<T>, IBytecodeSerializable<T>, allows ref struct {
+        FatPtr program = context->Program;
+        ref nuint pc = ref context->Pc;
+        
+        var data = T.FromBytecode(program.Ptr + pc, ref pc);
+        
+        return AllocPtr(context, data);
+    }
+    
+    [MethodImpl(Inline)]
+    static unsafe Ptr AllocPtr(RuntimeContext* context) {
         FatPtr program = context->Program;
         ref nuint pc = ref context->Pc;
         ref readonly Heap heap = ref context->Heap;
         
-        usize addr = usize.FromBytecode(program.Ptr + pc, ref pc);
-        var data = T.FromBytecode(program.Ptr + pc, ref pc);
-        Ptr<T> ptr = heap.AllocatePtr(ref data);
+        usize size = usize.FromBytecode(program.Ptr + pc, ref pc);
+        Ptr ptr = heap.AllocateRawPtr(size);
         #if ESM_DEBUG
-        Debug($"Allocating a {ptr.Dereference().InstSize}-byte memory block and storing to &{addr.Hex}"); 
+        Debug($"Allocating a {size}-byte memory block and storing to &:0x{ptr.Address.Hex}");
+        #endif
+        return ptr;
+    }
+    
+    [MethodImpl(Inline)]
+    static unsafe Ptr AllocPtr(RuntimeContext* context, int a) {
+        FatPtr program = context->Program;
+        ref nuint pc = ref context->Pc;
+        ref readonly Heap heap = ref context->Heap;
+        
+        usize size = usize.FromBytecode(program.Ptr + pc, ref pc);
+        Ptr ptr = heap.AllocateRawPtr(size);
+        #if ESM_DEBUG
+        Debug($"Allocating a {size}-byte memory block and storing to &:0x{ptr.Address.Hex}");
         #endif
         return ptr;
     }

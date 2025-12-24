@@ -85,7 +85,7 @@ public record PushMem(string VarName, FilePos Pos) : UnfinalizedStmt(2, Pos) {
     public string VarName { get; set; } = VarName;
 }
 
-public record PushHeap(byte Index, FilePos Pos) : OneOpStmt(EsmRuntime.Common.OpCode.PushGlobalAddr, Index, Pos) {
+public record PushHeap(byte Index, FilePos Pos) : OneOpStmt(EsmRuntime.Common.OpCode.PushGlobalRef, Index, Pos) {
     public byte Index { get; set; } = Index;
 }
 

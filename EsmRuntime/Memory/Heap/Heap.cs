@@ -16,13 +16,11 @@ public readonly unsafe struct Heap(byte* start, nint size, HeapTree** tree) {
             : throw new MemoryAccessError("No memory left in reference heap :(");
     }
     
-    public Ptr AllocateRawPtr<T>(scoped ref T value) where T: struct, ITypedValue<T>, allows ref struct {
-        usize u = value.InstSize;
-        if (typeof(T) == typeof(Unit))
-            return new(EsmVM.UnitAddr);
+    public Ptr AllocateRawPtr(nuint size) {
+        if (size == 0) return new(EsmVM.UnitAddr);
         
-        return HeapTree.TryAllocate(ref *tree, u, out byte* ptr)
-            ? Ptr.CreateAt(ptr, ref value)
+        return HeapTree.TryAllocate(ref *tree, size, out byte* ptr)
+            ? Ptr.CreateAt(ptr)
             : throw new MemoryAccessError("No memory left in reference heap :(");
     }
 
