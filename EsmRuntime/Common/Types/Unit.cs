@@ -31,7 +31,7 @@ public struct Unit: ISpanFormattable, ISizedPrimValue<Unit> {
     public static unsafe Unit FromPtr(byte* ptr) => Self;
 
     [MethodImpl(Inline)]
-    public static unsafe Unit FromBytecode(byte* start, scoped ref int pc) => Self;
+    public static unsafe Unit FromBytecode(byte* start, scoped ref nuint pc) => Self;
     
     [MethodImpl(Inline)]
     public byte[] ToBytecode() => [];

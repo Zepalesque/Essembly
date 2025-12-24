@@ -22,7 +22,7 @@ public readonly record struct @bool(bool value) : ISizedValue<@bool> {
     public static unsafe @bool FromFatPtr(byte* ptr, usize size)
         => FromPtr(ptr);
 
-    public static unsafe @bool FromBytecode(byte* start, scoped ref int pc) {
+    public static unsafe @bool FromBytecode(byte* start, scoped ref nuint pc) {
         pc += sizeof(bool);
         return ReadUnaligned<bool>(start);
     }

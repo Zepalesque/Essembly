@@ -3,12 +3,12 @@ using EsmRuntime.Memory.Util;
 using static System.Runtime.InteropServices.NativeMemory;
 using static EsmRuntime.Constants;
 
-namespace EsmRuntime.Common.Types.Signature;
+namespace EsmRuntime.Memory.TypeTable.Signature;
 
-public readonly ref struct TypeSig : IDisposable {
+public readonly ref struct Signature : IDisposable {
     
     [MethodImpl(Inline)]
-    unsafe TypeSig(bool disc, void* data) {
+    unsafe Signature(bool disc, void* data) {
         IsUnion = disc;
         _data = data;
     }
@@ -48,26 +48,26 @@ public readonly ref struct TypeSig : IDisposable {
     }
     
     [MethodImpl(Inline)]
-    public static unsafe RecursiveBox<TypeSig> SigPiece(ReadOnlySpan<byte> span) {
-        var self = (TypeSig*)AlignedAlloc((nuint) sizeof(TypeSig), 16);
+    public static unsafe Box<Signature> SigPiece(ReadOnlySpan<byte> span) {
+        var self = (Signature*)AlignedAlloc((nuint) sizeof(Signature), 16);
         
-        SigPiece* data = Signature.SigPiece.AllocCopy(span);
+        SigPiece* data = TypeTable.Signature.SigPiece.AllocCopy(span);
         const bool disc = false;
         
-        TypeSig value = new(disc, data);
+        Signature value = new(disc, data);
         *self = value;
         
         return new(self);
     }
     
     [MethodImpl(Inline)]
-    public static unsafe RecursiveBox<TypeSig> SigUnion(RecursiveBox<TypeSig> first, RecursiveBox<TypeSig> second) {
-        var self = (TypeSig*)AlignedAlloc((nuint) sizeof(TypeSig), 16);
+    public static unsafe Box<Signature> SigUnion(Box<Signature> first, Box<Signature> second) {
+        var self = (Signature*)AlignedAlloc((nuint) sizeof(Signature), 16);
         
-        SigUnion* data = Signature.SigUnion.Unite(first, second);
+        SigUnion* data = TypeTable.Signature.SigUnion.Unite(first, second);
         const bool disc = true;
         
-        TypeSig value = new(disc, data);
+        Signature value = new(disc, data);
         *self = value;
         
         return new(self);
@@ -138,14 +138,14 @@ public readonly unsafe ref struct SigPiece : IDisposable {
 
 public readonly unsafe ref struct SigUnion : IDisposable {
     [MethodImpl(Inline)]
-    SigUnion(RecursiveBox<TypeSig> first, RecursiveBox<TypeSig> second) {
+    SigUnion(Box<Signature> first, Box<Signature> second) {
         _first = first;
         _second = second;
         Length = First.Length + Second.Length;
     }
     
-    readonly RecursiveBox<TypeSig> _first;
-    readonly RecursiveBox<TypeSig> _second;
+    readonly Box<Signature> _first;
+    readonly Box<Signature> _second;
     
     public int Length { [MethodImpl(Inline)] get; }
    
@@ -156,12 +156,12 @@ public readonly unsafe ref struct SigUnion : IDisposable {
         Second.CopyTo(span[split..]);
     }
     
-    ref TypeSig First { [MethodImpl(Inline)] get => ref _first.Value; }
+    ref Signature First { [MethodImpl(Inline)] get => ref _first.Value; }
     
-    ref TypeSig Second { [MethodImpl(Inline)] get => ref _second.Value; }
+    ref Signature Second { [MethodImpl(Inline)] get => ref _second.Value; }
     
     [MethodImpl(Inline)]
-    internal static SigUnion* Unite(RecursiveBox<TypeSig> first, RecursiveBox<TypeSig> second) {
+    internal static SigUnion* Unite(Box<Signature> first, Box<Signature> second) {
         var self = (SigUnion*)AlignedAlloc((nuint) sizeof(SigUnion), 16);
         
         SigUnion value = new(first, second);

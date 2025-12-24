@@ -2,10 +2,10 @@
 using System.Runtime.InteropServices;
 using static EsmRuntime.Constants;
 
-namespace EsmRuntime.Memory.Types;
+namespace EsmRuntime.Memory.TypeTable;
 
 public readonly unsafe ref struct HashTable<T> : IDisposable
-    where T : unmanaged, allows ref struct {
+    where T : unmanaged, IDisposable, allows ref struct {
     readonly HashNode<T>** _nodes;
     readonly uint _mask;
     
@@ -108,7 +108,10 @@ public readonly unsafe ref struct HashTable<T> : IDisposable
         if (_nodes == null) return;
         for (uint i = 0; i <= _mask; i++) {
             HashNode<T>* node = _nodes[i];
-            if (node != null) NativeMemory.AlignedFree(node);
+            if (node != null) {
+                node->Value.Dispose();
+                NativeMemory.AlignedFree(node);
+            };
         }
         
         NativeMemory.AlignedFree(_nodes);
@@ -118,7 +121,7 @@ public readonly unsafe ref struct HashTable<T> : IDisposable
 [method: MethodImpl(Inline)]
 public unsafe ref struct HashNode<T>(UInt128 key, T value, uint psl) where T: unmanaged, allows ref struct {
     public readonly UInt128 Key = key;
-    public readonly T Value = value;
+    public T Value = value;
     public uint Psl = psl;
     
     [MethodImpl(Inline)]

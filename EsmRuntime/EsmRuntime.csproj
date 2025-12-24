@@ -9,6 +9,16 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACE
+ESM_DEBUG</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DefineConstants>TRACE
+ESM_RELEASE</DefineConstants>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="JetBrains.Annotations" Version="2025.2.4" />
       <PackageReference Include="System.CommandLine" Version="2.0.0" />

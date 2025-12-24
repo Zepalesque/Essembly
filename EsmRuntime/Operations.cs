@@ -7,6 +7,7 @@ using EsmRuntime.Common.Types;
 using EsmRuntime.Debug;
 using EsmRuntime.Memory;
 using EsmRuntime.Memory.Heap;
+using EsmRuntime.Memory.TypeTable;
 using JetBrains.Annotations;
 using static EsmRuntime.Constants;
 
@@ -16,36 +17,42 @@ namespace EsmRuntime;
 
 public static partial class EsmVM {
     [MethodImpl(Inline)]
-    static unsafe T LoadConst<T>(FatPtr program, scoped ref int pc) where T: struct, ISizedValue<T> {
+    static unsafe T LoadConst<T>(RuntimeContext* context) where T: struct, ISizedValue<T> {
+        FatPtr program = context->Program;
+        ref nuint pc = ref context->Pc;
+        
         var val = T.FromBytecode(program, ref pc);
-        pc += (int) T.ByteCount;
-        #if DEBUG
+        pc += (nuint) T.ByteCount;
+        #if ESM_DEBUG
         Debug($"Pushing {val} to stack");
         #endif
         return val;
     }
 
     [MethodImpl(Inline)]
-    static unsafe Reference<T> AllocRef<T>(FatPtr program, scoped ref int pc, scoped in ReferenceHeap heap) where T: struct, ITypedValue<T>, IBytecodeSerializable<T>, allows ref struct {
-
-        usize addr = usize.FromBytecode(program.Ptr, ref pc);
+    static unsafe Reference<T> AllocRef<T>(RuntimeContext* context) where T: struct, ITypedValue<T>, IBytecodeSerializable<T>, allows ref struct {
+        FatPtr program = context->Program;
+        ref nuint pc = ref context->Pc;
+        ref readonly ReferenceHeap heap = ref context->Heap;
+        
+        usize addr = usize.FromBytecode(program.Ptr + pc, ref pc);
         var data = T.FromBytecode(program.Ptr + pc, ref pc);
         Reference<T> reference = heap.Allocate(ref data);
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"Allocating a {reference.Dereference().InstSize}-byte memory block and storing to &{addr.Hex}"); 
         #endif
         return reference;
     }
     
-    // TODO: Jump table for local frames
+    // TODO: Jump table for local frames, rework
     [MethodImpl(Inline)]
-    static void Jump(FatPtr program, ref int pc, ref OpStack stack, bool? cond) {
+    static void Jump(FatPtr program, ref nuint pc, ref OpStack stack, bool? cond) {
         
         if (cond == null) {
-            int jump = unchecked((sbyte) program[++pc]) - 2;
-            int res = pc + jump;
+            nuint jump = (nuint)(unchecked((sbyte) program[++pc]) - 2);
+            nuint res = pc + jump;
             
-            #if DEBUG
+            #if ESM_DEBUG
             Debug($"Jumping: #{pc} + {jump} = #{res}");
             #endif
             
@@ -55,17 +62,17 @@ public static partial class EsmVM {
         } else {
             var top = stack.Pop<@bool>();
             if (top == cond.Value) {
-                int jump = unchecked((sbyte) program[++pc]) - 2;
-                int res = pc + jump;
+                nuint jump = (nuint)(unchecked((sbyte) program[++pc]) - 2);
+                nuint res = pc + jump;
 
-                #if DEBUG
+                #if ESM_DEBUG
                 string msgCond = cond.Value ? "false" : "true";
                 Debug($"stack.Pop() is {msgCond}, jumping: #{pc} + {jump} = #{res}");
                 #endif
                 pc = res;
                 
             } else {
-                #if DEBUG
+                #if ESM_DEBUG
                 string val = !cond.Value ? "true" : "false";
                 Debug($"stack.Pop() is {val}, skipping jump");
                 #endif
@@ -79,7 +86,7 @@ public static partial class EsmVM {
     [MethodImpl(Inline)]
     static u8 Exit(u8 code) {
         
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"User-specified exit: {code}");
         #endif
         
@@ -90,7 +97,7 @@ public static partial class EsmVM {
     static T UnaryNot<T>(T val) where T: struct, ISizedValue<T>, IBitwiseOperators<T, T, T> {
         T res = ~val;
         
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"~{val}: -> {val} => -> {res}");
         #endif
         
@@ -105,7 +112,7 @@ public static partial class EsmVM {
     static TRes BinaryAnd<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IBitwiseOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a & b;
         
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"{a} & {b}: -> {b}, {a} => -> {res}");
         #endif
         
@@ -120,7 +127,7 @@ public static partial class EsmVM {
     static TRes BinaryOr<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IBitwiseOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a | b;
         
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"{a} | {b}: -> {b}, {a} => -> {res}");
         #endif
         
@@ -135,7 +142,7 @@ public static partial class EsmVM {
     static TRes BinaryXor<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IBitwiseOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a ^ b;
         
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"{a} ^ {b}: -> {b}, {a} => -> {res}");
         #endif
         
@@ -150,7 +157,7 @@ public static partial class EsmVM {
     static TRes BinaryLeft<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IShiftOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a << b;
         
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"{a} << {b}: -> {b}, {a} => -> {res}");
         #endif
         
@@ -165,7 +172,7 @@ public static partial class EsmVM {
     static TRes BinaryRight<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IShiftOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a >> b;
        
-       #if DEBUG
+       #if ESM_DEBUG
         Debug($"{a} +>> {b}: -> {b}, {a} => -> {res}");
         #endif
         
@@ -180,7 +187,7 @@ public static partial class EsmVM {
     static TRes BinaryURight<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IShiftOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a >>> b;
         
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"{a} >> {b}: -> {b}, {a} => -> {res}");
         #endif
         
@@ -194,7 +201,7 @@ public static partial class EsmVM {
     [MethodImpl(Inline)]
     static TRes BinaryPlus<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IAdditionOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a + b;
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"{a} + {b}: -> {b}, {a} => -> {res}");
         #endif
         return res;
@@ -207,7 +214,7 @@ public static partial class EsmVM {
     [MethodImpl(Inline)]
     static TRes BinaryMinus<T1, T2, TRes>(T1 a, T2 b) where T1: struct, ISubtractionOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a - b;
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"{a} - {b}: -> {b}, {a} => -> {res}");
         #endif
         return res;
@@ -220,7 +227,7 @@ public static partial class EsmVM {
     [MethodImpl(Inline)]
     static TRes BinaryMult<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IMultiplyOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a * b;
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"{a} * {b}: -> {b}, {a} => -> {res}");
         #endif
         return res;
@@ -233,7 +240,7 @@ public static partial class EsmVM {
     [MethodImpl(Inline)]
     static TRes BinaryDiv<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IDivisionOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a / b;
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"{a} / {b}: -> {b}, {a} => -> {res}");
         #endif
         return res;
@@ -246,7 +253,7 @@ public static partial class EsmVM {
     [MethodImpl(Inline)]
     static TRes BinaryMod<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IModulusOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a % b;
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"{a} % {b}: -> {b}, {a} => -> {res}");
         #endif
         return res;
@@ -255,7 +262,7 @@ public static partial class EsmVM {
     [MethodImpl(Inline)]
     static @bool BinaryEqual<T>(T a, T b) where T: struct, ISizedValue<T>, IEqualityOperators<T, T, bool>  {
         @bool res = a == b;
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"{a} == {b}: -> {b}, {a} => -> {res}");
         #endif
         return res;
@@ -264,7 +271,7 @@ public static partial class EsmVM {
     [MethodImpl(Inline)]
     static @bool BinaryNEqual<T>(T a, T b) where T: struct, ISizedValue<T>, IEqualityOperators<T, T, bool>  {
         @bool res = a != b;
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"{a} == {b}: -> {b}, {a} => -> {res}");
         #endif
         return res;
@@ -272,7 +279,7 @@ public static partial class EsmVM {
     
     [MethodImpl(Inline)]
     static void PrintInteger<T>(T val) where T : struct, ISizedValue<T>, INumberFormattable {
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"Printing stack.Pop(): {val} formatted {val.Dec}");
         #endif
         Console.Write(val.Dec);
@@ -280,7 +287,7 @@ public static partial class EsmVM {
     
     [MethodImpl(Inline)]
     static void PrintAscii<T>(T val) where T : struct, ISizedValue<T>, IAsciiFormattable<T> {
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"Printing stack.Pop(): {val} formatted \'{(char) val}\'");
         #endif
         Console.Write((char) val);
@@ -288,7 +295,7 @@ public static partial class EsmVM {
     
     [MethodImpl(Inline)]
     static void PrintUtf16<T>(T val) where T : struct, ISizedValue<T>, IUtf16Formattable<T> {
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"Printing stack.Pop(): {val} formatted \'{(char) val}\'");
         #endif
         Console.Write((char) val);
@@ -298,7 +305,7 @@ public static partial class EsmVM {
     static void PrintString(ref OpStack stack) {
         var s = stack.Pop<Reference<StringSlice>>();
         StringSlice slice = s.Dereference();
-        #if DEBUG
+        #if ESM_DEBUG
         Debug($"Printing string to console: \"{slice.ToString()}\"");
         #endif
 
@@ -307,8 +314,10 @@ public static partial class EsmVM {
         }
     }
     
-    static unsafe void InputString(TextReader reader, ref OpStack stack, scoped in ReferenceHeap heap) {
-        #if DEBUG
+    static unsafe void InputString(TextReader reader, RuntimeContext* context) {
+        ref readonly ReferenceHeap heap = ref context->Heap;
+        ref OpStack stack = ref context->Stack;
+        #if ESM_DEBUG
         Debug("Awaiting string input...");
         #endif
         string input = reader.ReadLine() ?? "";

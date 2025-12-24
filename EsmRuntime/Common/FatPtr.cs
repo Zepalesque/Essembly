@@ -8,11 +8,11 @@ public readonly unsafe ref struct FatPtr(byte* ptr, nuint size) {
     public readonly byte* Ptr = ptr;
     public readonly usize Size = size;
 
-    public byte this[int i] => *(Ptr + i);
+    public byte this[nuint i] => Ptr[i];
     
     public static implicit operator byte*(FatPtr ptr) => ptr.Ptr;
 
-    public void Deconstruct(out byte* ptr, out int size) {
+    public void Deconstruct(out byte* ptr, out nuint size) {
         ptr = Ptr;
         size = Size;
     }

@@ -11,7 +11,7 @@ public readonly unsafe ref struct StringSlice(Slice<u8> utf8) : IPrimValue<Strin
 
     public Slice<u8> Utf8 => _utf8;
 
-    public static StringSlice FromBytecode(byte* start, scoped ref int pc) {
+    public static StringSlice FromBytecode(byte* start, scoped ref nuint pc) {
         return new(Slice<u8>.FromBytecode(start, ref pc));
     }
 

@@ -153,7 +153,7 @@ public readonly record struct i8(sbyte value):
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
 
     [MethodImpl(Inline)]
-    public static unsafe i8 FromBytecode(byte* start, scoped ref int pc) {
+    public static unsafe i8 FromBytecode(byte* start, scoped ref nuint pc) {
         pc += sizeof(sbyte);
         return IsLittleEndian ? ReverseEndianness(ReadUnaligned<sbyte>(start)) : ReadUnaligned<sbyte>(start);
     }
@@ -308,7 +308,7 @@ public readonly record struct i16(short value):
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
 
     [MethodImpl(Inline)]
-    public static unsafe i16 FromBytecode(byte* start, scoped ref int pc) {
+    public static unsafe i16 FromBytecode(byte* start, scoped ref nuint pc) {
         pc += sizeof(short);
         return IsLittleEndian ? ReverseEndianness(ReadUnaligned<short>(start)) : ReadUnaligned<short>(start);
     }
@@ -464,7 +464,7 @@ public readonly record struct i32(int value):
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
 
     [MethodImpl(Inline)]
-    public static unsafe i32 FromBytecode(byte* start, scoped ref int pc) {
+    public static unsafe i32 FromBytecode(byte* start, scoped ref nuint pc) {
         pc += sizeof(int);
         return IsLittleEndian 
             ? ReverseEndianness(ReadUnaligned<int>(start)) 
@@ -619,7 +619,7 @@ public readonly record struct i64(long value):
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
 
     [MethodImpl(Inline)]
-    public static unsafe i64 FromBytecode(byte* start, scoped ref int pc) {
+    public static unsafe i64 FromBytecode(byte* start, scoped ref nuint pc) {
         pc += sizeof(long);
         return IsLittleEndian 
             ? ReverseEndianness(ReadUnaligned<long>(start)) 
@@ -776,8 +776,8 @@ public readonly record struct i128(Int128 value):
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
 
     [MethodImpl(Inline)]
-    public static unsafe i128 FromBytecode(byte* start, scoped ref int pc) {
-        pc += sizeof(Int128);
+    public static unsafe i128 FromBytecode(byte* start, scoped ref nuint pc) {
+        pc += (nuint)sizeof(Int128);
         return IsLittleEndian 
             ? ReverseEndianness(ReadUnaligned<Int128>(start)) 
             : ReadUnaligned<Int128>(start);

@@ -53,10 +53,10 @@ public readonly unsafe ref struct Slice<T>(byte* start, usize byteLength): IType
         public T Current => T.FromPtr(start + _offset * T.ByteCount);
     }
     
-    public static Slice<T> FromBytecode(byte* start, scoped ref int pc) {
+    public static Slice<T> FromBytecode(byte* start, scoped ref nuint pc) {
         usize length = usize.FromBytecode(start, ref pc);
         usize byteLength = length * T.ByteCount;
-        pc += (int) byteLength;
+        pc += (nuint)byteLength;
         return FromFatPtr(start + usize.ByteCount, byteLength);
     }
     
@@ -70,4 +70,3 @@ public readonly unsafe ref struct Slice<T>(byte* start, usize byteLength): IType
         return data;
     }
 }
-

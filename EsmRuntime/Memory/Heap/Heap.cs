@@ -42,9 +42,8 @@ namespace EsmRuntime.Memory.Heap;
     }
 }*/
 
-public readonly unsafe ref struct ReferenceHeap(byte* start, nint size, ref HeapTree* tree) {
+public readonly unsafe struct ReferenceHeap(byte* start, nint size, HeapTree** tree) {
     // NOT ref readonly
-    readonly ref HeapTree* _tree = ref tree;
     byte* Start { get; } = start;
     nint Size { get; } = size;
     
@@ -53,7 +52,7 @@ public readonly unsafe ref struct ReferenceHeap(byte* start, nint size, ref Heap
         if (typeof(T) == typeof(Unit))
             return new(EsmVM.UnitAddr);
         
-        return HeapTree.TryAllocate(ref _tree, u, out byte* ptr) 
+        return HeapTree.TryAllocate(ref *tree, u, out byte* ptr) 
             ? Reference<T>.CreateAt(ptr, ref value) 
             : throw new MemoryAccessError("No memory left in reference heap :(");
     }
@@ -69,7 +68,7 @@ public readonly unsafe ref struct ReferenceHeap(byte* start, nint size, ref Heap
         
         usize size = reference.DerefSize;
         
-        if (!HeapTree.TryFree(ref _tree, reference.Address, reference.Address + size))
+        if (!HeapTree.TryFree(ref *tree, reference.Address, reference.Address + size))
             throw new MemoryAccessError("Tried to free already freed memory!");
     }
 }

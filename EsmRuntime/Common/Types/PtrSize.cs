@@ -63,7 +63,7 @@ public readonly record struct usize(nuint value):
     public static unsafe explicit operator usize(byte* self) => (nuint) self;
 
     [MethodImpl(Inline)]
-    public static unsafe usize FromBytecode(byte* start, scoped ref int pc) {
+    public static unsafe usize FromBytecode(byte* start, scoped ref nuint pc) {
         pc += sizeof(ulong);
         return IsLittleEndian
             ? ReverseEndianness(ReadUnaligned<ulong>(start))
@@ -237,7 +237,7 @@ public readonly record struct isize(nint value):
     public static unsafe explicit operator isize(byte* self) => (nint) self;
 
     [MethodImpl(Inline)]
-    public static unsafe isize FromBytecode(byte* start, scoped ref int pc) {
+    public static unsafe isize FromBytecode(byte* start, scoped ref nuint pc) {
         pc += sizeof(long);
         return IsLittleEndian
             ? ReverseEndianness(ReadUnaligned<long>(start))
