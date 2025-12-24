@@ -33,27 +33,26 @@ public readonly record struct usize(nuint value):
     [MethodImpl(Inline)]
     public static implicit operator nuint(usize self) => EsmVM.MemAddrUSize + self.value;
     [MethodImpl(Inline)]
-    public static implicit operator usize(nuint self) => new(self - EsmVM.MemAddrUSize);    
-
-    [MethodImpl(Inline)]
-    public static implicit operator int(usize self) => (int) self.value;
-    [MethodImpl(Inline)]
-    public static implicit operator usize(int self) => new((nuint)self);    
-
+    public static implicit operator usize(nuint self) => new(self - EsmVM.MemAddrUSize);
     
     [MethodImpl(Inline)]
-    public static implicit operator long(usize self) => (long) self.value;
-    [MethodImpl(Inline)]
-    public static implicit operator usize(long self) => new((nuint)self);    
-
+    public static implicit operator nint(usize self) => (isize) self;
     
     [MethodImpl(Inline)]
-    public static implicit operator uint(usize self) => (uint) self.value;
+    public static implicit operator isize(usize self) => new(unchecked((nint) self.value));
+    
+    [MethodImpl(Inline)]
+    public static implicit operator usize(nint self) => (isize) self;
+    
+    [MethodImpl(Inline)]
+    public static implicit operator usize(int self) => new((nuint)self);
+    
+    [MethodImpl(Inline)]
+    public static implicit operator usize(long self) => new((nuint)unchecked((ulong)self));    
+    
     [MethodImpl(Inline)]
     public static implicit operator usize(uint self) => new(self);  
     
-    [MethodImpl(Inline)]
-    public static implicit operator ulong(usize self) => self.value;
     [MethodImpl(Inline)]
     public static implicit operator usize(ulong self) => new((nuint) self);  
     
@@ -96,6 +95,11 @@ public readonly record struct usize(nuint value):
     public nuint InstSize {
         [MethodImpl(Inline)]
         get => ByteCount;
+    }
+    
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
     }
     
     [MethodImpl(Inline)]
@@ -194,7 +198,7 @@ public readonly record struct usize(nuint value):
     
     public static usize MinValue { [MethodImpl(Inline)] get => nuint.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^usize"u8; }
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$usize"u8; }
 }
 
 public readonly record struct isize(nint value):
@@ -219,17 +223,28 @@ public readonly record struct isize(nint value):
     [MethodImpl(Inline)]
     public static implicit operator nint(isize self) => EsmVM.MemAddrISize + self.value;
     [MethodImpl(Inline)]
-    public static implicit operator isize(nint self) => new(self - EsmVM.MemAddrISize);    
-
+    public static implicit operator isize(nint self) => new(self - EsmVM.MemAddrISize);
+    
     [MethodImpl(Inline)]
-    public static implicit operator int(isize self) => (int) self.value;
+    public static implicit operator usize(isize self) => new(unchecked((nuint) self.value));
+    
+    [MethodImpl(Inline)]
+    public static implicit operator nuint(isize self) => (usize) self;
+    
+    [MethodImpl(Inline)]
+    public static implicit operator isize(nuint self) => (usize) self;
+    
     [MethodImpl(Inline)]
     public static implicit operator isize(int self) => new(self);
     
     [MethodImpl(Inline)]
-    public static implicit operator long(isize self) => self.value;
+    public static implicit operator isize(uint self) => new(unchecked((int) self));
+    
     [MethodImpl(Inline)]
-    public static implicit operator isize(long self) => new((nint) self);  
+    public static implicit operator isize(long self) => new((nint) self);
+    
+    [MethodImpl(Inline)]
+    public static implicit operator isize(ulong self) => new((nint) unchecked((long) self));  
     
     [MethodImpl(Inline)]
     public static unsafe explicit operator byte*(isize self) => (byte*) (nint) self;
@@ -270,6 +285,11 @@ public readonly record struct isize(nint value):
     public nuint InstSize {
         [MethodImpl(Inline)]
         get => ByteCount;
+    }
+    
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
     }
     
     [MethodImpl(Inline)]
@@ -368,5 +388,5 @@ public readonly record struct isize(nint value):
     
     public static isize MinValue { [MethodImpl(Inline)] get => nint.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^isize"u8; }
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$isize"u8; }
 }

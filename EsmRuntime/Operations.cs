@@ -7,6 +7,7 @@ using EsmRuntime.Common.Types;
 using EsmRuntime.Debug;
 using EsmRuntime.Memory;
 using EsmRuntime.Memory.Heap;
+using EsmRuntime.Memory.TypeTables;
 using JetBrains.Annotations;
 using static EsmRuntime.Constants;
 

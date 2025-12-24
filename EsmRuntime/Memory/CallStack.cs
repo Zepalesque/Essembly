@@ -1,4 +1,6 @@
-﻿using EsmRuntime.Common.Types;
+﻿using System.Runtime.CompilerServices;
+using EsmRuntime.Common.Types;
+using static EsmRuntime.Constants;
 
 namespace EsmRuntime.Memory;
 
@@ -84,6 +86,8 @@ public readonly unsafe ref struct VariableTable(Slice<usize> offsets): IByteSeri
     
     public nuint InstSize => (_offsets.Length + 1) * usize.ByteCount;
     
+    public bool IsConstSize { [MethodImpl(Inline)] get => false; }
+    
     public void ToPtr(byte* ptr) {
         _offsets.Length.ToPtr(ptr);
         for (nuint i = 0; i < _offsets.Length; i ++)
@@ -113,7 +117,7 @@ public readonly unsafe ref struct Frame(byte* start, VariableTable table) {
             usize offset = table[index];
             byte* ptr = start + offset;
             usize size = usize.FromPtr(ptr);
-            return new(ptr + usize.ByteCount, size - usize.ByteCount);
+            return new(ptr + usize.ByteCount, (int) (size - usize.ByteCount));
         }
     }
     
@@ -124,7 +128,7 @@ public readonly unsafe ref struct Frame(byte* start, VariableTable table) {
 
     public void Clear() {
         usize size = usize.FromPtr(start);
-        var byteSpan = new Span<byte>(start, size);
+        var byteSpan = new Span<byte>(start, (int)size);
         byteSpan.Clear();
     }
 }

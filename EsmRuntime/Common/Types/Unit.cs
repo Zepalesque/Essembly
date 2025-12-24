@@ -40,5 +40,12 @@ public struct Unit: ISpanFormattable, ISizedPrimValue<Unit> {
         [MethodImpl(Inline)] get => 0;
     }
     
+    public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
+    
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
+    }
+    
     public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "()"u8; }
 }

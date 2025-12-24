@@ -21,7 +21,7 @@ public readonly unsafe ref struct Ptr<T>(isize address): ISizedTypeValue<Ptr<T>>
         if (Address == EsmVM.NullAddr)
             throw new NullAccessError("Attempted to dereference the null pointer!");
         
-        var ptr = (byte*) (Address + usize.ByteCount);
+        var ptr = (byte*) (Address + (isize) usize.ByteCount);
         return T.FromFatPtr(ptr, DerefSize);
     }
     
@@ -57,6 +57,11 @@ public readonly unsafe ref struct Ptr<T>(isize address): ISizedTypeValue<Ptr<T>>
         get => ByteCount;
     }
     
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
+    }
+    
     [MethodImpl(Inline)]
     public byte[] ToBytecode() => throw new InvalidOperationException();
     
@@ -66,7 +71,7 @@ public readonly unsafe ref struct Ptr<T>(isize address): ISizedTypeValue<Ptr<T>>
 
 // Raw Pointer
 [method: MethodImpl(Inline)]
-public readonly unsafe ref struct Ptr(isize address): ISizedTypeValue<Ptr> {
+public readonly unsafe ref struct Ptr(isize address): IPrimValue<Ptr> {
     public isize Address { [MethodImpl(Inline)] get; } = address;
     
     [MethodImpl(Inline)]
@@ -106,9 +111,17 @@ public readonly unsafe ref struct Ptr(isize address): ISizedTypeValue<Ptr> {
         get => ByteCount;
     }
     
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
+    }
+    
     [MethodImpl(Inline)]
     public byte[] ToBytecode() => throw new InvalidOperationException();
     
     [MethodImpl(Inline)]
     public static Ptr FromBytecode(byte* start, scoped ref nuint pc) => throw new InvalidOperationException();
+    
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$raw*"u8; }
+}
 }

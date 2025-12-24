@@ -6,16 +6,16 @@ namespace EsmRuntime.Memory.Heap;
 using static NativeMemory;
 
 // TODO: Refactor or even rewrite as a RB Tree (red black)
-public unsafe ref partial struct HeapTree(usize low, usize high, bool isRed) {
+public unsafe ref partial struct HeapTree(nuint low, nuint high, bool isRed) {
 
     bool _isRed = isRed;
     
     HeapTree* _left = null;
-    usize _low = low, _high = high;
+    nuint _low = low, _high = high;
     HeapTree* _right = null;
-    usize _maxInterval = high - low;
+    nuint _maxInterval = high - low;
     
-    usize _leftmostEnd = low, _rightmostEnd = high;
+    nuint _leftmostEnd = low, _rightmostEnd = high;
     HeapTree* _parent = null;
 
     static void Recalc(ref HeapTree* self) {
@@ -38,7 +38,7 @@ public unsafe ref partial struct HeapTree(usize low, usize high, bool isRed) {
     
     static HeapTree* ParentOrNull(HeapTree* self) => self == null ? null : self->_parent;
 
-    public static HeapTree* Create(usize from, usize to, bool isRed = true) {
+    public static HeapTree* Create(nuint from, nuint to, bool isRed = true) {
 
         // no need for it to be zeroed, we overwrite it immediately anyway
         // surprised this method call doesnt need unsafe also

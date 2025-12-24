@@ -17,17 +17,17 @@ public readonly unsafe struct Heap(byte* start, nint size, HeapTree** tree) {
     }
 
     public void Free<T>(Ptr<T> ptr) where T: struct, ITypedValue<T>, allows ref struct {
-        usize addr = ptr.Address;
+        isize addr = ptr.Address;
         if (addr == EsmVM.NullAddr)
             throw new NullAccessError("Attempted to free the null pointer!");
         if (addr == EsmVM.UnitAddr) return;
-        if (addr < (usize)Start || addr >= (usize)Start + Size) {
+        if (addr < (isize)Start || addr >= (isize)Start + Size) {
             throw new MemoryAccessError($"Free address {addr} is outside reference heap bounds!");
         }
         
         usize size = ptr.DerefSize;
         
-        if (!HeapTree.TryFree(ref *tree, ptr.Address, ptr.Address + size))
+        if (!HeapTree.TryFree(ref *tree, ptr.Address, ptr.Address + (isize)size))
             throw new MemoryAccessError("Tried to free already freed memory!");
     }
 }

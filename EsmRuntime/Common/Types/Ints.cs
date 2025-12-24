@@ -13,6 +13,7 @@ using static EsmRuntime.Constants;
 
 namespace EsmRuntime.Common.Types;
 
+[method: MethodImpl(Inline)]
 public readonly record struct i8(sbyte value):
     ISpanFormattable,
     INumberFormattable,
@@ -141,6 +142,11 @@ public readonly record struct i8(sbyte value):
         [MethodImpl(Inline)]
         get => ByteCount;
     }
+    
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
+    }
 
     [MethodImpl(Inline)]
     public static unsafe i8 FromPtr(byte* ptr) => ReadUnaligned<sbyte>(ptr);
@@ -169,10 +175,11 @@ public readonly record struct i8(sbyte value):
     
     public static i8 MinValue { [MethodImpl(Inline)] get => sbyte.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^i8"u8; }
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$i8"u8; }
 }
 
 
+[method: MethodImpl(Inline)]
 public readonly record struct i16(short value): 
     ISpanFormattable,
     INumberFormattable,
@@ -296,6 +303,11 @@ public readonly record struct i16(short value):
         [MethodImpl(Inline)]
         get => ByteCount;
     }
+    
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
+    }
 
     [MethodImpl(Inline)]
     public static unsafe i16 FromPtr(byte* ptr) => ReadUnaligned<short>(ptr);
@@ -324,10 +336,11 @@ public readonly record struct i16(short value):
     
     public static i16 MinValue { [MethodImpl(Inline)] get => short.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^i16"u8; }
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$i16"u8; }
 }
 
 
+[method: MethodImpl(Inline)]
 public readonly record struct i32(int value): 
     ISpanFormattable,
     INumberFormattable,
@@ -452,6 +465,11 @@ public readonly record struct i32(int value):
         [MethodImpl(Inline)]
         get => ByteCount;
     }
+    
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
+    }
 
     [MethodImpl(Inline)]
     public static unsafe i32 FromPtr(byte* ptr) => ReadUnaligned<int>(ptr);
@@ -482,10 +500,11 @@ public readonly record struct i32(int value):
     
     public static i32 MinValue { [MethodImpl(Inline)] get => int.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^i32"u8; }
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$i32"u8; }
 }
 
 
+[method: MethodImpl(Inline)]
 public readonly record struct i64(long value): 
     ISpanFormattable,
     INumberFormattable,
@@ -607,6 +626,11 @@ public readonly record struct i64(long value):
         [MethodImpl(Inline)]
         get => ByteCount;
     }
+    
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
+    }
 
     [MethodImpl(Inline)]
     public static unsafe i64 FromPtr(byte* ptr) => ReadUnaligned<long>(ptr);
@@ -638,9 +662,10 @@ public readonly record struct i64(long value):
     
     public static i64 MinValue { [MethodImpl(Inline)] get => long.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^i64"u8; }
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$i64"u8; }
 }
 
+[method: MethodImpl(Inline)]
 public readonly record struct i128(Int128 value): 
     ISpanFormattable,
     INumberFormattable,
@@ -764,6 +789,11 @@ public readonly record struct i128(Int128 value):
         [MethodImpl(Inline)]
         get => ByteCount;
     }
+    
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
+    }
 
     [MethodImpl(Inline)]
     public static unsafe i128 FromPtr(byte* ptr) => ReadUnaligned<Int128>(ptr);
@@ -794,5 +824,5 @@ public readonly record struct i128(Int128 value):
     
     public static i128 MinValue { [MethodImpl(Inline)] get => Int128.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^i128"u8; }
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$i128"u8; }
 }

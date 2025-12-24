@@ -6,10 +6,10 @@ using static NativeMemory;
 
 public unsafe ref partial struct HeapTree {
 
-    public static bool TryFree(ref HeapTree* self, usize from, usize to)
+    public static bool TryFree(ref HeapTree* self, nuint from, nuint to)
         => FreeImpl(ref self, null, ref self, from, to/*, out _*/);
 
-    static bool FreeImpl(ref HeapTree* self, HeapTree* parent, ref HeapTree* root, usize from, usize to/*, out HeapTree* inserted*/) {
+    static bool FreeImpl(ref HeapTree* self, HeapTree* parent, ref HeapTree* root, nuint from, nuint to/*, out HeapTree* inserted*/) {
         if (self == null) {
             self = Create(from, to);
             self->_parent = parent;

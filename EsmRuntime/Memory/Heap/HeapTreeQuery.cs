@@ -5,7 +5,7 @@ namespace EsmRuntime.Memory.Heap;
 public unsafe ref partial struct HeapTree {
     
     
-    public static bool IsFree(ref HeapTree* self, usize start, usize end) {
+    public static bool IsFree(ref HeapTree* self, nuint start, nuint end) {
         if (self == null) return true;
 
         if (self->_low <= start && self->_high >= end)

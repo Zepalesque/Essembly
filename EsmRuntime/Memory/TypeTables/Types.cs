@@ -28,6 +28,8 @@ public readonly ref struct PrimitiveDynamicType<T>(ReadOnlySpan<byte> signature)
     // ReSharper disable once StaticMemberInGenericType
     public static usize ByteCount { [MethodImpl(Inline)] get; } = usize.ByteCount + sizeof(TypeFlags) + u128.ByteCount;
     public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
+    public bool IsConstSize { [MethodImpl(Inline)] get => true; }
+    
     public static TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.DynamSize; }
     public u128 SigHash { [MethodImpl(Inline)] get; } = signature.Hash();
     public Box<Signature> Signature { [MethodImpl(Inline)] get; } = Signatures.Signature.SigPiece(signature);
@@ -55,6 +57,7 @@ public readonly ref struct PrimitiveSizedType<T>(ReadOnlySpan<byte> signature) :
     // ReSharper disable once StaticMemberInGenericType
     public static usize ByteCount { [MethodImpl(Inline)] get; } = usize.ByteCount + sizeof(TypeFlags) + u128.ByteCount;
     public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
+    public bool IsConstSize { [MethodImpl(Inline)] get => true; }
     public static TypeFlags Flags { [MethodImpl(Inline)] get => TypeFlags.ConstSize; }
     public u128 SigHash { [MethodImpl(Inline)] get; } = signature.Hash();
     public Box<Signature> Signature { [MethodImpl(Inline)] get; } = Signatures.Signature.SigPiece(signature);
@@ -81,10 +84,10 @@ public enum TypeFlags : byte {
 }
 
 // Not to be confused with objects
-public readonly ref struct ReferenceType<T>(T valType) : IType<ReferenceType<T>>
+public readonly ref struct RefType<T>(T valType) : IType<RefType<T>>
     where T : struct, IType<T>, allows ref struct {
     public unsafe void ToPtr(byte* ptr) => throw new NotImplementedException();
-    public static unsafe ReferenceType<T> FromFatPtr(byte* ptr, usize size) => throw new NotImplementedException();
+    public static unsafe RefType<T> FromFatPtr(byte* ptr, usize size) => throw new NotImplementedException();
     
     T ValType { get; } = valType;
     
@@ -177,7 +180,7 @@ public static class TypeUtils {
             return new(self);
         }
         
-        public ReferenceType<T> Reference() {
+        public RefType<T> Reference() {
             return new(self);
         }
     }
@@ -201,5 +204,6 @@ public static class TypeUtils {
     public static PrimitiveSizedType<i64> I64Type { [MethodImpl(Inline)] get => new(i64.Signature); }
     public static PrimitiveSizedType<i128> I128Type { [MethodImpl(Inline)] get => new(i128.Signature); }
     public static PrimitiveSizedType<isize> IsizeType { [MethodImpl(Inline)] get => new(isize.Signature); }
+    public static PrimitiveSizedType<Ptr> RawPtrType { [MethodImpl(Inline)] get => new(isize.Signature); }
     public static PrimitiveDynamicType<StringSlice> StrType { [MethodImpl(Inline)] get => new(StringSlice.Signature); }
 }

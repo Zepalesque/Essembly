@@ -6,17 +6,17 @@ using static NativeMemory;
 
 public unsafe ref partial struct HeapTree {
 
-    public static bool TryAllocate(ref HeapTree* self, usize size, out byte* start) 
+    public static bool TryAllocate(ref HeapTree* self, nuint size, out byte* start) 
         => AllocImpl(ref self, ref self, size, out start);
 
     // Me when i binary search the binary tree (i hate this)
-    static bool AllocImpl(ref HeapTree* self, ref HeapTree* root, usize size, out byte* start) {
+    static bool AllocImpl(ref HeapTree* self, ref HeapTree* root, nuint size, out byte* start) {
         if (self == null) {
             start = null;
             return false;
         }
         
-        usize max = self->_maxInterval;
+        nuint max = self->_maxInterval;
         if (size > max) {
             start = null;
             return false;
@@ -93,23 +93,23 @@ public unsafe ref partial struct HeapTree {
         return false;
     }
     
-    usize RecalculateMaxInterval() {
+    nuint RecalculateMaxInterval() {
         var left = _left;
         var right = _right;          
-        usize selfSize = _high - _low;
-        usize leftSize = left == null ? 0 : left->_maxInterval;
-        usize rightSize = right == null ? 0 : right->_maxInterval;
-        usize maxLr = leftSize > rightSize ? leftSize : rightSize;
+        nuint selfSize = _high - _low;
+        nuint leftSize = left == null ? 0 : left->_maxInterval;
+        nuint rightSize = right == null ? 0 : right->_maxInterval;
+        nuint maxLr = leftSize > rightSize ? leftSize : rightSize;
         return selfSize > maxLr ? selfSize : maxLr;
     }
 
-    usize RecalculateLeftmost() {
+    nuint RecalculateLeftmost() {
         var left = _left;
         return left != null ? _left->_leftmostEnd : _leftmostEnd;
     }
 
 
-    usize RecalculateRightmost() {
+    nuint RecalculateRightmost() {
         var right = _right;
         return right != null ? _right->_rightmostEnd : _rightmostEnd;
     }

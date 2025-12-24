@@ -25,8 +25,4 @@ public readonly unsafe ref struct FatPtr(byte* ptr, nuint size) {
         ptr = Ptr;
         size = Size;
     }
-    
-    [MethodImpl(Inline)]
-    public static explicit operator Span<byte>(FatPtr self)
-        => new(self.Ptr, self.Size);
 }

@@ -140,6 +140,11 @@ public readonly record struct u8(byte value):
         [MethodImpl(Inline)]
         get => ByteCount;
     }
+    
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
+    }
 
     [MethodImpl(Inline)]
     public static unsafe u8 FromPtr(byte* ptr) => ReadUnaligned<byte>(ptr);
@@ -168,7 +173,7 @@ public readonly record struct u8(byte value):
     
     public static u8 MinValue { [MethodImpl(Inline)] get => byte.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^u64"u8; }
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$u64"u8; }
 }
 
 
@@ -294,6 +299,11 @@ public readonly record struct u16(ushort value):
         [MethodImpl(Inline)]
         get => ByteCount;
     }
+    
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
+    }
 
     [MethodImpl(Inline)]
     public static unsafe u16 FromPtr(byte* ptr) => ReadUnaligned<ushort>(ptr);
@@ -322,7 +332,7 @@ public readonly record struct u16(ushort value):
     
     public static u16 MinValue { [MethodImpl(Inline)] get => ushort.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^u16"u8; }
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$u16"u8; }
 }
 
 
@@ -448,6 +458,11 @@ public readonly record struct u32(uint value):
         [MethodImpl(Inline)]
         get => ByteCount;
     }
+    
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
+    }
 
     [MethodImpl(Inline)]
     public static unsafe u32 FromPtr(byte* ptr) => ReadUnaligned<uint>(ptr);
@@ -478,7 +493,7 @@ public readonly record struct u32(uint value):
     
     public static u32 MinValue { [MethodImpl(Inline)] get => uint.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^u32"u8; }
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$u32"u8; }
 }
 
 
@@ -596,6 +611,11 @@ public readonly record struct u64(ulong value):
     public static usize ByteCount { [MethodImpl(Inline)] get => 8; }
     
     public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
+    
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
+    }
 
     [MethodImpl(Inline)]
     public static unsafe u64 FromPtr(byte* ptr) => ReadUnaligned<ulong>(ptr);
@@ -627,7 +647,7 @@ public readonly record struct u64(ulong value):
     
     public static u64 MinValue { [MethodImpl(Inline)] get => ulong.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^u64"u8; }
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$u64"u8; }
 }
 
 
@@ -751,6 +771,11 @@ public readonly record struct u128(UInt128 value):
         [MethodImpl(Inline)]
         get => ByteCount;
     }
+    
+    public bool IsConstSize {
+        [MethodImpl(Inline)]
+        get => true;
+    }
 
     [MethodImpl(Inline)]
     public static unsafe u128 FromPtr(byte* ptr) => ReadUnaligned<UInt128>(ptr);
@@ -782,5 +807,5 @@ public readonly record struct u128(UInt128 value):
 
     public static u128 MinValue { [MethodImpl(Inline)] get => UInt128.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "^u128"u8; }
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$u128"u8; }
 }

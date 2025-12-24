@@ -13,17 +13,17 @@ class Program {
         WriteLine("Memory tree test time");
         WriteLine();
         
-        int size;
+        nuint size;
         
         do {
             WriteLine("Please input a size, in bytes.");
             WriteLine(
                 "These will be actually allocated AND visualized via print, so don't choose too high a number.");
             
-        } while (!int.TryParse(ReadLine(), out size));
+        } while (!nuint.TryParse(ReadLine(), out size));
         
 
-        var alloc = (byte*) AllocZeroed((nuint) size);
+        var alloc = (byte*) AllocZeroed(size);
         EsmVM.MemStart = alloc;
         
         HeapTree* tree = HeapTree.Create(0, size);
@@ -59,16 +59,16 @@ class Program {
     }
 
     static unsafe void PerformQuery(ref HeapTree* tree) {
-        int start, end;
+        nuint start, end;
                 
         do {
             WriteLine("Please input the start to the interval to query.");
-        } while (!int.TryParse(ReadLine(), out start));
+        } while (!nuint.TryParse(ReadLine(), out start));
 
         
         do {
             WriteLine("Please input the end to the interval to query.");
-        } while (!int.TryParse(ReadLine(), out end));
+        } while (!nuint.TryParse(ReadLine(), out end));
         
                
         WriteLine($"Checking the range [{start}, {end})...");
@@ -78,16 +78,16 @@ class Program {
     }
 
     static unsafe void PerformFree(ref HeapTree* tree) {
-        int start, end;
+        nuint start, end;
                 
         do {
             WriteLine("Please input the start to the interval to free.");
-        } while (!int.TryParse(ReadLine(), out start));
+        } while (!nuint.TryParse(ReadLine(), out start));
 
         
         do {
             WriteLine("Please input the end to the interval to free.");
-        } while (!int.TryParse(ReadLine(), out end));
+        } while (!nuint.TryParse(ReadLine(), out end));
         
         WriteLine($"Attempting to free the range [{start}, {end})...");
         
@@ -97,11 +97,11 @@ class Program {
     }
 
     static unsafe void PerformAllocation(ref HeapTree* tree) {
-        int size;
+        nuint size;
         
         do {
             WriteLine("Please input an allocation size.");
-        } while (!int.TryParse(ReadLine(), out size));
+        } while (!nuint.TryParse(ReadLine(), out size));
         
         WriteLine($"Attempting to allocate {size} bytes...");
 

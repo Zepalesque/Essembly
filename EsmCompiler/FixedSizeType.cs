@@ -15,7 +15,7 @@ public enum FixedSizeType {
 
 public static class FixedSizeExt {
     extension(FixedSizeType self) {
-        public int? SizeInBytecode
+        public nuint? SizeInBytecode
             => self switch {
                 I8 => i8.ByteCount,
                 U8 => u8.ByteCount,
@@ -29,7 +29,7 @@ public static class FixedSizeExt {
                 _ => throw new InvalidOperationException()
             };
 
-        public int ByteCount
+        public nuint ByteCount
             => self switch {
                 I8 => i8.ByteCount,
                 U8 => u8.ByteCount,

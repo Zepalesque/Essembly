@@ -13,8 +13,8 @@ namespace EsmRuntime;
 
 // ReSharper disable once InconsistentNaming
 public static partial class EsmVM {
-    public static readonly usize NullAddr = 0;
-    public static readonly usize UnitAddr = 1;
+    public static readonly isize NullAddr = 0;
+    public static readonly isize UnitAddr = 1;
 
     public static unsafe void* MemStart { get; set; }
     public static unsafe nuint MemAddrUSize => (nuint) MemStart;
@@ -65,7 +65,7 @@ public static partial class EsmVM {
         var alloc = (byte*) NativeMemory.AlignedAlloc(size, 16);
         try {
             NativeMemory.Clear(alloc, size);
-            HeapTree* node = HeapTree.Create(2, sizes.Heap + 2, false);
+            HeapTree* node = HeapTree.Create(2, (usize) sizes.Heap + 2, false);
 
             MemStart = alloc;
         
