@@ -97,7 +97,7 @@ public readonly record struct usize(nuint value):
         get => ByteCount;
     }
     
-    public bool IsConstSize {
+    public static bool IsConstSize {
         [MethodImpl(Inline)]
         get => true;
     }
@@ -287,7 +287,7 @@ public readonly record struct isize(nint value):
         get => ByteCount;
     }
     
-    public bool IsConstSize {
+    public static bool IsConstSize {
         [MethodImpl(Inline)]
         get => true;
     }

@@ -143,7 +143,7 @@ public readonly record struct i8(sbyte value):
         get => ByteCount;
     }
     
-    public bool IsConstSize {
+    public static bool IsConstSize {
         [MethodImpl(Inline)]
         get => true;
     }
@@ -304,11 +304,6 @@ public readonly record struct i16(short value):
         get => ByteCount;
     }
     
-    public bool IsConstSize {
-        [MethodImpl(Inline)]
-        get => true;
-    }
-
     [MethodImpl(Inline)]
     public static unsafe i16 FromPtr(byte* ptr) => ReadUnaligned<short>(ptr);
 
@@ -466,11 +461,6 @@ public readonly record struct i32(int value):
         get => ByteCount;
     }
     
-    public bool IsConstSize {
-        [MethodImpl(Inline)]
-        get => true;
-    }
-
     [MethodImpl(Inline)]
     public static unsafe i32 FromPtr(byte* ptr) => ReadUnaligned<int>(ptr);
 
@@ -627,11 +617,6 @@ public readonly record struct i64(long value):
         get => ByteCount;
     }
     
-    public bool IsConstSize {
-        [MethodImpl(Inline)]
-        get => true;
-    }
-
     [MethodImpl(Inline)]
     public static unsafe i64 FromPtr(byte* ptr) => ReadUnaligned<long>(ptr);
 
@@ -790,11 +775,6 @@ public readonly record struct i128(Int128 value):
         get => ByteCount;
     }
     
-    public bool IsConstSize {
-        [MethodImpl(Inline)]
-        get => true;
-    }
-
     [MethodImpl(Inline)]
     public static unsafe i128 FromPtr(byte* ptr) => ReadUnaligned<Int128>(ptr);
 

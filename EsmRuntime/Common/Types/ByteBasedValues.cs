@@ -10,7 +10,7 @@ public interface IByteSerializable<out T> : IByteReadable<T> where T: struct, IB
     unsafe void ToPtr(byte* ptr);
     public nuint InstSize { get; }
     
-    public bool IsConstSize => false;
+    public static virtual nuint? ConstSize => null;
 }
 
 
@@ -22,19 +22,24 @@ public interface IBytecodeSerializable<out T>: IByteSerializable<T> where T : st
 public interface ISizedValue<out T> : IBytecodeSerializable<T> where T : struct, ISizedValue<T>, allows ref struct {
     public static abstract usize ByteCount { get; }
     nuint IByteSerializable<T>.InstSize => T.ByteCount;
-    bool IByteSerializable<T>.IsConstSize => true;
+    static nuint? IByteSerializable<T>.ConstSize => T.ByteCount;
     
     static abstract unsafe T FromPtr(byte* ptr);
 }
 
 
-public interface ISizedPrimValue<out T> : ISizedTypeValue<T>, IPrimValue<T> where T : struct, ISizedPrimValue<T>, allows ref struct;
+public interface ISizedPrimValue<out T> : ISizedTypeValue<T>, IPrimValue<T>
+    where T : struct, ISizedPrimValue<T>, allows ref struct {
+    static nuint? IByteSerializable<T>.ConstSize => T.ByteCount;
+}
 
-public interface ITypedValue<out T> : IByteSerializable<T> where T : struct, ITypedValue<T>, allows ref struct { }
+public interface ITypedValue<out T> : IByteSerializable<T> where T : struct, ITypedValue<T>, allows ref struct {
+    static nuint? IByteSerializable<T>.ConstSize => null;
+}
 
 public interface ISizedTypeValue<out T> : ISizedValue<T>, ITypedValue<T>
     where T : struct, ISizedTypeValue<T>, allows ref struct {
-    
+    static nuint? IByteSerializable<T>.ConstSize => T.ByteCount;
 }
 
 public interface IPrimValue<out T> : ITypedValue<T> where T : struct, IPrimValue<T>, allows ref struct {

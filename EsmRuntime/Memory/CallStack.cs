@@ -86,7 +86,7 @@ public readonly unsafe ref struct VariableTable(Slice<usize> offsets): IByteSeri
     
     public nuint InstSize => (_offsets.Length + 1) * usize.ByteCount;
     
-    public bool IsConstSize { [MethodImpl(Inline)] get => false; }
+    public static bool IsConstSize { [MethodImpl(Inline)] get => false; }
     
     public void ToPtr(byte* ptr) {
         _offsets.Length.ToPtr(ptr);

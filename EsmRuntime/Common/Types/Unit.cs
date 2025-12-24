@@ -8,17 +8,17 @@ public struct Unit: ISpanFormattable, ISizedPrimValue<Unit> {
 
     [MethodImpl(Inline)]
     public string ToString(string? format, IFormatProvider? formatProvider) {
-        FormattableString formattable = $"()";
+        FormattableString formattable = $"$()";
         return formattable.ToString(formatProvider);
     }
 
     [MethodImpl(Inline)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format,
         IFormatProvider? provider)
-        => destination.TryWrite(provider, $"()", out charsWritten);
+        => destination.TryWrite(provider, $"$()", out charsWritten);
 
     [MethodImpl(Inline)]
-    public override string ToString() => "()";
+    public override string ToString() => "$()";
 
 
     [MethodImpl(Inline)]
@@ -42,10 +42,5 @@ public struct Unit: ISpanFormattable, ISizedPrimValue<Unit> {
     
     public nuint InstSize { [MethodImpl(Inline)] get => ByteCount; }
     
-    public bool IsConstSize {
-        [MethodImpl(Inline)]
-        get => true;
-    }
-    
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "()"u8; }
+    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$unit"u8; }
 }

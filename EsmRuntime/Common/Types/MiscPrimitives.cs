@@ -43,7 +43,7 @@ public readonly unsafe ref struct StringSlice(Slice<u8> utf8) : IPrimValue<Strin
         get => _utf8.InstSize;
     }
     
-    public bool IsConstSize {
+    public static bool IsConstSize {
         [MethodImpl(Inline)]
         get => false;
     }
@@ -68,7 +68,7 @@ public readonly record struct @bool(bool value) : ISizedValue<@bool> {
         get => ByteCount;
     }
     
-    public bool IsConstSize {
+    public static bool IsConstSize {
         [MethodImpl(Inline)]
         get => true;
     }

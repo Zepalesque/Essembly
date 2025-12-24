@@ -37,7 +37,7 @@ public static partial class EsmVM {
         
         usize addr = usize.FromBytecode(program.Ptr + pc, ref pc);
         var data = T.FromBytecode(program.Ptr + pc, ref pc);
-        Ptr<T> ptr = heap.Allocate(ref data);
+        Ptr<T> ptr = heap.AllocatePtr(ref data);
         #if ESM_DEBUG
         Debug($"Allocating a {ptr.Dereference().InstSize}-byte memory block and storing to &{addr.Hex}"); 
         #endif
@@ -326,6 +326,6 @@ public static partial class EsmVM {
         ref Span<byte> spanRef = ref span;
         Encoding.UTF8.GetBytes(input, span);
         StringSlice slice = new(new(spanRef.StartPtr(), span.Length));
-        stack.Push(heap.Allocate(ref slice));
+        stack.Push(heap.AllocatePtr(ref slice));
     }
 }
