@@ -174,8 +174,6 @@ public readonly record struct i8(sbyte value):
     public static i8 MaxValue { [MethodImpl(Inline)] get => sbyte.MaxValue; }
     
     public static i8 MinValue { [MethodImpl(Inline)] get => sbyte.MinValue; }
-    
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$i8"u8; }
 }
 
 
@@ -331,7 +329,6 @@ public readonly record struct i16(short value):
     
     public static i16 MinValue { [MethodImpl(Inline)] get => short.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$i16"u8; }
 }
 
 
@@ -490,7 +487,6 @@ public readonly record struct i32(int value):
     
     public static i32 MinValue { [MethodImpl(Inline)] get => int.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$i32"u8; }
 }
 
 
@@ -647,7 +643,6 @@ public readonly record struct i64(long value):
     
     public static i64 MinValue { [MethodImpl(Inline)] get => long.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$i64"u8; }
 }
 
 [method: MethodImpl(Inline)]
@@ -804,5 +799,4 @@ public readonly record struct i128(Int128 value):
     
     public static i128 MinValue { [MethodImpl(Inline)] get => Int128.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$i128"u8; }
 }

@@ -23,7 +23,7 @@ public readonly unsafe struct Heap(byte* start, nint size, HeapTree** tree) {
             ? Ptr.CreateAt(ptr)
             : throw new MemoryAccessError("No memory left in reference heap :(");
     }
-
+    
     public void Free<T>(Ptr<T> ptr) where T: struct, ITypedValue<T>, allows ref struct {
         isize addr = ptr.Address;
         if (addr == EsmVM.NullAddr)
@@ -37,5 +37,19 @@ public readonly unsafe struct Heap(byte* start, nint size, HeapTree** tree) {
         
         if (!HeapTree.TryFree(ref *tree, ptr.Address, ptr.Address + (isize)size))
             throw new MemoryAccessError("Tried to free already freed memory!");
+    }
+    
+    public bool Query<T>(Ptr<T> ptr) where T: struct, ITypedValue<T>, allows ref struct {
+        isize addr = ptr.Address;
+        if (addr == EsmVM.NullAddr)
+            return false;
+        if (addr == EsmVM.UnitAddr) return false;
+        if (addr < (isize)Start || addr >= (isize)Start + Size) {
+            return false;
+        }
+        
+        usize size = ptr.DerefSize;
+        
+        return HeapTree.IsFree(ref *tree, ptr.Address, ptr.Address + (isize)size);
     }
 }

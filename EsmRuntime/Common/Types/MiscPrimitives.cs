@@ -48,7 +48,6 @@ public readonly unsafe ref struct StringSlice(Slice<u8> utf8) : IPrimValue<Strin
         get => false;
     }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$str"u8; }
 }
 
 [method: MethodImpl(Inline)]

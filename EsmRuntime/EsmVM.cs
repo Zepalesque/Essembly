@@ -102,11 +102,6 @@ public static partial class EsmVM {
                     break;
                 }
                 
-                case OpCode.AllocPtr: {
-                    stack->Push(AllocPtr(&context));
-                    break;
-                }
-                
                 case OpCode.FreeHeap: {
                     heap->Free(stack->Pop<Ptr<Unit>>());
                     break;

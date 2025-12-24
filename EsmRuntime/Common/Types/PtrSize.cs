@@ -198,7 +198,6 @@ public readonly record struct usize(nuint value):
     
     public static usize MinValue { [MethodImpl(Inline)] get => nuint.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$usize"u8; }
 }
 
 public readonly record struct isize(nint value):
@@ -388,5 +387,4 @@ public readonly record struct isize(nint value):
     
     public static isize MinValue { [MethodImpl(Inline)] get => nint.MinValue; }
     
-    public static ReadOnlySpan<byte> Signature { [MethodImpl(Inline)] get => "$isize"u8; }
 }

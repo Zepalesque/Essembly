@@ -4,28 +4,49 @@ using static EsmRuntime.Constants;
 
 namespace EsmRuntime.Memory.Util;
 
-[method: MethodImpl(Inline)]
-public readonly unsafe ref struct Box<T>(T* ptr) : IDisposable
+
+public unsafe struct Box<T> : IDisposable
     where T : unmanaged, allows ref struct {
+    T* _ptr;
     
-    public ref T Value { [MethodImpl(Inline)] get => ref *ptr; }
+    public ref T Value { [MethodImpl(Inline)] get => ref *_ptr; }
+    
+    [MethodImpl(Inline)]
+    internal Box(T* ptr) {
+        _ptr = ptr;
+    }
+    
+    [MethodImpl(Inline)]
+    public Box(T value) {
+        var ptr = (T*)NativeMemory.AlignedAlloc((nuint)sizeof(T), 16);
+        *ptr = value;
+        
+        _ptr = ptr;
+    }
+    
+    [MethodImpl(Inline)]
+    public Box<T> Move() {
+        var box = new Box<T>(_ptr);
+        _ptr = null;
+        
+        return box;
+    }
     
     [MethodImpl(Inline)]
     public void Dispose() {
-        if (ptr == null) return;
+        if (_ptr == null) return;
         
-        BoxDispose<T>.TryDispose(ptr);
+        TryDispose(_ptr);
+        NativeMemory.AlignedFree(_ptr);
         
-        NativeMemory.AlignedFree(ptr);
+        _ptr = null;
     }
-}
-
-static class BoxDispose<T> where T : unmanaged, allows ref struct {
+    
     // ReSharper disable once StaticMemberInGenericType
-    static readonly unsafe delegate*<T*, void> FuncPtr;
+    static readonly delegate*<T*, void> FuncPtr;
     
     [MethodImpl(Inline)]
-    static unsafe BoxDispose() {
+    static Box() {
         if (!typeof(IDisposable).IsAssignableFrom(typeof(T))) return;
         var func = (void*) typeof(Disposer<>).MakeGenericType(typeof(T)).GetMethod(nameof(Disposer<>.Dispose))!.MethodHandle.GetFunctionPointer();
         
@@ -33,7 +54,7 @@ static class BoxDispose<T> where T : unmanaged, allows ref struct {
     }
     
     [MethodImpl(Inline)]
-    public static unsafe void TryDispose(T* ptr) {
+    static void TryDispose(T* ptr) {
         if (FuncPtr == null) return;
         FuncPtr(ptr);
     }
@@ -41,7 +62,7 @@ static class BoxDispose<T> where T : unmanaged, allows ref struct {
 
 static class Disposer<T> where T : unmanaged, IDisposable, allows ref struct {
     [MethodImpl(Inline)]
-    public static unsafe void Dispose(T* value) {
+    internal static unsafe void Dispose(T* value) {
         value->Dispose();
     }
 }

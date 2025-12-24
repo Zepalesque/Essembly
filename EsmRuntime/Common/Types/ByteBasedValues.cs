@@ -43,5 +43,5 @@ public interface ISizedTypeValue<out T> : ISizedValue<T>, ITypedValue<T>
 }
 
 public interface IPrimValue<out T> : ITypedValue<T> where T : struct, IPrimValue<T>, allows ref struct {
-    public static abstract ReadOnlySpan<byte> Signature { get; }
+    // public static abstract ReadOnlySpan<byte> Signature { get; }
 }
