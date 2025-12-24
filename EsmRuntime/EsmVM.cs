@@ -88,9 +88,20 @@ public static partial class EsmVM {
     static unsafe u8? Run(FatPtr program, ReferenceHeap* heap, OpStack* stack) {
         nuint pc = 0;
         RuntimeContext context = new(program, heap, stack, &pc);
+        
         while (pc < program.Size) {
             OpCode opcode = *(OpCode*)(program.Ptr + pc);
             switch (opcode) {
+                case OpCode.AllocStr: {
+                    stack->Push(AllocRef<StringSlice>(&context));
+                    break;
+                }
+                
+                case OpCode.FreeHeap: {
+                    heap->Free(stack->Pop<Reference<Unit>>());
+                    break;
+                }
+                
                 case OpCode.PushX8: 
                     stack->Push(LoadConst<u8>(&context));
                     break;
@@ -107,24 +118,19 @@ public static partial class EsmVM {
                     stack->Push(LoadConst<usize>(&context));
                     break;
                 
-                case OpCode.AllocStr: {
-                    stack->Push(AllocRef<StringSlice>(&context));
+                // TODO: Properly implement global frames
+                case OpCode.PushGlobalAddr: {
+                    stack->Push(stack->Pop<Reference<Unit>>().DerefSize);
                     break;
                 }
 
-                case OpCode.FreeHeap: {
-                    heap->Free(stack->Pop<Reference<Unit>>());
-                    break;
-                }
+
                 
                 case OpCode.Deref: {
                     stack->Push(stack->Pop<Reference<Slice<u8>>>().Dereference());
                     break;
                 }
-                case OpCode.PushGlobalAddr: {
-                    // stack->Push(PushHeapRef(program, ref pc, heap));
-                    break;
-                }
+
                 case OpCode.StoreGlobalX8: {
                     // StoreMem(ref stack, ref heap, stack->Pop<u8>());
                     break;

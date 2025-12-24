@@ -28,7 +28,11 @@ public interface ISizedValue<out T> : IBytecodeSerializable<T> where T : struct,
 public interface ISizedPrimValue<out T> : ISizedTypeValue<T>, IPrimValue<T> where T : struct, ISizedPrimValue<T>, allows ref struct;
 
 public interface ITypedValue<out T> : IByteSerializable<T> where T : struct, ITypedValue<T>, allows ref struct { }
-public interface ISizedTypeValue<out T> : ISizedValue<T>, ITypedValue<T> where T : struct, ISizedTypeValue<T>, allows ref struct;
+
+public interface ISizedTypeValue<out T> : ISizedValue<T>, ITypedValue<T>
+    where T : struct, ISizedTypeValue<T>, allows ref struct {
+    
+}
 
 
 public interface IPrimValue<out T> : ITypedValue<T> where T : struct, IPrimValue<T>, allows ref struct {

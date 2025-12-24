@@ -1,5 +1,4 @@
-﻿using EsmRuntime.Common;
-using EsmRuntime.Common.Types;
+﻿using EsmRuntime.Common.Types;
 
 namespace EsmRuntime.Memory;
 

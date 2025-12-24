@@ -1,6 +1,6 @@
 ﻿using EsmRuntime.Common;
 
-namespace EsmRuntime.Memory.TypeTable.Func;
+namespace EsmRuntime.Memory.TypeTables.Func;
 
 public ref struct Func(VariableTable parameters, FatPtr bytes) {
     readonly VariableTable _parameters = parameters;

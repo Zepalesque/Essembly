@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using static EsmRuntime.Constants;
 
-namespace EsmRuntime.Memory.TypeTable;
+namespace EsmRuntime.Memory.TypeTables;
 
 public readonly unsafe ref struct HashTable<T> : IDisposable
     where T : unmanaged, IDisposable, allows ref struct {

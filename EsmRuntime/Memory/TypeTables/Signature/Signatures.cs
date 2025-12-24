@@ -3,7 +3,7 @@ using EsmRuntime.Memory.Util;
 using static System.Runtime.InteropServices.NativeMemory;
 using static EsmRuntime.Constants;
 
-namespace EsmRuntime.Memory.TypeTable.Signature;
+namespace EsmRuntime.Memory.TypeTables.Signature;
 
 public readonly ref struct Signature : IDisposable {
     

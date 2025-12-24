@@ -3,6 +3,7 @@
 namespace EsmRuntime.Memory;
 
 // TODO: Non-top level var access, preferably O(log n)s
+//  Perhaps even O(1) if offsets from current frame are computed at compile time - Store offset table, frames can go at the end maybe
 public unsafe ref struct GlobalStack(byte* start, int length) {
     nint _offs = -1;
 
