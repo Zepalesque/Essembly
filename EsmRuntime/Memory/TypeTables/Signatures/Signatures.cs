@@ -5,10 +5,10 @@ using static EsmRuntime.Constants;
 
 namespace EsmRuntime.Memory.TypeTables.Signatures;
 
-public readonly ref struct Signature : IDisposable {
+public readonly ref struct LegacySignature : IDisposable {
     
     [MethodImpl(Inline)]
-    unsafe Signature(bool disc, void* data) {
+    unsafe LegacySignature(bool disc, void* data) {
         IsUnion = disc;
         _data = data;
     }
@@ -21,7 +21,7 @@ public readonly ref struct Signature : IDisposable {
     // ReSharper restore MemberCanBePrivate.Global
     
     
-    public unsafe ref SigPiece AsPiece {
+    public unsafe ref Signature AsPiece {
         [MethodImpl(Inline)]
         get {
             if (IsPiece) return ref *PiecePtr;
@@ -37,9 +37,9 @@ public readonly ref struct Signature : IDisposable {
         }
     }
     
-    unsafe SigPiece* PiecePtr {
+    unsafe Signature* PiecePtr {
         [MethodImpl(Inline)]
-        get => (SigPiece*)_data;
+        get => (Signature*)_data;
     }
     
     unsafe SigUnion* UnionPtr {
@@ -48,26 +48,26 @@ public readonly ref struct Signature : IDisposable {
     }
     
     [MethodImpl(Inline)]
-    public static unsafe Box<Signature> SigPiece(ReadOnlySpan<byte> span) {
-        var self = (Signature*)AlignedAlloc((nuint) sizeof(Signature), 16);
+    public static unsafe Box<LegacySignature> SigPiece(ReadOnlySpan<byte> span) {
+        var self = (LegacySignature*)AlignedAlloc((nuint) sizeof(LegacySignature), 16);
         
-        SigPiece* data = Signatures.SigPiece.AllocCopy(span);
+        Signature* data = Signatures.Signature.AllocCopy(span);
         const bool disc = false;
         
-        Signature value = new(disc, data);
+        LegacySignature value = new(disc, data);
         *self = value;
         
         return new(self);
     }
     
     [MethodImpl(Inline)]
-    public static unsafe Box<Signature> SigUnion(Box<Signature> first, Box<Signature> second) {
-        var self = (Signature*)AlignedAlloc((nuint) sizeof(Signature), 16);
+    public static unsafe Box<LegacySignature> SigUnion(Box<LegacySignature> first, Box<LegacySignature> second) {
+        var self = (LegacySignature*)AlignedAlloc((nuint) sizeof(LegacySignature), 16);
         
         SigUnion* data = Signatures.SigUnion.Unite(first, second);
         const bool disc = true;
         
-        Signature value = new(disc, data);
+        LegacySignature value = new(disc, data);
         *self = value;
         
         return new(self);
@@ -93,12 +93,12 @@ public readonly ref struct Signature : IDisposable {
     }
 }
 
-public readonly unsafe ref struct SigPiece : IDisposable {
+public readonly unsafe ref struct Signature : IDisposable {
     byte* Start { [MethodImpl(Inline)] get; }
     int Size { [MethodImpl(Inline)] get; }
     
     [MethodImpl(Inline)]
-    SigPiece(byte* start, int size) {
+    Signature(byte* start, int size) {
         Start = start;
         Size = size;
     }
@@ -107,18 +107,31 @@ public readonly unsafe ref struct SigPiece : IDisposable {
     ReadOnlySpan<byte> AsSpan() => new(Start, Size);
     
     [MethodImpl(Inline)]
-    internal static SigPiece* AllocCopy(ReadOnlySpan<byte> data) {
-        var self = (SigPiece*)AlignedAlloc((nuint) sizeof(SigPiece), 16);
+    internal static Signature AllocCopy(scoped ReadOnlySpan<byte> data) {
         
-        var start = (byte*)AlignedAlloc((nuint)data.Length, 16);
-        int size = data.Length;
+        int length = data.Length;
         
-        data.CopyTo(new(start, size));
+        var start = (byte*)AlignedAlloc((nuint)length, 16);
+        data.CopyTo(new(start, length));
+        Signature value = new(start, length);
         
-        SigPiece value = new(start, size);
-        *self = value;
+        return value;
+    }
+    
+    /*public static explicit operator Signature(scoped ReadOnlySpan<byte> data)
+        => AllocCopy(data);   
+    
+    public static explicit operator Signature(scoped Span<byte> data)
+        => AllocCopy(data);*/
+    
+    public static Signature operator +(Signature a, Signature b) {
+        Span<byte> concat = stackalloc byte[a.Length + b.Length];
+        int split = a.Length;
+        a.CopyTo(concat[..split]);
+        b.CopyTo(concat[split..]);
         
-        return self;
+        
+        return AllocCopy(concat);
     }
     
     [MethodImpl(Inline)]
@@ -138,14 +151,14 @@ public readonly unsafe ref struct SigPiece : IDisposable {
 
 public readonly unsafe ref struct SigUnion : IDisposable {
     [MethodImpl(Inline)]
-    SigUnion(Box<Signature> first, Box<Signature> second) {
+    SigUnion(Box<LegacySignature> first, Box<LegacySignature> second) {
         _first = first;
         _second = second;
         Length = First.Length + Second.Length;
     }
     
-    readonly Box<Signature> _first;
-    readonly Box<Signature> _second;
+    readonly Box<LegacySignature> _first;
+    readonly Box<LegacySignature> _second;
     
     public int Length { [MethodImpl(Inline)] get; }
    
@@ -156,12 +169,12 @@ public readonly unsafe ref struct SigUnion : IDisposable {
         Second.CopyTo(span[split..]);
     }
     
-    ref Signature First { [MethodImpl(Inline)] get => ref _first.Value; }
+    ref LegacySignature First { [MethodImpl(Inline)] get => ref _first.Value; }
     
-    ref Signature Second { [MethodImpl(Inline)] get => ref _second.Value; }
+    ref LegacySignature Second { [MethodImpl(Inline)] get => ref _second.Value; }
     
     [MethodImpl(Inline)]
-    internal static SigUnion* Unite(Box<Signature> first, Box<Signature> second) {
+    internal static SigUnion* Unite(Box<LegacySignature> first, Box<LegacySignature> second) {
         var self = (SigUnion*)AlignedAlloc((nuint) sizeof(SigUnion), 16);
         
         SigUnion value = new(first, second);
