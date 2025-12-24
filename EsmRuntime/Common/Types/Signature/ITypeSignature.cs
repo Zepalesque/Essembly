@@ -5,7 +5,7 @@ using static EsmRuntime.Constants;
 
 namespace EsmRuntime.Common.Types.Signature;
 
-public readonly ref struct TypeSig : IHeapDispose {
+public readonly ref struct TypeSig : IDisposable {
     
     [MethodImpl(Inline)]
     unsafe TypeSig(bool disc, void* data) {
@@ -93,7 +93,7 @@ public readonly ref struct TypeSig : IHeapDispose {
     }
 }
 
-public readonly unsafe ref struct SigPiece : IHeapDispose {
+public readonly unsafe ref struct SigPiece : IDisposable {
     byte* Start { [MethodImpl(Inline)] get; }
     int Size { [MethodImpl(Inline)] get; }
     
@@ -136,7 +136,7 @@ public readonly unsafe ref struct SigPiece : IHeapDispose {
     }
 }
 
-public readonly unsafe ref struct SigUnion : IHeapDispose {
+public readonly unsafe ref struct SigUnion : IDisposable {
     [MethodImpl(Inline)]
     SigUnion(RecursiveBox<TypeSig> first, RecursiveBox<TypeSig> second) {
         _first = first;

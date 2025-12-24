@@ -5,8 +5,8 @@ using static EsmRuntime.Constants;
 namespace EsmRuntime.Memory.Util;
 
 [method: MethodImpl(Inline)]
-public readonly unsafe ref struct RecursiveBox<T>(T* ptr) : IDisposable, IHeapDispose
-    where T : unmanaged, IHeapDispose, allows ref struct {
+public readonly unsafe ref struct RecursiveBox<T>(T* ptr) : IDisposable
+    where T : unmanaged, IDisposable, allows ref struct {
     
     public static implicit operator RecursiveBox<T>(T* self) => new(self);
     
@@ -23,7 +23,7 @@ public readonly unsafe ref struct RecursiveBox<T>(T* ptr) : IDisposable, IHeapDi
 }
 
 [method: MethodImpl(Inline)]
-public readonly unsafe ref struct Box<T>(T* ptr) : IDisposable, IHeapDispose
+public readonly unsafe ref struct Box<T>(T* ptr) : IDisposable
     where T : unmanaged, allows ref struct {
     
     public static implicit operator Box<T>(T* self) => new(self);
@@ -35,8 +35,4 @@ public readonly unsafe ref struct Box<T>(T* ptr) : IDisposable, IHeapDispose
         if (ptr == null) return;
         NativeMemory.AlignedFree(ptr);
     }
-}
-
-public interface IHeapDispose {
-    public void Dispose();
 }
