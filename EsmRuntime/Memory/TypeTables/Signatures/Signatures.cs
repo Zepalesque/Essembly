@@ -1,24 +1,23 @@
 ﻿using System.Runtime.CompilerServices;
 using EsmRuntime.Memory.Util;
 using static System.Runtime.InteropServices.NativeMemory;
-using static EsmRuntime.Constants;
 
 namespace EsmRuntime.Memory.TypeTables.Signatures;
 
 public readonly unsafe ref struct Signature : IDisposable {
-    byte* Start { [MethodImpl(Inline)] get; }
-    int Size { [MethodImpl(Inline)] get; }
+    byte* Start { [MethodImpl(Utils.Inline)] get; }
+    int Size { [MethodImpl(Utils.Inline)] get; }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     Signature(byte* start, int size) {
         Start = start;
         Size = size;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     internal ReadOnlySpan<byte> AsSpan() => new(Start, Size);
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     internal static Signature AllocCopy(scoped ReadOnlySpan<byte> data) {
         
         int length = data.Length;
@@ -46,16 +45,16 @@ public readonly unsafe ref struct Signature : IDisposable {
         return AllocCopy(concat);
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public void Dispose() {
         AlignedFree(Start);
     }
     
     public int Length {
-        [MethodImpl(Inline)] get => Size;
+        [MethodImpl(Utils.Inline)] get => Size;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public void CopyTo(Span<byte> span) {
         AsSpan().CopyTo(span);
     }

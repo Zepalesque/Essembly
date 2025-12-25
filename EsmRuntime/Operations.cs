@@ -8,15 +8,15 @@ using EsmRuntime.Debug;
 using EsmRuntime.Memory;
 using EsmRuntime.Memory.Heap;
 using EsmRuntime.Memory.TypeTables;
+using EsmRuntime.Memory.Util;
 using JetBrains.Annotations;
-using static EsmRuntime.Constants;
 
 // ReSharper disable InconsistentNaming
 
 namespace EsmRuntime;
 
 public static partial class EsmVM {
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static unsafe T LoadConst<T>(RuntimeContext* context) where T: struct, ISizedValue<T> {
         FatPtr program = context->Program;
         ref nuint pc = ref context->Pc;
@@ -29,7 +29,7 @@ public static partial class EsmVM {
         return val;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static unsafe Ptr<T> AllocPtr<T>(RuntimeContext* context, T data) where T: struct, ITypedValue<T>, IBytecodeSerializable<T>, allows ref struct {
         ref readonly Heap heap = ref context->Heap;
         
@@ -40,7 +40,7 @@ public static partial class EsmVM {
         return ptr;
     }
     
-    [MethodImpl(Inline)] static unsafe Ptr<T> AllocPtr<T>(RuntimeContext* context) where T: struct, ITypedValue<T>, IBytecodeSerializable<T>, allows ref struct {
+    [MethodImpl(Utils.Inline)] static unsafe Ptr<T> AllocPtr<T>(RuntimeContext* context) where T: struct, ITypedValue<T>, IBytecodeSerializable<T>, allows ref struct {
         FatPtr program = context->Program;
         ref nuint pc = ref context->Pc;
         
@@ -49,7 +49,7 @@ public static partial class EsmVM {
         return AllocPtr(context, data);
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static unsafe Ptr AllocPtr(RuntimeContext* context) {
         FatPtr program = context->Program;
         ref nuint pc = ref context->Pc;
@@ -63,7 +63,7 @@ public static partial class EsmVM {
         return ptr;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static unsafe Ptr AllocPtr(RuntimeContext* context, int a) {
         FatPtr program = context->Program;
         ref nuint pc = ref context->Pc;
@@ -78,7 +78,7 @@ public static partial class EsmVM {
     }
     
     // TODO: Jump table for local frames, rework
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static void Jump(FatPtr program, ref nuint pc, ref OpStack stack, bool? cond) {
         
         if (cond == null) {
@@ -116,7 +116,7 @@ public static partial class EsmVM {
 
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static u8 Exit(u8 code) {
         
         #if ESM_DEBUG
@@ -126,7 +126,7 @@ public static partial class EsmVM {
         return code;
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static T UnaryNot<T>(T val) where T: struct, ISizedValue<T>, IBitwiseOperators<T, T, T> {
         T res = ~val;
         
@@ -137,11 +137,11 @@ public static partial class EsmVM {
         return res;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static T BinaryAnd<T>(T a, T b) where T: struct, ISizedValue<T>, IBitwiseOperators<T, T, T>
         => BinaryAnd<T, T, T>(a, b);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static TRes BinaryAnd<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IBitwiseOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a & b;
         
@@ -152,11 +152,11 @@ public static partial class EsmVM {
         return res;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static T BinaryOr<T>(T a, T b) where T: struct, ISizedValue<T>, IBitwiseOperators<T, T, T>
         => BinaryOr<T, T, T>(a, b);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static TRes BinaryOr<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IBitwiseOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a | b;
         
@@ -167,11 +167,11 @@ public static partial class EsmVM {
         return res;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static T BinaryXor<T>(T a, T b) where T: struct, ISizedValue<T>, IBitwiseOperators<T, T, T>
         => BinaryXor<T, T, T>(a, b);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static TRes BinaryXor<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IBitwiseOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a ^ b;
         
@@ -182,11 +182,11 @@ public static partial class EsmVM {
         return res;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static T BinaryLeft<T>(T a, T b) where T: struct, ISizedValue<T>, IShiftOperators<T, T, T>
         => BinaryLeft<T, T, T>(a, b);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static TRes BinaryLeft<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IShiftOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a << b;
         
@@ -197,11 +197,11 @@ public static partial class EsmVM {
         return res;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static T BinaryRight<T>(T a, T b) where T: struct, ISizedValue<T>, IShiftOperators<T, T, T>
         => BinaryRight<T, T, T>(a, b);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static TRes BinaryRight<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IShiftOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a >> b;
        
@@ -212,11 +212,11 @@ public static partial class EsmVM {
         return res;
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static T BinaryURight<T>(T a, T b) where T: struct, ISizedValue<T>, IShiftOperators<T, T, T>
         => BinaryURight<T, T, T>(a, b);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static TRes BinaryURight<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IShiftOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a >>> b;
         
@@ -227,11 +227,11 @@ public static partial class EsmVM {
         return res;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static T BinaryPlus<T>(T a, T b) where T: struct, ISizedValue<T>, IAdditionOperators<T, T, T>
         => BinaryPlus<T, T, T>(a, b);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static TRes BinaryPlus<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IAdditionOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a + b;
         #if ESM_DEBUG
@@ -240,11 +240,11 @@ public static partial class EsmVM {
         return res;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static T BinaryMinus<T>(T a, T b) where T: struct, ISizedValue<T>, ISubtractionOperators<T, T, T>
         => BinaryMinus<T, T, T>(a, b);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static TRes BinaryMinus<T1, T2, TRes>(T1 a, T2 b) where T1: struct, ISubtractionOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a - b;
         #if ESM_DEBUG
@@ -253,11 +253,11 @@ public static partial class EsmVM {
         return res;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static T BinaryMult<T>(T a, T b) where T: struct, ISizedValue<T>, IMultiplyOperators<T, T, T>
         => BinaryMult<T, T, T>(a, b);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static TRes BinaryMult<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IMultiplyOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a * b;
         #if ESM_DEBUG
@@ -266,11 +266,11 @@ public static partial class EsmVM {
         return res;
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static T BinaryDiv<T>(T a, T b) where T: struct, ISizedValue<T>, IDivisionOperators<T, T, T>
         => BinaryDiv<T, T, T>(a, b);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static TRes BinaryDiv<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IDivisionOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a / b;
         #if ESM_DEBUG
@@ -279,11 +279,11 @@ public static partial class EsmVM {
         return res;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static T BinaryMod<T>(T a, T b) where T: struct, ISizedValue<T>, IModulusOperators<T, T, T>
         => BinaryMod<T, T, T>(a, b);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static TRes BinaryMod<T1, T2, TRes>(T1 a, T2 b) where T1: struct, IModulusOperators<T1, T2, TRes> where T2: struct where TRes: struct, ISizedValue<TRes>  {
         TRes res = a % b;
         #if ESM_DEBUG
@@ -292,7 +292,7 @@ public static partial class EsmVM {
         return res;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static @bool BinaryEqual<T>(T a, T b) where T: struct, ISizedValue<T>, IEqualityOperators<T, T, bool>  {
         @bool res = a == b;
         #if ESM_DEBUG
@@ -301,7 +301,7 @@ public static partial class EsmVM {
         return res;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static @bool BinaryNEqual<T>(T a, T b) where T: struct, ISizedValue<T>, IEqualityOperators<T, T, bool>  {
         @bool res = a != b;
         #if ESM_DEBUG
@@ -310,7 +310,7 @@ public static partial class EsmVM {
         return res;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static void PrintInteger<T>(T val) where T : struct, ISizedValue<T>, INumberFormattable {
         #if ESM_DEBUG
         Debug($"Printing stack.Pop(): {val} formatted {val.Dec}");
@@ -318,15 +318,15 @@ public static partial class EsmVM {
         Console.Write(val.Dec);
     }
     
-    [MethodImpl(Inline)]
-    static void PrintAscii<T>(T val) where T : struct, ISizedValue<T>, IAsciiFormattable<T> {
+    [MethodImpl(Utils.Inline)]
+    static void PrintAscii<T>(T val) where T : struct, ISizedValue<T>, IUtf8Formattable<T> {
         #if ESM_DEBUG
         Debug($"Printing stack.Pop(): {val} formatted \'{(char) val}\'");
         #endif
         Console.Write((char) val);
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static void PrintUtf16<T>(T val) where T : struct, ISizedValue<T>, IUtf16Formattable<T> {
         #if ESM_DEBUG
         Debug($"Printing stack.Pop(): {val} formatted \'{(char) val}\'");
@@ -334,7 +334,7 @@ public static partial class EsmVM {
         Console.Write((char) val);
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     static void PrintString(ref OpStack stack) {
         var s = stack.Pop<Ptr<StringSlice>>();
         StringSlice slice = s.Dereference();

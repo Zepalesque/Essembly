@@ -1,10 +1,10 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
+using EsmRuntime.Memory.Util;
 using static System.BitConverter;
 using static System.Buffers.Binary.BinaryPrimitives;
 using static System.Runtime.CompilerServices.Unsafe;
 using static System.Runtime.InteropServices.MemoryMarshal;
-using static EsmRuntime.Constants;
 
 // ReSharper disable InconsistentNaming
 
@@ -30,38 +30,38 @@ public readonly record struct usize(nuint value):
     IComparable<usize>,
     IMinMaxValue<usize>
 {
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator nuint(usize self) => EsmVM.MemAddrUSize + self.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator usize(nuint self) => new(self - EsmVM.MemAddrUSize);
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator nint(usize self) => (isize) self;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator isize(usize self) => new(unchecked((nint) self.value));
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator usize(nint self) => (isize) self;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator usize(int self) => new((nuint)self);
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator usize(long self) => new((nuint)unchecked((ulong)self));    
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator usize(uint self) => new(self);  
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator usize(ulong self) => new((nuint) self);  
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe explicit operator byte*(usize self) => (byte*) (nuint) self;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe explicit operator usize(byte* self) => (nuint) self;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe usize FromBytecode(byte* start, scoped ref nuint pc) {
         pc += sizeof(ulong);
         return IsLittleEndian
@@ -69,50 +69,50 @@ public readonly record struct usize(nuint value):
             : ReadUnaligned<ulong>(start);
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public byte[] ToBytecode() {
         var arr = new byte[sizeof(ulong)];
         Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
         return arr;
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public unsafe void ToPtr(byte* ptr) {
         WriteUnaligned(ptr, value);
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe usize FromFatPtr(byte* ptr, usize size) => FromPtr(ptr);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe usize FromPtr(byte* ptr) => ReadUnaligned<nuint>(ptr);
     
-    public static unsafe usize ByteCount {
-        [MethodImpl(Inline)]
-        get => sizeof(nuint);
+    public static usize ByteCount {
+        [MethodImpl(Utils.Inline)]
+        get => nuint.Size;
     }
     
     public nuint InstSize {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => ByteCount;
     }
     
     public static bool IsConstSize {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => true;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public string ToString(string? format, IFormatProvider? formatProvider)
         => value.ToString(format, formatProvider);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format,
         IFormatProvider? provider)
         => value.TryFormat(destination, out charsWritten, format, provider);
 
     public string Bin {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => nuint.Size switch {
             4 => $"{value:B32}",
             8 => $"{value:B64}",
@@ -121,7 +121,7 @@ public readonly record struct usize(nuint value):
     }
 
     public string Hex {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => nuint.Size switch {
             4 => $"{value:X8}",
             8 => $"{value:X16}",
@@ -130,73 +130,73 @@ public readonly record struct usize(nuint value):
     }
 
     public string Dec {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => $"{value:D}";
     }
 
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static usize operator &(usize left, usize right) => new(left.value & right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static usize operator |(usize left, usize right) => new(left.value | right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static usize operator ^(usize left, usize right) => new(left.value ^ right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static usize operator ~(usize value) => new(~value.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static usize operator +(usize left, usize right) => new(left.value + right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static usize operator -(usize left, usize right) => new(left.value - right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static usize operator *(usize left, usize right) => new(left.value * right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static usize operator /(usize left, usize right) => new(left.value / right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static usize operator %(usize left, usize right) => new(left.value % right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static usize operator <<(usize value, usize shiftAmount) => new(value.value << (int) shiftAmount.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static usize operator >> (usize value, usize shiftAmount) => new(value.value >> (int) shiftAmount.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static usize operator >>> (usize value, usize shiftAmount) => new(value.value >>> (int) shiftAmount.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator >(usize left, usize right) => left.value > right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator >=(usize left, usize right) => left.value >= right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator <(usize left, usize right) => left.value < right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator <=(usize left, usize right) => left.value <= right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static usize operator +(usize value) => value;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static usize operator -(usize value) => new(~value.value + 1);
     
-    public static usize AdditiveIdentity { [MethodImpl(Inline)] get => 0; }
-    public static usize MultiplicativeIdentity { [MethodImpl(Inline)] get => 1; }
-    [MethodImpl(Inline)]
+    public static usize AdditiveIdentity { [MethodImpl(Utils.Inline)] get => 0; }
+    public static usize MultiplicativeIdentity { [MethodImpl(Utils.Inline)] get => 1; }
+    [MethodImpl(Utils.Inline)]
     public int CompareTo(usize other) => value.CompareTo(other.value);
     
-    public static usize MaxValue { [MethodImpl(Inline)] get => nuint.MaxValue; }
+    public static usize MaxValue { [MethodImpl(Utils.Inline)] get => nuint.MaxValue; }
     
-    public static usize MinValue { [MethodImpl(Inline)] get => nuint.MinValue; }
+    public static usize MinValue { [MethodImpl(Utils.Inline)] get => nuint.MinValue; }
     
 }
 
@@ -219,38 +219,38 @@ public readonly record struct isize(nint value):
     IComparable<isize>,
     IMinMaxValue<isize>
 {
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator nint(isize self) => EsmVM.MemAddrISize + self.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator isize(nint self) => new(self - EsmVM.MemAddrISize);
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator usize(isize self) => new(unchecked((nuint) self.value));
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator nuint(isize self) => (usize) self;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator isize(nuint self) => (usize) self;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator isize(int self) => new(self);
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator isize(uint self) => new(unchecked((int) self));
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator isize(long self) => new((nint) self);
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator isize(ulong self) => new((nint) unchecked((long) self));  
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe explicit operator byte*(isize self) => (byte*) (nint) self;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe explicit operator isize(byte* self) => (nint) self;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe isize FromBytecode(byte* start, scoped ref nuint pc) {
         pc += sizeof(long);
         return IsLittleEndian
@@ -258,50 +258,50 @@ public readonly record struct isize(nint value):
             : ReadUnaligned<long>(start);
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public byte[] ToBytecode() {
         var arr = new byte[sizeof(long)];
         Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
         return arr;
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public unsafe void ToPtr(byte* ptr) {
         WriteUnaligned(ptr, value);
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe isize FromFatPtr(byte* ptr, usize size) => FromPtr(ptr);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe isize FromPtr(byte* ptr) => ReadUnaligned<nint>(ptr);
     
     public static unsafe usize ByteCount {
-        [MethodImpl(Inline)]
-        get => sizeof(nint);
+        [MethodImpl(Utils.Inline)]
+        get => nint.Size;
     }
     
     public nuint InstSize {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => ByteCount;
     }
     
     public static bool IsConstSize {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => true;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public string ToString(string? format, IFormatProvider? formatProvider)
         => value.ToString(format, formatProvider);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format,
         IFormatProvider? provider)
         => value.TryFormat(destination, out charsWritten, format, provider);
 
     public string Bin {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => nint.Size switch {
             4 => $"{value:B32}",
             8 => $"{value:B64}",
@@ -310,7 +310,7 @@ public readonly record struct isize(nint value):
     }
 
     public string Hex {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => nint.Size switch {
             4 => $"{value:X8}",
             8 => $"{value:X16}",
@@ -319,72 +319,72 @@ public readonly record struct isize(nint value):
     }
 
     public string Dec {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => $"{value:D}";
     }
 
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static isize operator &(isize left, isize right) => new(left.value & right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static isize operator |(isize left, isize right) => new(left.value | right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static isize operator ^(isize left, isize right) => new(left.value ^ right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static isize operator ~(isize value) => new(~value.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static isize operator +(isize left, isize right) => new(left.value + right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static isize operator -(isize left, isize right) => new(left.value - right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static isize operator *(isize left, isize right) => new(left.value * right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static isize operator /(isize left, isize right) => new(left.value / right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static isize operator %(isize left, isize right) => new(left.value % right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static isize operator <<(isize value, isize shiftAmount) => new(value.value << (int) shiftAmount.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static isize operator >> (isize value, isize shiftAmount) => new(value.value >> (int) shiftAmount.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static isize operator >>> (isize value, isize shiftAmount) => new(value.value >>> (int) shiftAmount.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator >(isize left, isize right) => left.value > right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator >=(isize left, isize right) => left.value >= right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator <(isize left, isize right) => left.value < right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator <=(isize left, isize right) => left.value <= right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static isize operator +(isize value) => value;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static isize operator -(isize value) => new(~value.value + 1);
 
-    public static isize AdditiveIdentity { [MethodImpl(Inline)] get => 0; }
-    public static isize MultiplicativeIdentity { [MethodImpl(Inline)] get => 1; }
-    [MethodImpl(Inline)]
+    public static isize AdditiveIdentity { [MethodImpl(Utils.Inline)] get => 0; }
+    public static isize MultiplicativeIdentity { [MethodImpl(Utils.Inline)] get => 1; }
+    [MethodImpl(Utils.Inline)]
     public int CompareTo(isize other) => value.CompareTo(other.value);
     
-    public static isize MaxValue { [MethodImpl(Inline)] get => nint.MaxValue; }
+    public static isize MaxValue { [MethodImpl(Utils.Inline)] get => nint.MaxValue; }
     
-    public static isize MinValue { [MethodImpl(Inline)] get => nint.MinValue; }
+    public static isize MinValue { [MethodImpl(Utils.Inline)] get => nint.MinValue; }
     
 }

@@ -2,22 +2,22 @@
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using EsmRuntime.Memory.Util;
 using static System.BitConverter;
 using static System.Buffers.Binary.BinaryPrimitives;
 using static System.Runtime.CompilerServices.Unsafe;
 using static System.Runtime.InteropServices.MemoryMarshal;
-using static EsmRuntime.Constants;
 
 // ReSharper disable UseSymbolAlias
 #pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
 
 namespace EsmRuntime.Common.Types;
 
-[method: MethodImpl(Inline)]
+[method: MethodImpl(Utils.Inline)]
 public readonly record struct i8(sbyte value):
     ISpanFormattable,
     INumberFormattable,
-    IAsciiFormattable<i8>,
+    IUtf8Formattable<i8>,
     ISizedPrimValue<i8>,
     IBitwiseOperators<i8, i8, i8>,
     IAdditionOperators<i8, i8, i8>,
@@ -35,149 +35,149 @@ public readonly record struct i8(sbyte value):
     IMinMaxValue<i8>
 {
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator i8(sbyte val) => new(val);
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator sbyte(i8 val) => val.value;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator ~(i8 self) => unchecked((sbyte)~self.value);
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator &(i8 a, i8 b) => unchecked((sbyte)(a.value & b.value));
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator |(i8 a, i8 b) => unchecked((sbyte)(a.value | b.value));
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator ^(i8 a, i8 b) => unchecked((sbyte)(a.value ^ b.value));
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator <<(i8 a, i8 b) => unchecked((sbyte)(a.value << b.value));
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator >>(i8 a, i8 b) => unchecked((sbyte)(a.value >> b.value));
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator >>>(i8 a, i8 b) => unchecked((sbyte)(a.value >>> b.value));
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static explicit operator char(i8 val) => (char) val.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static explicit operator i8(char val) => new(unchecked((sbyte)val));
     
     public string Bin {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => $"{value:B8}";
     }
 
     public string Hex {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => $"{value:X2}";
     }
 
     public string Dec {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => $"{value:D}";
     }
 
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public int CompareTo(i8 other) => value.CompareTo(other.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator %(i8 left, i8 right) => unchecked((sbyte) (left.value % right.value));
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator +(i8 value) => value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public override string ToString() => value.ToString();
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public string ToString(string? format, IFormatProvider? formatProvider) 
         => value.ToString(format, formatProvider);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) 
         => value.TryFormat(destination, out charsWritten, format, provider);
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator +(i8 left, i8 right) => unchecked((sbyte) (left.value + right.value));
 
     public static i8 AdditiveIdentity {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => 0;
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator >(i8 left, i8 right) => left.value > right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator >=(i8 left, i8 right) => left.value >= right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator <(i8 left, i8 right) => left.value < right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator <=(i8 left, i8 right) => left.value <= right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator --(i8 value) => value - 1;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator /(i8 left, i8 right) => unchecked((sbyte) (left.value / right.value));
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator ++(i8 value) => value + 1;
-    public static i8 MultiplicativeIdentity { [MethodImpl(Inline)] get => 1; }
-    [MethodImpl(Inline)]
+    public static i8 MultiplicativeIdentity { [MethodImpl(Utils.Inline)] get => 1; }
+    [MethodImpl(Utils.Inline)]
     public static i8 operator *(i8 left, i8 right) => unchecked((sbyte) (left.value * right.value));
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator -(i8 left, i8 right) => unchecked((sbyte) (left.value - right.value));
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i8 operator -(i8 value) => unchecked((sbyte)-value.value);
 
     public static usize ByteCount {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => 1;
     }
     
     public nuint InstSize {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => ByteCount;
     }
     
     public static bool IsConstSize {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => true;
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i8 FromPtr(byte* ptr) => ReadUnaligned<sbyte>(ptr);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i8 FromFatPtr(byte* ptr, usize size) 
         => FromPtr(ptr);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i8 FromBytecode(byte* start, scoped ref nuint pc) {
         pc += sizeof(sbyte);
         return IsLittleEndian ? ReverseEndianness(ReadUnaligned<sbyte>(start)) : ReadUnaligned<sbyte>(start);
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public byte[] ToBytecode() {
         var arr = new byte[sizeof(sbyte)];
         Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
         return arr;
     }
     
-    public static i8 MaxValue { [MethodImpl(Inline)] get => sbyte.MaxValue; }
+    public static i8 MaxValue { [MethodImpl(Utils.Inline)] get => sbyte.MaxValue; }
     
-    public static i8 MinValue { [MethodImpl(Inline)] get => sbyte.MinValue; }
+    public static i8 MinValue { [MethodImpl(Utils.Inline)] get => sbyte.MinValue; }
 }
 
 
-[method: MethodImpl(Inline)]
+[method: MethodImpl(Utils.Inline)]
 public readonly record struct i16(short value): 
     ISpanFormattable,
     INumberFormattable,
@@ -198,141 +198,141 @@ public readonly record struct i16(short value):
     IComparable<i16>,
     IMinMaxValue<i16>
 {
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator i16(short val) => new(val);
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator short(i16 val) => val.value;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator ~(i16 self) => unchecked((short)~self.value);
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator &(i16 a, i16 b) => unchecked((short)(a.value & b.value));
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator |(i16 a, i16 b) => unchecked((short)(a.value | b.value));
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator ^(i16 a, i16 b) => unchecked((short)(a.value ^ b.value));
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator <<(i16 a, i16 b) => unchecked((short)(a.value << b.value));
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator >>(i16 a, i16 b) => unchecked((short)(a.value >> b.value));
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator >>>(i16 a, i16 b) => unchecked((short)(a.value >>> b.value));
 
 
     public string Bin {
-        [MethodImpl(Inline)] get => $"{value:B16}";
+        [MethodImpl(Utils.Inline)] get => $"{value:B16}";
     }
 
     public string Hex {
-        [MethodImpl(Inline)] get => $"{value:X4}";
+        [MethodImpl(Utils.Inline)] get => $"{value:X4}";
     }
 
     public string Dec {
-        [MethodImpl(Inline)] get => $"{value:D}";
+        [MethodImpl(Utils.Inline)] get => $"{value:D}";
     }
 
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public int CompareTo(i16 other) => value.CompareTo(other.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator %(i16 left, i16 right) => unchecked((short) (left.value % right.value));
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator +(i16 value) => value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static explicit operator char(i16 value) => (char) value.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public override string ToString() => value.ToString();
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public string ToString(string? format, IFormatProvider? formatProvider) 
         => value.ToString(format, formatProvider);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) 
         => value.TryFormat(destination, out charsWritten, format, provider);
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator +(i16 left, i16 right) => unchecked((short) (left.value + right.value));
     
-    public static i16 AdditiveIdentity { [MethodImpl(Inline)] get => 0; }
+    public static i16 AdditiveIdentity { [MethodImpl(Utils.Inline)] get => 0; }
    
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator >(i16 left, i16 right) => left.value > right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator >=(i16 left, i16 right) => left.value >= right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator <(i16 left, i16 right) => left.value < right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator <=(i16 left, i16 right) => left.value <= right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator --(i16 value) => value - 1;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator /(i16 left, i16 right) => unchecked((short) (left.value / right.value));
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator ++(i16 value) => value + 1;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator *(i16 left, i16 right) => unchecked((short) (left.value * right.value));
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator -(i16 left, i16 right) => unchecked((short) (left.value - right.value));
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i16 operator -(i16 value) => unchecked((short)-value.value);
 
     public static i16 MultiplicativeIdentity {
-        [MethodImpl(Inline)] get => 1;
+        [MethodImpl(Utils.Inline)] get => 1;
     }
     
     public static usize ByteCount {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => 2;
     }
     
     public nuint InstSize {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => ByteCount;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i16 FromPtr(byte* ptr) => ReadUnaligned<short>(ptr);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i16 FromFatPtr(byte* ptr, usize size) 
         => FromPtr(ptr);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i16 FromBytecode(byte* start, scoped ref nuint pc) {
         pc += sizeof(short);
         return IsLittleEndian ? ReverseEndianness(ReadUnaligned<short>(start)) : ReadUnaligned<short>(start);
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public byte[] ToBytecode() {
         var arr = new byte[sizeof(short)];
         Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
         return arr;
     }
     
-    public static i16 MaxValue { [MethodImpl(Inline)] get => short.MaxValue; }
+    public static i16 MaxValue { [MethodImpl(Utils.Inline)] get => short.MaxValue; }
     
-    public static i16 MinValue { [MethodImpl(Inline)] get => short.MinValue; }
+    public static i16 MinValue { [MethodImpl(Utils.Inline)] get => short.MinValue; }
     
 }
 
 
-[method: MethodImpl(Inline)]
+[method: MethodImpl(Utils.Inline)]
 public readonly record struct i32(int value): 
     ISpanFormattable,
     INumberFormattable,
@@ -352,123 +352,123 @@ public readonly record struct i32(int value):
     IComparable<i32>,
     IMinMaxValue<i32>
 {
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator i32(int val) => new(val);
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator int(i32 val) => val.value;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator ~(i32 self) => ~self.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator &(i32 a, i32 b) => a.value & b.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator |(i32 a, i32 b) => a.value | b.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator ^(i32 a, i32 b) => a.value ^ b.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator <<(i32 a, i32 b) => a.value << b.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator >>(i32 a, i32 b) => a.value >> b.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator >>>(i32 a, i32 b) => a.value >>> b.value;
 
 
     public string Bin {
-        [MethodImpl(Inline)] get => $"{value:B32}";
+        [MethodImpl(Utils.Inline)] get => $"{value:B32}";
     }
 
     public string Hex {
-        [MethodImpl(Inline)] get => $"{value:X8}";
+        [MethodImpl(Utils.Inline)] get => $"{value:X8}";
     }
 
     public string Dec {
-        [MethodImpl(Inline)] get => $"{value:D}";
+        [MethodImpl(Utils.Inline)] get => $"{value:D}";
     }
 
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public int CompareTo(i32 other) => value.CompareTo(other.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator %(i32 left, i32 right) => left.value % right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator +(i32 value) => value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static explicit operator char(i32 value) => (char) value.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public override string ToString() => value.ToString();
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public string ToString(string? format, IFormatProvider? formatProvider) 
         => value.ToString(format, formatProvider);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) 
         => value.TryFormat(destination, out charsWritten, format, provider);
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator +(i32 left, i32 right) => unchecked(left.value + right.value);
 
     public static i32 AdditiveIdentity {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => 0;
     }
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator >(i32 left, i32 right) => left.value > right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator >=(i32 left, i32 right) => left.value >= right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator <(i32 left, i32 right) => left.value < right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator <=(i32 left, i32 right) => left.value <= right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator --(i32 value) => value - 1;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator /(i32 left, i32 right) => left.value / right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator ++(i32 value) => value + 1;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator *(i32 left, i32 right) => unchecked(left.value * right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator -(i32 left, i32 right) => unchecked(left.value - right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i32 operator -(i32 value) => unchecked(-value.value);
 
     public static i32 MultiplicativeIdentity {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => 1;
     }
     
     public static usize ByteCount {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => 4;
     }
     
     public nuint InstSize {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => ByteCount;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i32 FromPtr(byte* ptr) => ReadUnaligned<int>(ptr);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i32 FromFatPtr(byte* ptr, usize size) 
         => FromPtr(ptr);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i32 FromBytecode(byte* start, scoped ref nuint pc) {
         pc += sizeof(int);
         return IsLittleEndian 
@@ -476,21 +476,21 @@ public readonly record struct i32(int value):
             : ReadUnaligned<int>(start);
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public byte[] ToBytecode() {
         var arr = new byte[sizeof(int)];
         Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
         return arr;
     }
     
-    public static i32 MaxValue { [MethodImpl(Inline)] get => int.MaxValue; }
+    public static i32 MaxValue { [MethodImpl(Utils.Inline)] get => int.MaxValue; }
     
-    public static i32 MinValue { [MethodImpl(Inline)] get => int.MinValue; }
+    public static i32 MinValue { [MethodImpl(Utils.Inline)] get => int.MinValue; }
     
 }
 
 
-[method: MethodImpl(Inline)]
+[method: MethodImpl(Utils.Inline)]
 public readonly record struct i64(long value): 
     ISpanFormattable,
     INumberFormattable,
@@ -510,120 +510,120 @@ public readonly record struct i64(long value):
     IComparable<i64>,
     IMinMaxValue<i64> {
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator i64(long val) => new(val);
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator long(i64 val) => val.value;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator ~(i64 self) => ~self.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator &(i64 a, i64 b) => a.value & b.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator |(i64 a, i64 b) => a.value | b.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator ^(i64 a, i64 b) => a.value ^ b.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator <<(i64 a, i64 b) => unchecked(a.value << (int) b.value);
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator >>(i64 a, i64 b) => unchecked(a.value >> (int) b.value);
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator >>>(i64 a, i64 b) => unchecked(a.value >>> (int) b.value);
 
 
     public string Bin {
-        [MethodImpl(Inline)] get => $"{value:B64}";
+        [MethodImpl(Utils.Inline)] get => $"{value:B64}";
     }
 
     public string Hex {
-        [MethodImpl(Inline)] get => $"{value:X16}";
+        [MethodImpl(Utils.Inline)] get => $"{value:X16}";
     }
 
     public string Dec {
-        [MethodImpl(Inline)] get => $"{value:D}";
+        [MethodImpl(Utils.Inline)] get => $"{value:D}";
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public int CompareTo(i64 other) => value.CompareTo(other.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator %(i64 left, i64 right) => left.value % right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator +(i64 value) => value;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static explicit operator char(i64 value) => (char) value.value;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public override string ToString() => value.ToString();
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public string ToString(string? format, IFormatProvider? formatProvider) 
         => value.ToString(format, formatProvider);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) 
         => value.TryFormat(destination, out charsWritten, format, provider);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator +(i64 left, i64 right) => unchecked(left.value + right.value);
     
-    public static i64 AdditiveIdentity { [MethodImpl(Inline)] get => 0; }
-    [MethodImpl(Inline)]
+    public static i64 AdditiveIdentity { [MethodImpl(Utils.Inline)] get => 0; }
+    [MethodImpl(Utils.Inline)]
     public static bool operator >(i64 left, i64 right) => left.value > right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator >=(i64 left, i64 right) => left.value >= right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator <(i64 left, i64 right) => left.value < right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator <=(i64 left, i64 right) => left.value <= right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator --(i64 value) => value - 1;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator /(i64 left, i64 right) => left.value / right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator ++(i64 value) => value + 1;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator *(i64 left, i64 right) => unchecked(left.value * right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator -(i64 left, i64 right) => unchecked(left.value - right.value);
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i64 operator -(i64 value) => unchecked(-value.value);
 
     public static i64 MultiplicativeIdentity {
-        [MethodImpl(Inline)] get => 1;
+        [MethodImpl(Utils.Inline)] get => 1;
     }
     
     public static usize ByteCount {
-        [MethodImpl(Inline)] get => 8;
+        [MethodImpl(Utils.Inline)] get => 8;
     }
     
     public nuint InstSize {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => ByteCount;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i64 FromPtr(byte* ptr) => ReadUnaligned<long>(ptr);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i64 FromFatPtr(byte* ptr, usize size) 
         => FromPtr(ptr);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i64 FromBytecode(byte* start, scoped ref nuint pc) {
         pc += sizeof(long);
         return IsLittleEndian 
@@ -631,7 +631,7 @@ public readonly record struct i64(long value):
             : ReadUnaligned<long>(start);
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public byte[] ToBytecode() {
         var arr = new byte[sizeof(long)];
         Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
@@ -639,13 +639,13 @@ public readonly record struct i64(long value):
     }
     
     
-    public static i64 MaxValue { [MethodImpl(Inline)] get => long.MaxValue; }
+    public static i64 MaxValue { [MethodImpl(Utils.Inline)] get => long.MaxValue; }
     
-    public static i64 MinValue { [MethodImpl(Inline)] get => long.MinValue; }
+    public static i64 MinValue { [MethodImpl(Utils.Inline)] get => long.MinValue; }
     
 }
 
-[method: MethodImpl(Inline)]
+[method: MethodImpl(Utils.Inline)]
 public readonly record struct i128(Int128 value): 
     ISpanFormattable,
     INumberFormattable,
@@ -665,122 +665,122 @@ public readonly record struct i128(Int128 value):
     IComparable<i128>,
     IMinMaxValue<i128> {
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator i128(Int128 val) => new(val);
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static implicit operator Int128(i128 val) => val.value;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator ~(i128 self) => ~self.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator &(i128 a, i128 b) => a.value & b.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator |(i128 a, i128 b) => a.value | b.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator ^(i128 a, i128 b) => a.value ^ b.value;
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator <<(i128 a, i128 b) => unchecked(a.value << (int) b.value);
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator >>(i128 a, i128 b) => unchecked(a.value >> (int) b.value);
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator >>>(i128 a, i128 b) => unchecked(a.value >>> (int) b.value);
 
 
     public string Bin {
-        [MethodImpl(Inline)] get => $"{value:B64}";
+        [MethodImpl(Utils.Inline)] get => $"{value:B64}";
     }
 
     public string Hex {
-        [MethodImpl(Inline)] get => $"{value:X16}";
+        [MethodImpl(Utils.Inline)] get => $"{value:X16}";
     }
 
     public string Dec {
-        [MethodImpl(Inline)] get => $"{value:D}";
+        [MethodImpl(Utils.Inline)] get => $"{value:D}";
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public int CompareTo(i128 other) => value.CompareTo(other.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator %(i128 left, i128 right) => left.value % right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator +(i128 value) => value;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static explicit operator char(i128 value) => (char) value.value;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public override string ToString() => value.ToString();
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public string ToString(string? format, IFormatProvider? formatProvider) 
         => value.ToString(format, formatProvider);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) 
         => value.TryFormat(destination, out charsWritten, format, provider);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator +(i128 left, i128 right) => unchecked(left.value + right.value);
     
     public static i128 AdditiveIdentity {
-        [MethodImpl(Inline)] get => Int128.Zero;
+        [MethodImpl(Utils.Inline)] get => Int128.Zero;
     }
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator >(i128 left, i128 right) => left.value > right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator >=(i128 left, i128 right) => left.value >= right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator <(i128 left, i128 right) => left.value < right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static bool operator <=(i128 left, i128 right) => left.value <= right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator --(i128 value) => (Int128) value - 1;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator /(i128 left, i128 right) => left.value / right.value;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator ++(i128 value) => (Int128) value + 1;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator *(i128 left, i128 right) => unchecked(left.value * right.value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator -(i128 left, i128 right) => unchecked(left.value - right.value);
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static i128 operator -(i128 value) => unchecked(-value.value);
 
     public static i128 MultiplicativeIdentity {
-        [MethodImpl(Inline)] get => (Int128) 1;
+        [MethodImpl(Utils.Inline)] get => (Int128) 1;
     }
     
     public static usize ByteCount {
-        [MethodImpl(Inline)] get => 8;
+        [MethodImpl(Utils.Inline)] get => 8;
     }
     
     public nuint InstSize {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => ByteCount;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i128 FromPtr(byte* ptr) => ReadUnaligned<Int128>(ptr);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i128 FromFatPtr(byte* ptr, usize size) 
         => FromPtr(ptr);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public unsafe void ToPtr(byte* ptr) => WriteUnaligned(ptr, value);
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static unsafe i128 FromBytecode(byte* start, scoped ref nuint pc) {
         pc += (nuint)sizeof(Int128);
         return IsLittleEndian 
@@ -788,15 +788,15 @@ public readonly record struct i128(Int128 value):
             : ReadUnaligned<Int128>(start);
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public unsafe byte[] ToBytecode() {
         var arr = new byte[sizeof(Int128)];
         Write(arr, IsLittleEndian ? ReverseEndianness(value) : value);
         return arr;
     }
     
-    public static i128 MaxValue { [MethodImpl(Inline)] get => Int128.MaxValue; }
+    public static i128 MaxValue { [MethodImpl(Utils.Inline)] get => Int128.MaxValue; }
     
-    public static i128 MinValue { [MethodImpl(Inline)] get => Int128.MinValue; }
+    public static i128 MinValue { [MethodImpl(Utils.Inline)] get => Int128.MinValue; }
     
 }

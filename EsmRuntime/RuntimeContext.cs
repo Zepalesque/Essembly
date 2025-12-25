@@ -2,17 +2,17 @@
 using EsmRuntime.Common;
 using EsmRuntime.Memory;
 using EsmRuntime.Memory.Heap;
-using static EsmRuntime.Constants;
+using EsmRuntime.Memory.Util;
 
 namespace EsmRuntime;
 
-[method: MethodImpl(Inline)]
+[method: MethodImpl(Utils.Inline)]
 public readonly unsafe ref struct RuntimeContext(FatPtr program, Heap* heap, OpStack* stack, nuint* pc) {
-    public FatPtr Program { [MethodImpl(Inline)] get; } = program;
+    public FatPtr Program { [MethodImpl(Utils.Inline)] get; } = program;
     
-    public ref readonly Heap Heap { [MethodImpl(Inline)] get => ref *heap; }
+    public ref readonly Heap Heap { [MethodImpl(Utils.Inline)] get => ref *heap; }
     
-    public ref nuint Pc { [MethodImpl(Inline)] get => ref *pc; }
+    public ref nuint Pc { [MethodImpl(Utils.Inline)] get => ref *pc; }
     
-    public ref OpStack Stack { [MethodImpl(Inline)] get => ref *stack; }
+    public ref OpStack Stack { [MethodImpl(Utils.Inline)] get => ref *stack; }
 }

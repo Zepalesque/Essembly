@@ -6,7 +6,7 @@ using EsmRuntime.Common;
 using EsmRuntime.Common.Types;
 using EsmRuntime.Memory;
 using EsmRuntime.Memory.Heap;
-using static EsmRuntime.Constants;
+using EsmRuntime.Memory.Util;
 using HeapTree = EsmRuntime.Memory.Heap.HeapTree;
 
 namespace EsmRuntime;
@@ -56,7 +56,7 @@ public static partial class EsmVM {
         public readonly nuint GlobalStack = globalStack;
         public readonly nuint OpStack = opStack;
 
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         public nuint FullSize() => Heap + FunctionStack + GlobalStack + OpStack + 2;
     }
 

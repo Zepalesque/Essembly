@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace EsmRuntime;
+namespace EsmRuntime.Memory.Util;
 
-public static class Constants {
+public static partial class Utils {
     public const MethodImplOptions Inline = MethodImplOptions.AggressiveInlining;
 }

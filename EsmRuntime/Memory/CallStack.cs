@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using EsmRuntime.Common.Types;
-using static EsmRuntime.Constants;
+using EsmRuntime.Memory.Util;
 
 namespace EsmRuntime.Memory;
 
@@ -86,7 +86,7 @@ public readonly unsafe ref struct VariableTable(Slice<usize> offsets): IByteSeri
     
     public nuint InstSize => (_offsets.Length + 1) * usize.ByteCount;
     
-    public static bool IsConstSize { [MethodImpl(Inline)] get => false; }
+    public static bool IsConstSize { [MethodImpl(Utils.Inline)] get => false; }
     
     public void ToPtr(byte* ptr) {
         _offsets.Length.ToPtr(ptr);

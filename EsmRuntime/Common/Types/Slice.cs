@@ -1,21 +1,21 @@
 ﻿using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static EsmRuntime.Constants;
+using EsmRuntime.Memory.Util;
 
 namespace EsmRuntime.Common.Types;
 
-[method: MethodImpl(Inline)]
+[method: MethodImpl(Utils.Inline)]
 public readonly unsafe ref struct Slice<T>(byte* start, usize byteLength): ITypedValue<Slice<T>>, IBytecodeSerializable<Slice<T>> where T: struct, ISizedTypeValue<T>, allows ref struct {
     byte* Start {
-        [MethodImpl(Inline)] get => start;
+        [MethodImpl(Utils.Inline)] get => start;
     }
     
     public usize Length {
-        [MethodImpl(Inline)] get;
+        [MethodImpl(Utils.Inline)] get;
     } = byteLength / T.ByteCount;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static Slice<T> Create(ReadOnlySpan<byte> span) {
         ref byte reference = ref MemoryMarshal.GetReference(span);
         var ptr = (byte*)Unsafe.AsPointer(ref reference);
@@ -24,12 +24,12 @@ public readonly unsafe ref struct Slice<T>(byte* start, usize byteLength): IType
     
     // TODO: Custom span impl with nuints
     public ReadOnlySpan<byte> Bytes {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => new(Start, checked((int)(usize)InstSize));
     }
     
     public T this[nuint index] {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get {
             if (index >= Length)
                 throw new InvalidIndexError($"Cannot access value at index {index} for slice of length {Length} (index should be < {Length})");
@@ -38,7 +38,7 @@ public readonly unsafe ref struct Slice<T>(byte* start, usize byteLength): IType
         }
     }
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public void ToPtr(byte* ptr) {
         for (nuint i = 0; i < InstSize; i += T.ByteCount) {
             byte* valStart = ptr + i;
@@ -46,42 +46,42 @@ public readonly unsafe ref struct Slice<T>(byte* start, usize byteLength): IType
         }
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static Slice<T> FromFatPtr(byte* ptr, usize size) 
         => new(ptr, size);
     
     public nuint InstSize {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => byteLength;
     }
     
     public bool IsConstSize {
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         get => false;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public Enumerator GetEnumerator() => new Enumerator(Start, Length);
     
-    [method: MethodImpl(Inline)]
+    [method: MethodImpl(Utils.Inline)]
     public struct Enumerator(byte* start, nuint length) {
         nuint _offset = nuint.MaxValue;
 
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
         public bool MoveNext() => ++_offset < length;
         
-        [MethodImpl(Inline)]
+        [MethodImpl(Utils.Inline)]
         public void Reset() {
             _offset = nuint.MaxValue;
         }
 
         public T Current {
-            [MethodImpl(Inline)]
+            [MethodImpl(Utils.Inline)]
             get => T.FromPtr(start + _offset * T.ByteCount);
         }
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static Slice<T> FromBytecode(byte* start, scoped ref nuint pc) {
         usize length = usize.FromBytecode(start, ref pc);
         usize byteLength = length * T.ByteCount;
@@ -89,7 +89,7 @@ public readonly unsafe ref struct Slice<T>(byte* start, usize byteLength): IType
         return FromFatPtr(start + usize.ByteCount, byteLength);
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public byte[] ToBytecode() {
         usize fullByteLength = usize.ByteCount + byteLength;
         var data = new byte[fullByteLength];

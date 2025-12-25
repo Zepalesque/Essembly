@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static EsmRuntime.Constants;
+using EsmRuntime.Memory.Util;
 
 namespace EsmRuntime.Memory.TypeTables;
 
@@ -9,7 +9,7 @@ public readonly unsafe ref struct HashTable<T> : IDisposable
     readonly HashNode<T>** _nodes;
     readonly uint _mask;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public HashTable(uint capPwr) {
         uint cap = 1u << (int)capPwr;
         _mask = cap - 1;
@@ -24,7 +24,7 @@ public readonly unsafe ref struct HashTable<T> : IDisposable
         }
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public bool Insert(UInt128 hash, T value) {
         if (_nodes == null) return false;
         
@@ -61,7 +61,7 @@ public readonly unsafe ref struct HashTable<T> : IDisposable
         return false;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public bool Get(UInt128 hash, out T* value) {
         if (_nodes == null) {
             value = null;
@@ -97,13 +97,13 @@ public readonly unsafe ref struct HashTable<T> : IDisposable
         return false;
     }
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     uint BucketKey(UInt128 key) => Wrap((uint) key);
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     uint Wrap(uint key) => key & _mask;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public void Dispose() {
         if (_nodes == null) return;
         for (uint i = 0; i <= _mask; i++) {
@@ -118,13 +118,13 @@ public readonly unsafe ref struct HashTable<T> : IDisposable
     }
 }
 
-[method: MethodImpl(Inline)]
+[method: MethodImpl(Utils.Inline)]
 public unsafe ref struct HashNode<T>(UInt128 key, T value, uint psl) where T: unmanaged, allows ref struct {
     public readonly UInt128 Key = key;
     public T Value = value;
     public uint Psl = psl;
     
-    [MethodImpl(Inline)]
+    [MethodImpl(Utils.Inline)]
     public static HashNode<T>* Alloc(UInt128 key, T value, uint offset = 0) {
         var ptr = (HashNode<T>*)NativeMemory.AlignedAlloc((nuint)sizeof(HashNode<T>), 16);
         
